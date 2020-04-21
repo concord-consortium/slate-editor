@@ -1,0 +1,24 @@
+.slate-editor {
+  padding: 3px;
+
+  strong {
+    font-style: bold;
+  }
+  em {
+    font-style: italic;
+  }
+  blockquote {
+    border-left: 2px solid #ddd;
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 10px;
+    color: #aaa;
+    font-style: italic;
+  }
+  .text-color {
+    // allow selected text color to be set from JavaScript
+    &::selection {
+      color: var(--selected-color);
+    }
+  }
+}

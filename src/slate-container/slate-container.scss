@@ -1,0 +1,13 @@
+.slate-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  .slate-toolbar {
+    flex: 0 0 auto;
+  }
+
+  .slate-editor {
+    flex: 1 1 auto;
+  }
+}
