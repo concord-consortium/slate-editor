@@ -26,8 +26,7 @@ describe("Slate Editor serialization", () => {
 
   const emptyTextNode: TextJSON = { object: "text", text: "" };
   const emptyText050 = { text: "" };
-  const textNode: TextJSON = { object: "text", text: "foo",
-                                marks: [boldMark] };
+  const textNode: TextJSON = { object: "text", text: "foo", marks: [boldMark] };
   const text050 = { text: "foo", bold: true };
   it("can serialize/deserialize text nodes", () => {
     // empty text node

@@ -25,6 +25,7 @@ interface SlateElement {
 
 type SlateNode = SlateElement | SlateText;
 
+// map from type (e.g. paragraph or link) to object type (e.g. block or inline)
 export type ObjectTypeMap = Record<string, string>;
 
 export interface SlateDocument {
@@ -128,8 +129,9 @@ export function deserializeElement(node: SlateElement, objTypes: ObjectTypeMap):
 }
 
 export function deserializeNode(node: SlateNode, objTypes: ObjectTypeMap): ChildJSON {
-  if (node.children) return deserializeElement(node as SlateElement, objTypes);
-  return deserializeTextNode(node as SlateText);
+  return node.children
+          ? deserializeElement(node as SlateElement, objTypes)
+          : deserializeTextNode(node as SlateText);
 }
 
 export function deserializeDocument(document: SlateDocument): DocumentJSON {
