@@ -10,7 +10,7 @@ export enum EFormat {
   code = "code",
   superscript = "superscript",
   subscript = "subscript",
-  textColor = "text-color",
+  color = "color",
 
   // blocks
   heading1 = "heading1",
@@ -24,6 +24,8 @@ export enum EFormat {
   numberedList = "ordered-list",
   bulletedList = "bulleted-list",
   image = "image",
+
+  // inlines
   link = "link"
 }
 
@@ -31,7 +33,8 @@ export type EditorValue = Value;
 export type EditorContent = Document;
 
 export function textToSlate(text: string): EditorValue {
-  return SlatePlainSerializer.deserialize(text);
+  // cast to any required as typings don't account for string shortcut
+  return SlatePlainSerializer.deserialize(text, { defaultBlock: "paragraph" } as any);
 }
 
 export function slateToText(value?: EditorValue): string {

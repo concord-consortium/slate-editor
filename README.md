@@ -24,9 +24,9 @@ $ npm link @concord-consortium/slate-editor # to link to the `slate-editor` libr
 
 ## References
 
-Slate: https://slatejs.org
-Slate GitHub (0.47 branch): https://github.com/ianstormtaylor/slate/tree/v0.47
-Project Configuration: https://blog.harveydelaney.com/creating-your-own-react-component-library/
-ESLint/TypeScript Configuration: https://michelenasti.com/2019/06/27/typescript-babel-webpack-eslint-my-configuration.html
-FontAwesome Icons: https://www.iconfinder.com/iconsets/font-awesome
-SVG Conversion: https://react-svgr.com/playground/
+- Slate: https://slatejs.org
+- Slate GitHub (0.47 branch): https://github.com/ianstormtaylor/slate/tree/v0.47
+- Project Configuration: https://blog.harveydelaney.com/creating-your-own-react-component-library/
+- ESLint/TypeScript Configuration: https://michelenasti.com/2019/06/27/typescript-babel-webpack-eslint-my-configuration.html
+- FontAwesome Icons: https://www.iconfinder.com/iconsets/font-awesome
+- SVG Conversion: https://react-svgr.com/playground/

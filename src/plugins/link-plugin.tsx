@@ -12,17 +12,17 @@ export function handleToggleLink(editor?: Editor) {
   const { value } = editor;
   const hasLink = hasActiveInline(editor.value, EFormat.link);
 
-  function wrapLink(editor: Editor, href: string) {
-    editor.wrapInline({
+  function wrapLink(_editor: Editor, href: string) {
+    _editor.wrapInline({
       type: EFormat.link,
       data: { href },
     });
 
-    editor.moveToEnd();
+    _editor.moveToEnd();
   }
 
-  function unwrapLink(editor: Editor) {
-    editor.unwrapInline(EFormat.link);
+  function unwrapLink(_editor: Editor) {
+    _editor.unwrapInline(EFormat.link);
   }
 
   if (hasLink) {

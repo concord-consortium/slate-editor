@@ -1,7 +1,8 @@
-import React, { useCallback, useRef, useState, useEffect } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import find from "lodash/find";
-import { Value, ValueJSON } from "slate";
+import { Value } from "slate";
 import { Editor, OnChangeParam, RenderBlockProps, RenderMarkProps } from "slate-react";
+import { serializeDocument, SlateDocument } from "./serialization";
 import { renderSlateMark, renderSlateBlock } from "./slate-renderers";
 import { HotkeyMap, useHotkeyMap } from "../common/slate-hooks";
 import { EditorValue, EFormat, textToSlate } from "../common/slate-types";
@@ -16,13 +17,13 @@ export interface EditorSelectionJson {
 
 export interface IProps {
   className: string;
-  initialValue?: EditorValue;
+  value?: EditorValue | string;
   hotkeyMap?: HotkeyMap;
-  onEditorRef?: (editorRef: Editor | undefined) => void;
+  onEditorRef?: (editorRef?: Editor) => void;
   onValueChange?: (value: EditorValue) => void;
-  onContentChange?: (before: ValueJSON, after: ValueJSON) => void;
-  onFocus?: (editor: Editor) => void;
-  onBlur?: (editor: Editor) => void;
+  onContentChange?: (content: SlateExchangeValue) => void;
+  onFocus?: (editor?: Editor) => void;
+  onBlur?: (editor?: Editor) => void;
 }
 
 const kEmptyEditorValue = textToSlate("");
@@ -35,10 +36,15 @@ const kDefaultHotkeyMap = {
         'mod+shift+z': (editor: Editor) => editor.redo()
       };
 
-function exportValue(value: Value) {
-  const json = value.toJSON();
+export interface SlateExchangeValue {
+  object: "value";
+  document?: SlateDocument;
+}
+
+function exportValue(value: Value): SlateExchangeValue {
   // strip selection and other non-essential properties on export
-  return { object: json.object, document: json.document };
+  const { document } = value.toJSON();
+  return { object: "value", document: document && serializeDocument(document) };
 }
 
 function renderMark(props: RenderMarkProps, editor: Editor, next: () => any) {
@@ -51,22 +57,22 @@ function renderBlock(props: RenderBlockProps, editor: Editor, next: () => any) {
   return renderedBlock || next();
 }
 
-// let renderCount = 0;
-
 const slatePlugins = [linkPlugin];
 
 const SlateEditor: React.FC<IProps> = (props: IProps) => {
-  // console.log("SlateEditor.renderCount:", ++renderCount);
-  const { onValueChange, onContentChange } = props;
+  const { onEditorRef, onValueChange, onContentChange, onFocus, onBlur } = props;
   const editorRef = useRef<Editor>();
-  const [editorValue, setEditorValue] = useState<EditorValue>(props.initialValue || kEmptyEditorValue);
+  const value = typeof props.value === "string"
+                  ? textToSlate(props.value)
+                  : props.value || kEmptyEditorValue;
+  const [prevValue, setPrevValue] = useState<EditorValue>(value);
 
   const handleChange = useCallback((change: OnChangeParam) => {
-    const isContentChange = change.value.document !== editorValue.document;
-    setEditorValue(change.value);
+    const isContentChange = change.value.document !== prevValue.document;
+    setPrevValue(change.value);
     onValueChange?.(change.value);
-    isContentChange && onContentChange?.(exportValue(editorValue), exportValue(change.value));
-  }, [editorValue, onValueChange, onContentChange]);
+    isContentChange && onContentChange?.(exportValue(change.value));
+  }, [prevValue.document, onValueChange, onContentChange]);
 
   const hotkeyFnMap = useHotkeyMap(props.hotkeyMap || kDefaultHotkeyMap);
   const handleKeyDown = useCallback((e: React.KeyboardEvent<Element>, editor: Editor, next: () => any) => {
@@ -78,26 +84,31 @@ const SlateEditor: React.FC<IProps> = (props: IProps) => {
     found.invoker(editor);
   }, [hotkeyFnMap]);
 
-  useEffect(() => {
-    props.onEditorRef?.(editorRef.current);
-  }, [editorRef, props.onEditorRef]);
+  const handleEditorRef = useCallback((editor: Editor | null) => {
+    editorRef.current = editor || undefined;
+    onEditorRef?.(editorRef.current);
+  }, [onEditorRef]);
+  const handleFocus = useCallback(() => {
+    onFocus?.(editorRef.current);
+  }, [onFocus]);
+  const handleBlur = useCallback(() => {
+    onBlur?.(editorRef.current);
+  }, [onBlur]);
 
   return (
     <Editor
       data-testid="slate-editor"
       className={"slate-editor " + props.className}
-      ref={editorRef as any}
-      value={editorValue}
+      ref={handleEditorRef}
+      value={value}
       plugins={slatePlugins}
       renderMark={renderMark}
       renderBlock={renderBlock}
       onKeyDown={handleKeyDown}
       onChange={handleChange}
-      // onFocus={() => console.log("SlateEditor.onFocus")}
-      // onBlur={() => {
-      //   console.log("SlateEditor.onBlur");
-      // }}
-      />
+      onFocus={handleFocus}
+      onBlur={handleBlur}
+    />
   );
 };
 SlateEditor.displayName = "SlateEditor";

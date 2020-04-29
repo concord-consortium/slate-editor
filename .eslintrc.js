@@ -39,6 +39,7 @@ module.exports = {
       curly: ["error", "multi-line", "consistent"],
       eqeqeq: ["error", "smart"],
       "no-debugger": "off",
+      "no-shadow": ["error", { "builtinGlobals": false, "hoist": "all", "allow": [] }],
       "react/prop-types": "off",
       semi: ["error", "always"]
     }

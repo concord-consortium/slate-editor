@@ -21,7 +21,7 @@ import { handleToggleListBlock, handleToggleMark, hasActiveMark, selectionContai
         from "../slate-editor/slate-utils";
 import { SelectionJSON } from "slate";
 import { hasActiveLink, handleToggleLink } from "../plugins/link-plugin";
-import { hasActiveTextColorMark, handleTextColor } from "../plugins/text-color-plugin";
+import { hasActiveColorMark, handleColor } from "../plugins/color-plugin";
 import { EFormat } from "../common/slate-types";
 
 export interface IProps {
@@ -88,10 +88,10 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
     (() => {
       let selection: SelectionJSON | undefined;
       return {
-        format: EFormat.textColor,
+        format: EFormat.color,
         SvgIcon: InputColor,
-        tooltip: getPlatformTooltip("text color"),
-        isActive: hasActiveTextColorMark(editor),
+        tooltip: getPlatformTooltip("color"),
+        isActive: hasActiveColorMark(editor),
         onMouseDown: () => {
           // cache selection - interaction with platform color picker can blur
           selection = editor && editor.value.selection.toJSON();
@@ -99,7 +99,7 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
         onChange: (value: string) => {
           // restore the selection
           editor && selection && editor.select(selection);
-          return handleTextColor(EFormat.textColor, value, editor);
+          return handleColor(EFormat.color, value, editor);
         }
       };
     })(),

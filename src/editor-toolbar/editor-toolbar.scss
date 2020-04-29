@@ -1,12 +1,12 @@
 .editor-toolbar {
   // https://www.webomelette.com/css-float-parent-container-child-element-hight-width
   display: inline-block;
-  background-color: #dfdfdf;
 
   .editor-toolbar-container {
 
     display: flex;
     padding: 2px;
+    background-color: #dfdfdf;
 
     &.vertical {
       flex-direction: column;

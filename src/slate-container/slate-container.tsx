@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { Editor } from "slate-react";
-import { EFormat, textToSlate } from "../common/slate-types";
-import { SlateEditor } from "../slate-editor/slate-editor";
+import { HotkeyMap } from "../common/slate-hooks";
+import { EFormat, EditorValue } from "../common/slate-types";
+import { SlateEditor, SlateExchangeValue } from "../slate-editor/slate-editor";
 import { SlateToolbar } from "../slate-toolbar/slate-toolbar";
 import "./slate-container.scss";
 
-const initialValue = textToSlate('');
 const hotkeyMap = {
         'mod+b': (editor: Editor) => editor.toggleMark(EFormat.bold),
         'mod+i': (editor: Editor) => editor.toggleMark(EFormat.italic),
@@ -19,27 +19,50 @@ interface IProps {
   containerClassNames?: string;
   toolbarClassNames?: string;
   editorClassNames?: string;
+  value?: EditorValue | string;
+  hotkeyMap?: HotkeyMap;
+  onEditorRef?: (editorRef?: Editor) => void;
+  onValueChange?: (value: EditorValue) => void;
+  onContentChange?: (content: SlateExchangeValue) => void;
+  onFocus?: (editor?: Editor) => void;
+  onBlur?: (editor?: Editor) => void;
 }
 
 export const SlateContainer: React.FC<IProps> = (props: IProps) => {
-  const [editor, setEditor] = useState<Editor>();
-  const [changeCount, setChangeCount] = useState<number>(0);
+  const { onEditorRef, onValueChange, onContentChange, onBlur, onFocus } = props;
+  const editorRef = useRef<Editor>();
+  const [changeCount, setChangeCount] = useState(0);
+  const handleEditorRef = useCallback((editor?: Editor) => {
+    editorRef.current = editor;
+    onEditorRef?.(editor);
+  }, [onEditorRef]);
+  const handleFocus = useCallback(() => {
+    onFocus?.(editorRef.current);
+  }, [onFocus]);
+  const handleBlur = useCallback(() => {
+    onBlur?.(editorRef.current);
+  }, [onBlur]);
   return (
     <div className={`slate-container ${props.containerClassNames || ""}`}>
       <SlateToolbar
         className={`slate-toolbar ${props.toolbarClassNames || ""}`}
-        editor={editor}
-        changeCount={changeCount} />
+        editor={editorRef.current}
+        changeCount={changeCount}
+      />
       <SlateEditor
         className={`slate-editor ${props.editorClassNames || ""}`}
-        initialValue={initialValue}
-        hotkeyMap={hotkeyMap}
-        onEditorRef={editor => setEditor(editor)}
-        onValueChange={() => setChangeCount(count => ++count)}
-        // onContentChange={(prevValue: any, newValue: any) => {
-        //   debugger;
-        // }}
-        />
+        value={props.value}
+        hotkeyMap={props.hotkeyMap || hotkeyMap}
+        onEditorRef={handleEditorRef}
+        onValueChange={value => {
+          onValueChange?.(value);
+          // trigger toolbar rerender on selection change as well
+          setChangeCount(count => ++count);
+        }}
+        onContentChange={onContentChange}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
+      />
     </div>
   );
 };

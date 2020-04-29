@@ -19,7 +19,7 @@ describe("Slate Editor", () => {
       let editorRef: Editor | undefined;
       const { getByTestId } = renderEditor({
                                 className: "test-class",
-                                onEditorRef: (ref: Editor | undefined) => { editorRef = ref; }
+                                onEditorRef: (ref?: Editor) => { editorRef = ref; }
                               });
 
       const slateEditor = getByTestId("slate-editor");
@@ -33,8 +33,8 @@ describe("Slate Editor", () => {
       const initialValue = textToSlate(text);
       const { getByTestId } = renderEditor({
                                 className: "test-class-2",
-                                initialValue: initialValue,
-                                onEditorRef: (ref: Editor | undefined) => { editorRef = ref; }
+                                value: initialValue,
+                                onEditorRef: (ref?: Editor) => { editorRef = ref; }
                               });
 
       const slateEditor = getByTestId("slate-editor");
