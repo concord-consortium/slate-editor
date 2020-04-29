@@ -9,7 +9,7 @@ import { EFormat } from "../common/slate-types";
 
 const markLayers: Record<string, number> = {
   "deleted": -1,
-  "text-color": 1
+  "color": 1
 };
 
 function renderOneSlateMark(props: RenderMarkProps) {
@@ -31,14 +31,14 @@ function renderOneSlateMark(props: RenderMarkProps) {
       return (<sup {...attributes}>{children}</sup>);
     case "subscript":
       return (<sub {...attributes}>{children}</sub>);
-    case "text-color": {
+    case "color": {
       const color = data.get("color");
       // color shouldn't change when text is selected
       const styleColors = { color, "--selected-color": color };
       return (<span className="text-color" style={styleColors} {...attributes}>{children}</span>);
     }
     default:
-      return null;
+      return (<span {...attributes}>{children}</span>);
   }
 }
 
@@ -52,9 +52,9 @@ function renderOneSlateMark(props: RenderMarkProps) {
 export function renderSlateMark(props: RenderMarkProps) {
   const { mark, marks: originalMarks, ...others } = props;
   const marks: Mark[] = originalMarks.toArray();
-  const requestedIndex = marks.findIndex(mark => mark.type === props.mark.type);
-  const textColorMark = findLast(marks, mark => mark.type === EFormat.textColor);
-  const orderedMarks = marks.filter(mark => mark.type !== EFormat.textColor);
+  const requestedIndex = marks.findIndex(_mark => _mark.type === mark.type);
+  const textColorMark = findLast(marks, _mark => _mark.type === EFormat.color);
+  const orderedMarks = marks.filter(_mark => _mark.type !== EFormat.color);
   orderedMarks.sort((a: Mark, b: Mark) => (markLayers[a.type] || 0) - (markLayers[b.type] || 0));
   textColorMark && orderedMarks.push(textColorMark);
   if (requestedIndex < orderedMarks.length) {
@@ -64,8 +64,6 @@ export function renderSlateMark(props: RenderMarkProps) {
 
 export function renderSlateBlock(blockName: string, attributes: unknown, children: ReactNode) {
   switch (blockName) {
-    case "paragraph":
-      return (<p {...attributes}>{children}</p>);
     case "heading1":
       return (<h1 {...attributes}>{children}</h1>);
     case "heading2":
@@ -113,7 +111,8 @@ export function renderSlateBlock(blockName: string, attributes: unknown, childre
     // case "link":   // TODO: This is broken.
     //   return (<a href={href} {...attributes}>{children}</a>);
 
+    case "paragraph":
     default:
-      return null;
+      return (<p {...attributes}>{children}</p>);
   }
 }

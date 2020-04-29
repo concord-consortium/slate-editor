@@ -16,7 +16,7 @@
     font-style: italic;
   }
   .text-color {
-    // allow selected text color to be set from JavaScript
+    // allow selected text color to be set from JavaScript via CSS variable
     &::selection {
       color: var(--selected-color);
     }
