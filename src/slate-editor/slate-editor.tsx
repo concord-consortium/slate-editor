@@ -16,7 +16,7 @@ export interface EditorSelectionJson {
 }
 
 export interface IProps {
-  className: string;
+  className?: string;
   value?: EditorValue | string;
   hotkeyMap?: HotkeyMap;
   onEditorRef?: (editorRef?: Editor) => void;
@@ -98,7 +98,7 @@ const SlateEditor: React.FC<IProps> = (props: IProps) => {
   return (
     <Editor
       data-testid="slate-editor"
-      className={"slate-editor " + props.className}
+      className={`slate-editor ${props.className || ""}`}
       ref={handleEditorRef}
       value={value}
       plugins={slatePlugins}

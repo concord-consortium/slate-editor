@@ -34,7 +34,7 @@ export interface IProps {
 
 export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
   // console.log("SlateToolbar.renderCount:", ++renderCount);
-  const { editor, ...others } = props;
+  const { className, editor, ...others } = props;
   const buttons: IButtonSpec[] = [
     {
       format: EFormat.bold,
@@ -188,6 +188,7 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
   ];
   return (
     <EditorToolbar
+      className={`slate-toolbar ${props.className || ""}`}
       iconSize={16}
       buttons={buttons}
       {...others}

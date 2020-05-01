@@ -6,6 +6,7 @@ export interface IButtonSpec extends IBaseProps {
 }
 
 export interface IProps {
+  show?: boolean;
   className?: string;
   orientation?: "horizontal" | "vertical";
   iconSize?: number;
@@ -30,6 +31,8 @@ export function getPlatformTooltip(str: string) {
 
 export const EditorToolbar: React.FC<IProps> = (iProps: IProps) => {
   // console.log("SlateEditor.renderCount:", ++renderCount);
+
+  if (iProps.show === false) return null;
 
   const props = { ...kDefaultProps, ...iProps } as Required<IProps>;
   const { orientation, iconSize, buttonSize, buttons } = props;
