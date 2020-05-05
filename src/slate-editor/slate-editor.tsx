@@ -11,6 +11,7 @@ import { EditorValue, EFormat, textToSlate } from "../common/slate-types";
 import { colorPlugin } from "../plugins/color-plugin";
 import { fontSizePlugin, getFontSize } from "../plugins/font-size-plugin";
 import { linkPlugin } from "../plugins/link-plugin";
+import { imagePlugin } from "../plugins/image-plugin";
 
 import './slate-editor.scss';
 
@@ -67,7 +68,14 @@ function renderBlock(props: RenderBlockProps, editor: Editor, next: () => any) {
   return renderedBlock || next();
 }
 
-const slatePlugins = [colorPlugin, fontSizePlugin, linkPlugin];
+const slatePlugins = [colorPlugin, imagePlugin, linkPlugin, fontSizePlugin];
+const editorSchema = {
+  inlines: {
+    image: {
+      isVoid: true,
+    },
+  },
+};
 
 const SlateEditor: React.FC<IProps> = (props: IProps) => {
   const { onEditorRef, onValueChange, onContentChange, onFocus, onBlur, plugins } = props;
@@ -134,6 +142,7 @@ const SlateEditor: React.FC<IProps> = (props: IProps) => {
       onChange={handleChange}
       onFocus={handleFocus}
       onBlur={handleBlur}
+      schema={editorSchema}
     />
   );
 };

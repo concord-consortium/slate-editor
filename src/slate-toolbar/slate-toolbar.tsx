@@ -3,7 +3,7 @@ import { EditorToolbar, getPlatformTooltip } from "../editor-toolbar/editor-tool
 import IconBold from "../assets/icon-bold";
 import IconCode from "../assets/icon-code";
 import IconItalic from "../assets/icon-italic";
-// import IconImage from "../assets/icon-image";
+import IconImage from "../assets/icon-image";
 import IconLink from "../assets/icon-link";
 import IconHeading from "../assets/icon-heading";
 import IconQuote from "../assets/icon-quote";
@@ -183,13 +183,13 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
       isActive: editor ? selectionContainsBlock(editor.value, EFormat.bulletedList) : false,
       onClick: () => editor && handleToggleListBlock(EFormat.bulletedList, editor)
     },
-    // {
-    //   format: EFormat.image,
-    //   SvgIcon: IconImage,
-    //   tooltip: getPlatformTooltip("image"),
-    //   isActive: editor ? selectionContainsBlock(editor.value, EFormat.image) : false,
-    //   onClick: () => alert("Images not yet implemented, but example exists")
-    // },
+    {
+      format: EFormat.image,
+      SvgIcon: IconImage,
+      tooltip: getPlatformTooltip("image"),
+      isActive: editor ? selectionContainsBlock(editor.value, EFormat.image) : false,
+      onClick: () => editor && editor.command("addImage")
+    }, 
     {
       format: EFormat.link,
       SvgIcon: IconLink,
