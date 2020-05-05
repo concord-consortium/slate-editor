@@ -9,6 +9,7 @@ export interface IProps {
   show?: boolean;
   className?: string;
   orientation?: "horizontal" | "vertical";
+  buttonsPerRow?: number;
   iconSize?: number;
   buttonSize?: number;
   buttons: IButtonSpec[];
@@ -35,9 +36,11 @@ export const EditorToolbar: React.FC<IProps> = (iProps: IProps) => {
   if (iProps.show === false) return null;
 
   const props = { ...kDefaultProps, ...iProps } as Required<IProps>;
-  const { orientation, iconSize, buttonSize, buttons } = props;
-  const toolbarLongExtent = buttons.length * buttonSize;
-  const toolbarCrossExtent = buttonSize;
+  const { orientation, buttonsPerRow, iconSize, buttonSize, buttons } = props;
+  const longAxisButtonCount = buttonsPerRow || buttons.length;
+  const crossAxisButtonCount = buttonsPerRow ? Math.ceil(buttons.length / buttonsPerRow) : 1;
+  const toolbarLongExtent = longAxisButtonCount * buttonSize;
+  const toolbarCrossExtent = crossAxisButtonCount * buttonSize;
   const toolbarStyle = orientation === "vertical"
           ? { width: toolbarCrossExtent, height: toolbarLongExtent }
           : { width: toolbarLongExtent, height: toolbarCrossExtent };
