@@ -15,6 +15,10 @@ const hotkeyMap = {
         'mod+shift+z': (editor: Editor) => editor.redo()
       };
 
+const kFontSizeMinimum = .2;
+const kFontSizeMaximum = 4;
+const kFontSizeDelta = .1;
+
 interface IProps extends IEditorProps {
   className?: string;
   editorClassName?: string;
@@ -27,6 +31,14 @@ export const SlateContainer: React.FC<IProps> = (props: IProps) => {
           onBlur, onFocus, ...others } = props;
   const editorRef = useRef<Editor>();
   const [changeCount, setChangeCount] = useState(0);
+  const [fontSize, setFontSize] = useState(1);
+  const style = {fontSize: `${fontSize}em`};
+  const handleIncreaseFontSize = () => {
+    setFontSize(Math.min(kFontSizeMaximum, fontSize + kFontSizeDelta));
+  }
+  const handleDecreaseFontSize = () => {
+    setFontSize(Math.max(kFontSizeMinimum, fontSize - kFontSizeDelta));
+  }
   const handleEditorRef = useCallback((editor?: Editor) => {
     editorRef.current = editor;
     onEditorRef?.(editor);
@@ -44,12 +56,16 @@ export const SlateContainer: React.FC<IProps> = (props: IProps) => {
                         className={toolbarClasses}
                         editor={editorRef.current}
                         changeCount={changeCount}
+                        onDecreaseFontSize={handleDecreaseFontSize}
+                        onIncreaseFontSize={handleIncreaseFontSize}
                         {...toolbarOthers}
                       />
                     : <SlateToolbar
                         className={toolbarClasses}
                         editor={editorRef.current}
                         changeCount={changeCount}
+                        onDecreaseFontSize={handleDecreaseFontSize}
+                        onIncreaseFontSize={handleIncreaseFontSize}
                         {...toolbarOthers}
                       />;
   return (
@@ -68,6 +84,7 @@ export const SlateContainer: React.FC<IProps> = (props: IProps) => {
         onContentChange={onContentChange}
         onFocus={handleFocus}
         onBlur={handleBlur}
+        style={style}
         {...others}
       />
     </div>

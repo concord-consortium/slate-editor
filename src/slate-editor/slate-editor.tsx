@@ -25,6 +25,7 @@ export interface IProps {
   onContentChange?: (content: SlateExchangeValue) => void;
   onFocus?: (editor?: Editor) => void;
   onBlur?: (editor?: Editor) => void;
+  style?: React.CSSProperties;
 }
 
 const kEmptyEditorValue = textToSlate("");
@@ -106,10 +107,11 @@ const SlateEditor: React.FC<IProps> = (props: IProps) => {
     editor.blur();
     onBlur?.(editor);
   }, [onBlur]);
-
+  
   return (
     <Editor
       data-testid="slate-editor"
+      style={props.style}
       className={`slate-editor ${props.className || ""}`}
       ref={handleEditorRef}
       value={value}

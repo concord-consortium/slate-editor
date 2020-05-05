@@ -26,7 +26,14 @@ export enum EFormat {
   image = "image",
 
   // inlines
-  link = "link"
+  link = "link",
+
+  // font size
+  // These font size enums do do not correspond to a Slate type
+  // but are needed to ensure unique keys in the toolbar button entries
+  // TODO: perhaps there's a better way to do this than adding 2 new format enums?
+  fontIncrease = "fontIncrease",
+  fontDecrease = "fontDecrease"
 }
 
 export type EditorValue = Value;
