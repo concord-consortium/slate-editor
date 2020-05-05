@@ -1,17 +1,21 @@
-import React from "react";
+import React, { useCallback, useRef } from "react";
 import { IBaseProps, ToolbarButton } from "./toolbar-button";
+import { Editor } from "slate-react";
+import { SelectionJSON } from "slate";
 
 export interface IButtonSpec extends IBaseProps {
   iconSize?: number;
 }
 
 export interface IProps {
-  show?: boolean;
   className?: string;
   orientation?: "horizontal" | "vertical";
+  buttonsPerRow?: number;
   iconSize?: number;
   buttonSize?: number;
   buttons: IButtonSpec[];
+  editor?: Editor;
+  show?: boolean;
 }
 
 const kDefaultProps: Partial<IProps> = {
@@ -32,16 +36,30 @@ export function getPlatformTooltip(str: string) {
 export const EditorToolbar: React.FC<IProps> = (iProps: IProps) => {
   // console.log("SlateEditor.renderCount:", ++renderCount);
 
-  if (iProps.show === false) return null;
-
   const props = { ...kDefaultProps, ...iProps } as Required<IProps>;
-  const { orientation, iconSize, buttonSize, buttons } = props;
-  const toolbarLongExtent = buttons.length * buttonSize;
-  const toolbarCrossExtent = buttonSize;
+  const { orientation, buttonsPerRow, iconSize, buttonSize, buttons, editor } = props;
+  const longAxisButtonCount = buttonsPerRow || buttons.length;
+  const crossAxisButtonCount = buttonsPerRow ? Math.ceil(buttons.length / buttonsPerRow) : 1;
+  const toolbarLongExtent = longAxisButtonCount * buttonSize;
+  const toolbarCrossExtent = crossAxisButtonCount * buttonSize;
   const toolbarStyle = orientation === "vertical"
           ? { width: toolbarCrossExtent, height: toolbarLongExtent }
           : { width: toolbarLongExtent, height: toolbarCrossExtent };
   const orientationClass = orientation || "horizontal";
+
+  // By default, clicking on a button (such as a toolbar button) takes focus from an
+  // active editor. Buttons that want to preserve the current selection, which is the
+  // expected behavior for most buttons, should save the selection state before the
+  // focus change occurs (e.g. in onMouseDown) and then restore it before making changes.
+  const savedSelection = useRef<SelectionJSON>(editor && editor.value.selection.toJSON());
+  const handleSaveSelection = useCallback(() => {
+    editor && (savedSelection.current = editor.value.selection.toJSON());
+  }, [editor]);
+  const handleRestoreSelection = useCallback(() => {
+    editor && editor.select(savedSelection.current);
+  }, [editor]);
+
+  if (iProps.show === false) return null;
 
   return (
     <div className={`editor-toolbar ${props.className || ""}`}>
@@ -51,8 +69,8 @@ export const EditorToolbar: React.FC<IProps> = (iProps: IProps) => {
             const { format, ...others } = button;
             const _iconSize = button.iconSize || iconSize;
             return (
-              <ToolbarButton key={`key-${format}`} format={format} {...others}
-                              iconSize={_iconSize} buttonSize={buttonSize} />
+              <ToolbarButton key={`key-${format}`} format={format} iconSize={_iconSize} buttonSize={buttonSize}
+                onSaveSelection={handleSaveSelection} onRestoreSelection={handleRestoreSelection} {...others} />
             );
           })
         }

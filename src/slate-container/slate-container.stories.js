@@ -63,7 +63,7 @@ export const Portal = () => {
   }, []);
   return (
     <SlateContainer
-      toolbar={{ portalRoot, show: isFocused }}
+      toolbar={{ portalRoot, show: isFocused, buttonsPerRow: 8 }}
       onEditorRef={editor => editorRef.current = editor}
       value={value}
       onValueChange={_value => setValue(_value)}
