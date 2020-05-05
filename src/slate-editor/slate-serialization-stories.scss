@@ -1,0 +1,15 @@
+.serialization-container {
+  display: flex;
+
+  .panel {
+    flex: 1 1 0;
+    width: 0;
+  }
+  .output {
+    background-color: #F0F0F0;
+    padding: 5px 10px 15px 10px;
+  }  
+  h3 {
+    margin: 5px 0px 5px 0px;
+  }  
+}
