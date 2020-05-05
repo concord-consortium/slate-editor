@@ -14,14 +14,16 @@ export interface IBaseProps {
   onMouseDown?: OnMouseFn;
   onClick?: OnClickFn;
   onChange?: OnChangeFn;
+  onSaveSelection?: () => void;
+  onRestoreSelection?: () => void;
 }
 export interface IProps extends IBaseProps {
   iconSize: number;
   buttonSize: number;
 }
 export const ToolbarButton: React.FC<IProps> = (props: IProps) => {
-  const { format, SvgIcon, iconSize, buttonSize, tooltip,
-          isActive, onClick, onMouseDown, onChange } = props;
+  const { format, SvgIcon, iconSize, buttonSize, tooltip, isActive,
+          onChange, onClick, onMouseDown, onSaveSelection, onRestoreSelection } = props;
   const buttonStyle = {
           width: buttonSize,
           height: buttonSize
@@ -32,12 +34,14 @@ export const ToolbarButton: React.FC<IProps> = (props: IProps) => {
         };
   const fill = isActive ? "#009CDC" : "#909090";
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-    onMouseDown && onMouseDown(e);
+    onSaveSelection?.();
+    onMouseDown?.(e);
   };
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    onRestoreSelection?.();
     if (onClick) {
+      onClick(format, e);
       e.preventDefault();
-      onClick?.(format, e);
     }
   };
   const onChangeProps = onChange ? { onChange } : {};

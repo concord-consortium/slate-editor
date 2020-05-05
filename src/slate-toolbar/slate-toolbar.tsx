@@ -191,6 +191,7 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
       className={`slate-toolbar ${props.className || ""}`}
       iconSize={16}
       buttons={buttons}
+      editor={editor}
       {...others}
       />
   );
