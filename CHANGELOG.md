@@ -1,5 +1,12 @@
 # Changelog
 
+## Version 0.0.3 - May 5, 2020
+
+- Support client-provided editor plugins
+- Improved handling of focus/blur
+- Support wrapping of toolbar onto multiple rows/columns
+- Toolbar buttons preserve focus/selection (required after recent focus/blur changes)
+
 ## Version 0.0.2 - April 29, 2020
 
 Serialization support plus
