@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { SlateContainer } from "../slate-container/slate-container";
 import { textToSlate } from "../common/slate-types";
-import { serializeDocument } from "./serialization";
-import "./slate-serialization-stories.scss";
+import { serializeValue } from "./serialization";
+import "./slate-serialization.stories.scss";
 
 export default {
   title: "Serialization"
@@ -12,10 +12,9 @@ const serializationText = "This example shows the serialized editor content.";
 
 export const Serialization = () => {
   const [value, setValue] = useState(serializationText);
-  const slateValue = textToSlate(serializationText)
-  const { document } = slateValue.toJSON();
-  const serializedDocument = { object: "value", document: document && serializeDocument(document) };  
-  const [content, setContent] = useState(serializedDocument);
+  const slateValue = textToSlate(serializationText);
+  const serializedValue = serializeValue(slateValue.toJSON());
+  const [content, setContent] = useState(serializedValue);
   return (
     <div className="serialization-container">
       <div className="panel">
@@ -27,7 +26,7 @@ export const Serialization = () => {
       </div>
       <div className="panel output">
         <h3>Serialized Content</h3>
-        <div>{JSON.stringify(content)}</div>
+        <pre>{JSON.stringify(content, null, 2)}</pre>
       </div>
     </div>
   );

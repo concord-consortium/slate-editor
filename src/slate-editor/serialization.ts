@@ -100,6 +100,11 @@ export function serializeDocument(document: DocumentJSON): SlateDocument {
   return { ...keyProp(key), children, objTypes, ...data };
 }
 
+export function serializeValue(value: ValueJSON): SlateExchangeValue {
+  const { document } = value;
+  return { object: "value", document: document && serializeDocument(document) };
+}
+
 export function deserializeMark(type: string, value: any): MarkJSON {
   const mark: MarkJSON = { type };
   if (typeof value === "boolean") return mark;
