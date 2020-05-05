@@ -90,11 +90,21 @@ const SlateEditor: React.FC<IProps> = (props: IProps) => {
     editorRef.current = editor || undefined;
     onEditorRef?.(editorRef.current);
   }, [onEditorRef]);
-  const handleFocus = useCallback(() => {
-    onFocus?.(editorRef.current);
+
+  // For focus/blur, by default Slate will synchronize its internal model with
+  // the browser's focus/blur "eventually" in an asynchronous fashion. When
+  // there are multiple editors on the screen, focusing/blurring one can cause
+  // others to blur/focus in response, which can then result in stale responses.
+  // Immediately calling focus/blur in the appropriate callback forces Slate
+  // to synchronize the model immediately.
+  // cf. https://github.com/ianstormtaylor/slate/issues/2097#issuecomment-464935337
+  const handleFocus = useCallback((event, editor) => {
+    editor.focus();
+    onFocus?.(editor);
   }, [onFocus]);
-  const handleBlur = useCallback(() => {
-    onBlur?.(editorRef.current);
+  const handleBlur = useCallback((event, editor) => {
+    editor.blur();
+    onBlur?.(editor);
   }, [onBlur]);
 
   return (
