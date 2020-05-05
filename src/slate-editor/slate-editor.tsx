@@ -1,7 +1,7 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useRef, useState, useMemo } from "react";
 import find from "lodash/find";
 import { Value } from "slate";
-import { Editor, OnChangeParam, RenderBlockProps, RenderMarkProps } from "slate-react";
+import { Editor, OnChangeParam, Plugins, RenderBlockProps, RenderMarkProps } from "slate-react";
 import { serializeDocument, SlateDocument } from "./serialization";
 import { renderSlateMark, renderSlateBlock } from "./slate-renderers";
 import { HotkeyMap, useHotkeyMap } from "../common/slate-hooks";
@@ -19,6 +19,7 @@ export interface IProps {
   className?: string;
   value?: EditorValue | string;
   hotkeyMap?: HotkeyMap;
+  plugins?: Plugins<Editor>;
   onEditorRef?: (editorRef?: Editor) => void;
   onValueChange?: (value: EditorValue) => void;
   onContentChange?: (content: SlateExchangeValue) => void;
@@ -60,7 +61,8 @@ function renderBlock(props: RenderBlockProps, editor: Editor, next: () => any) {
 const slatePlugins = [linkPlugin];
 
 const SlateEditor: React.FC<IProps> = (props: IProps) => {
-  const { onEditorRef, onValueChange, onContentChange, onFocus, onBlur } = props;
+  const { onEditorRef, onValueChange, onContentChange, onFocus, onBlur, plugins } = props;
+  const allPlugins = useMemo(() => [...slatePlugins, ...(plugins || [])], [plugins]);
   const editorRef = useRef<Editor>();
   const value = typeof props.value === "string"
                   ? textToSlate(props.value)
@@ -101,7 +103,7 @@ const SlateEditor: React.FC<IProps> = (props: IProps) => {
       className={`slate-editor ${props.className || ""}`}
       ref={handleEditorRef}
       value={value}
-      plugins={slatePlugins}
+      plugins={allPlugins}
       renderMark={renderMark}
       renderBlock={renderBlock}
       onKeyDown={handleKeyDown}
