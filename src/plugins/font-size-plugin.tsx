@@ -1,5 +1,5 @@
 import { Editor, Plugin } from "slate-react";
-import { Data, Value } from "slate";
+import { Value } from "slate";
 
 const kFontSizeMinimum = .2;
 const kFontSizeMaximum = 4;
