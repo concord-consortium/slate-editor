@@ -14,6 +14,28 @@ export const Combined = () => {
   );
 };
 
+const coloredText = "This example demonstrates a toolbar with custom colors with the selection indicated by a change in the fill color.";
+
+export const ColoredToolbarSelectedFill = () => {
+  const [value, setValue] = useState(coloredText);
+  return (
+    <SlateContainer value={value} onValueChange={_value => setValue(_value)}
+    toolbar={{ colors: { fill: "#ffffff", background: "#177991" },
+                selectedColors: { fill: "#72bfca", background: "#177991" } }} />
+  );
+};
+
+const backgroundText = "This example demonstrates a toolbar with custom colors with the selection indicated by a change in the fill and background colors.";
+
+export const ColoredToolbarSelectedBackground = () => {
+  const [value, setValue] = useState(backgroundText);
+  return (
+    <SlateContainer value={value} onValueChange={_value => setValue(_value)}
+    toolbar={{ colors: { fill: "#ffffff", background: "#177991" },
+                selectedColors: { fill: "#177991", background: "#72bfca" } }} />
+  );
+};
+
 const portalText = "This example demonstrates rendering the toolbar in a React portal (so" +
                   " it can be attached at an arbitrary point in the DOM outside the React" +
                   " hierarchy) as well as hiding/showing the toolbar on blur/focus.";

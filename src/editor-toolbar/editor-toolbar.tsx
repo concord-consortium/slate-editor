@@ -1,5 +1,5 @@
 import React, { useCallback, useRef } from "react";
-import { IBaseProps, ToolbarButton } from "./toolbar-button";
+import { IBaseProps, IColors, ToolbarButton } from "./toolbar-button";
 import { Editor } from "slate-react";
 import { SelectionJSON } from "slate";
 
@@ -10,6 +10,8 @@ export interface IButtonSpec extends IBaseProps {
 export interface IProps {
   className?: string;
   orientation?: "horizontal" | "vertical";
+  colors?: IColors;
+  selectedColors?: IColors;
   buttonsPerRow?: number;
   iconSize?: number;
   buttonSize?: number;
@@ -37,14 +39,17 @@ export const EditorToolbar: React.FC<IProps> = (iProps: IProps) => {
   // console.log("SlateEditor.renderCount:", ++renderCount);
 
   const props = { ...kDefaultProps, ...iProps } as Required<IProps>;
-  const { orientation, buttonsPerRow, iconSize, buttonSize, buttons, editor } = props;
+  const { orientation, colors, selectedColors, buttonsPerRow, iconSize, buttonSize, buttons, editor } = props;
   const longAxisButtonCount = buttonsPerRow || buttons.length;
   const crossAxisButtonCount = buttonsPerRow ? Math.ceil(buttons.length / buttonsPerRow) : 1;
   const toolbarLongExtent = longAxisButtonCount * buttonSize;
   const toolbarCrossExtent = crossAxisButtonCount * buttonSize;
-  const toolbarStyle = orientation === "vertical"
+  const toolbarSize = orientation === "vertical"
           ? { width: toolbarCrossExtent, height: toolbarLongExtent }
           : { width: toolbarLongExtent, height: toolbarCrossExtent };
+  const toolbarStyle = colors?.background
+                        ? { backgroundColor: colors.background, ...toolbarSize }
+                        : toolbarSize;
   const orientationClass = orientation || "horizontal";
 
   // By default, clicking on a button (such as a toolbar button) takes focus from an
@@ -70,6 +75,7 @@ export const EditorToolbar: React.FC<IProps> = (iProps: IProps) => {
             const _iconSize = button.iconSize || iconSize;
             return (
               <ToolbarButton key={`key-${format}`} format={format} iconSize={_iconSize} buttonSize={buttonSize}
+                colors={colors} selectedColors={selectedColors}
                 onSaveSelection={handleSaveSelection} onRestoreSelection={handleRestoreSelection} {...others} />
             );
           })
