@@ -7,6 +7,7 @@ import { renderSlateMark, renderSlateBlock } from "./slate-renderers";
 import { HotkeyMap, useHotkeyMap } from "../common/slate-hooks";
 import { EditorValue, EFormat, textToSlate } from "../common/slate-types";
 import { linkPlugin } from "../plugins/link-plugin";
+import { kInitialSize, fontSizePlugin } from "../plugins/font-size-plugin";
 
 import './slate-editor.scss';
 
@@ -59,7 +60,7 @@ function renderBlock(props: RenderBlockProps, editor: Editor, next: () => any) {
   return renderedBlock || next();
 }
 
-const slatePlugins = [linkPlugin];
+const slatePlugins = [linkPlugin, fontSizePlugin];
 
 const SlateEditor: React.FC<IProps> = (props: IProps) => {
   const { onEditorRef, onValueChange, onContentChange, onFocus, onBlur, plugins } = props;
@@ -69,6 +70,9 @@ const SlateEditor: React.FC<IProps> = (props: IProps) => {
                   ? textToSlate(props.value)
                   : props.value || kEmptyEditorValue;
   const [prevValue, setPrevValue] = useState<EditorValue>(value);
+
+  const fontSize = value.data.has("fontSize") ? value.data.get("fontSize") : kInitialSize;
+  const style = {fontSize: `${fontSize}em`};
 
   const handleChange = useCallback((change: OnChangeParam) => {
     const isContentChange = change.value.document !== prevValue.document;
@@ -111,7 +115,7 @@ const SlateEditor: React.FC<IProps> = (props: IProps) => {
   return (
     <Editor
       data-testid="slate-editor"
-      style={props.style}
+      style={style}
       className={`slate-editor ${props.className || ""}`}
       ref={handleEditorRef}
       value={value}

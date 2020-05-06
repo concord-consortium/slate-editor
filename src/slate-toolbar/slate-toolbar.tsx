@@ -29,15 +29,13 @@ export interface IProps {
   className?: string;
   editor?: Editor;
   changeCount: number;
-  onIncreaseFontSize?: () => void;
-  onDecreaseFontSize?: () => void;
 }
 
 // let renderCount = 0;
 
 export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
   // console.log("SlateToolbar.renderCount:", ++renderCount);
-  const { className, editor, onIncreaseFontSize, onDecreaseFontSize, ...others } = props;
+  const { className, editor, ...others } = props;
   const buttons: IButtonSpec[] = [
     {
       format: EFormat.bold,
@@ -192,15 +190,15 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
       format: EMetaFormat.fontDecrease,
       SvgIcon: IconFontDecrease,
       tooltip: getPlatformTooltip("decrease font"),
-      isActive: false, // TODO: state may need to behave differently than other buttons
-      onClick: () => onDecreaseFontSize && onDecreaseFontSize()
+      isActive: false,
+      onClick: () => editor && editor.command("adjustFontSize", false)
     },
     {
       format: EMetaFormat.fontIncrease,
       SvgIcon: IconFontIncrease,
       tooltip: getPlatformTooltip("increase font"),
-      isActive: false, // TODO: state may need to behave differently than other buttons
-      onClick: () => onIncreaseFontSize && onIncreaseFontSize()
+      isActive: false,
+      onClick: () => editor && editor.command("adjustFontSize", true)
     }
   ];
   return (
