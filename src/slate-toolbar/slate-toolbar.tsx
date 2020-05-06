@@ -20,7 +20,6 @@ import { handleToggleListBlock, handleToggleMark, hasActiveMark, selectionContai
           handleToggleSuperSubscript, handleToggleBlock }
         from "../slate-editor/slate-utils";
 import { SelectionJSON } from "slate";
-import { hasActiveLink, handleToggleLink } from "../plugins/link-plugin";
 import { hasActiveColorMark, handleColor } from "../plugins/color-plugin";
 import { EFormat } from "../common/slate-types";
 
@@ -181,9 +180,9 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
     {
       format: EFormat.link,
       SvgIcon: IconLink,
-      tooltip: getPlatformTooltip("image"),
-      isActive: hasActiveLink(editor),
-      onClick: () => handleToggleLink(editor)
+      tooltip: getPlatformTooltip("link"),
+      isActive: editor && editor.query("isLinkActive"),
+      onClick: () => editor && editor.command("toggleLink")
     }
   ];
   return (
