@@ -35,10 +35,10 @@ export const SlateContainer: React.FC<IProps> = (props: IProps) => {
   const style = {fontSize: `${fontSize}em`};
   const handleIncreaseFontSize = () => {
     setFontSize(Math.min(kFontSizeMaximum, fontSize + kFontSizeDelta));
-  }
+  };
   const handleDecreaseFontSize = () => {
     setFontSize(Math.max(kFontSizeMinimum, fontSize - kFontSizeDelta));
-  }
+  };
   const handleEditorRef = useCallback((editor?: Editor) => {
     editorRef.current = editor;
     onEditorRef?.(editor);

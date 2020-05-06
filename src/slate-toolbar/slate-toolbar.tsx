@@ -23,7 +23,7 @@ import { handleToggleListBlock, handleToggleMark, hasActiveMark, selectionContai
         from "../slate-editor/slate-utils";
 import { SelectionJSON } from "slate";
 import { hasActiveColorMark, handleColor } from "../plugins/color-plugin";
-import { EFormat } from "../common/slate-types";
+import { EFormat, EMetaFormat } from "../common/slate-types";
 
 export interface IProps {
   className?: string;
@@ -189,14 +189,14 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
       onClick: () => editor && editor.command("toggleLink")
     },
     {
-      format: EFormat.fontDecrease,
+      format: EMetaFormat.fontDecrease,
       SvgIcon: IconFontDecrease,
       tooltip: getPlatformTooltip("decrease font"),
       isActive: false, // TODO: state may need to behave differently than other buttons
       onClick: () => onDecreaseFontSize && onDecreaseFontSize()
     },
     {
-      format: EFormat.fontIncrease,
+      format: EMetaFormat.fontIncrease,
       SvgIcon: IconFontIncrease,
       tooltip: getPlatformTooltip("increase font"),
       isActive: false, // TODO: state may need to behave differently than other buttons
