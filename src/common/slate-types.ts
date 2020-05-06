@@ -29,6 +29,11 @@ export enum EFormat {
   link = "link"
 }
 
+export enum EMetaFormat {
+  fontIncrease = "fontIncrease",
+  fontDecrease = "fontDecrease"
+}
+
 export type EditorValue = Value;
 export type EditorContent = Document;
 

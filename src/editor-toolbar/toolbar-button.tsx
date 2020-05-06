@@ -1,5 +1,6 @@
 import React, { CSSProperties } from "react";
 import { IconProps } from "../assets/icon-props";
+import { EFormat, EMetaFormat } from "../common/slate-types";
 
 export type OnMouseFn = (e: React.MouseEvent<HTMLDivElement>) => void;
 export type OnClickFn = (format: string, e: React.MouseEvent<HTMLDivElement>) => void;
@@ -15,7 +16,7 @@ export interface IColors {
 }
 
 export interface IBaseProps {
-  format: string;
+  format: EFormat | EMetaFormat;
   SvgIcon: (props: IconProps) => JSX.Element;
   colors?: IColors;
   selectedColors?: IColors;

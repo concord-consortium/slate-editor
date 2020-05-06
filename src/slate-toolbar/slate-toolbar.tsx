@@ -14,6 +14,8 @@ import IconSubscript from "../assets/icon-subscript";
 import IconSuperscript from "../assets/icon-superscript";
 import IconUnderline from "../assets/icon-underline";
 import InputColor from "../assets/input-color";
+import IconFontIncrease from "../assets/icon-font-increase";
+import IconFontDecrease from "../assets/icon-font-decrease";
 import { Editor } from "slate-react";
 import { IButtonSpec } from "../editor-toolbar/editor-toolbar";
 import { handleToggleListBlock, handleToggleMark, hasActiveMark, selectionContainsBlock,
@@ -21,7 +23,7 @@ import { handleToggleListBlock, handleToggleMark, hasActiveMark, selectionContai
         from "../slate-editor/slate-utils";
 import { SelectionJSON } from "slate";
 import { hasActiveColorMark, handleColor } from "../plugins/color-plugin";
-import { EFormat } from "../common/slate-types";
+import { EFormat, EMetaFormat } from "../common/slate-types";
 
 export interface IProps {
   className?: string;
@@ -183,6 +185,20 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
       tooltip: getPlatformTooltip("link"),
       isActive: editor && editor.query("isLinkActive"),
       onClick: () => editor && editor.command("toggleLink")
+    },
+    {
+      format: EMetaFormat.fontDecrease,
+      SvgIcon: IconFontDecrease,
+      tooltip: getPlatformTooltip("decrease font"),
+      isActive: false,
+      onClick: () => editor && editor.command("decreaseFontSize")
+    },
+    {
+      format: EMetaFormat.fontIncrease,
+      SvgIcon: IconFontIncrease,
+      tooltip: getPlatformTooltip("increase font"),
+      isActive: false,
+      onClick: () => editor && editor.command("increaseFontSize")
     }
   ];
   return (
