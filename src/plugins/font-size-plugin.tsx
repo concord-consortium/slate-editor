@@ -1,26 +1,38 @@
 import { Editor, Plugin } from "slate-react";
-import { Data } from "slate";
+import { Data, Value } from "slate";
 
 const kFontSizeMinimum = .2;
 const kFontSizeMaximum = 4;
 const kFontSizeDelta = .1;
 const kInitialSize = 1;
 
+export function getFontSize(value: Value) {
+  const fontSize = value.data.get("fontSize");
+  return fontSize ? +fontSize : undefined;
+}
+
+function setFontSize(editor: Editor, fontSize: number) {
+  fontSize && editor.setData(editor.value.data.set("fontSize", "" + Math.round(10 * fontSize) / 10));
+}
+
 export const fontSizePlugin: Plugin = {
+  queries: {
+    getFontSize: function(editor: Editor) {
+      return getFontSize(editor.value);
+    }
+  },
   commands: {
     increaseFontSize: function (editor: Editor) {
-      const editorData: Data = editor.value.data;
-      const currentFontSize = editorData.get("fontSize") || kInitialSize;
+      const currentFontSize = getFontSize(editor.value) || kInitialSize;
       const newFontSize = Math.min(currentFontSize + kFontSizeDelta, kFontSizeMaximum);
-      editor.setData(editorData.set("fontSize", newFontSize));
+      setFontSize(editor, newFontSize);
       return editor;
     },
     decreaseFontSize: function (editor: Editor) {
-      const editorData: Data = editor.value.data;
-      const currentFontSize = editorData.get("fontSize") || kInitialSize;
+      const currentFontSize = getFontSize(editor.value) || kInitialSize;
       const newFontSize = Math.max(currentFontSize - kFontSizeDelta, kFontSizeMinimum);
-      editor.setData(editorData.set("fontSize", newFontSize));
+      setFontSize(editor, newFontSize);
       return editor;
-    }    
+    }
   },
 };

@@ -101,8 +101,10 @@ export function serializeDocument(document: DocumentJSON): SlateDocument {
 }
 
 export function serializeValueJSON(value: ValueJSON): SlateExchangeValue {
-  const { document } = value;
-  return { object: "value", document: document && serializeDocument(document) };
+  const { data: _data, document } = value;
+  const { undos, redos, ...others } = _data || {};
+  const data = size(others) ? { data: { ...others } } : {};
+  return { object: "value", ...data, document: document && serializeDocument(document) };
 }
 
 export function serializeValue(value: Value | ValueJSON): SlateExchangeValue {

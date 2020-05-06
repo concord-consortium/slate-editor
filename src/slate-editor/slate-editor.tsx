@@ -1,13 +1,15 @@
 import React, { useCallback, useRef, useState, useMemo } from "react";
-import find from "lodash/find";
-import { Value } from "slate";
 import { Editor, OnChangeParam, Plugins, RenderBlockProps, RenderMarkProps } from "slate-react";
-import { serializeDocument, SlateDocument } from "./serialization";
+import { Value } from "slate";
+import find from "lodash/find";
+import isEqual from "lodash/isEqual";
+import size from "lodash/size";
+import { SlateDocument, serializeValue } from "./serialization";
 import { renderSlateMark, renderSlateBlock } from "./slate-renderers";
 import { HotkeyMap, useHotkeyMap } from "../common/slate-hooks";
 import { EditorValue, EFormat, textToSlate } from "../common/slate-types";
+import { fontSizePlugin, getFontSize } from "../plugins/font-size-plugin";
 import { linkPlugin } from "../plugins/link-plugin";
-import { fontSizePlugin } from "../plugins/font-size-plugin";
 
 import './slate-editor.scss';
 
@@ -45,10 +47,13 @@ export interface SlateExchangeValue {
   document?: SlateDocument;
 }
 
-function exportValue(value: Value): SlateExchangeValue {
-  // strip selection and other non-essential properties on export
-  const { document } = value.toJSON();
-  return { object: "value", document: document && serializeDocument(document) };
+function extractUserDataJSON(value: Value) {
+  const { data: _data } = value.toJSON({ preserveData: true });
+  const { undos, redos, ...others } = _data || {};
+  return size(_data) ? { data: {...others} } : undefined;
+}
+function isValueDataChange(value1: Value, value2: Value) {
+  return !isEqual(extractUserDataJSON(value1), extractUserDataJSON(value2));
 }
 
 function renderMark(props: RenderMarkProps, editor: Editor, next: () => any) {
@@ -72,15 +77,16 @@ const SlateEditor: React.FC<IProps> = (props: IProps) => {
                   : props.value || kEmptyEditorValue;
   const [prevValue, setPrevValue] = useState<EditorValue>(value);
 
-  const fontSize = value.data.get("fontSize");
+  const fontSize = getFontSize(value);
   const style = fontSize ? {fontSize: `${fontSize}em`} : undefined;
 
   const handleChange = useCallback((change: OnChangeParam) => {
-    const isContentChange = change.value.document !== prevValue.document;
+    const isContentChange = (change.value.document !== prevValue.document) ||
+                              isValueDataChange(change.value, prevValue);
     setPrevValue(change.value);
     onValueChange?.(change.value);
-    isContentChange && onContentChange?.(exportValue(change.value));
-  }, [prevValue.document, onValueChange, onContentChange]);
+    isContentChange && onContentChange?.(serializeValue(change.value));
+  }, [prevValue, onValueChange, onContentChange]);
 
   const hotkeyFnMap = useHotkeyMap(props.hotkeyMap || kDefaultHotkeyMap);
   const handleKeyDown = useCallback((e: React.KeyboardEvent<Element>, editor: Editor, next: () => any) => {
@@ -112,7 +118,7 @@ const SlateEditor: React.FC<IProps> = (props: IProps) => {
     editor.blur();
     onBlur?.(editor);
   }, [onBlur]);
-  
+
   return (
     <Editor
       data-testid="slate-editor"
