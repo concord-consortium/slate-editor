@@ -70,3 +70,12 @@ export const Vertical = () => (
     buttons={buttons}
     />
 );
+
+export const Colored = () => (
+  <EditorToolbar
+    orientation="vertical"
+    colors={{ background: "#177991", fill: "#ffffff" }}
+    iconSize={16}
+    buttons={buttons}
+    />
+);

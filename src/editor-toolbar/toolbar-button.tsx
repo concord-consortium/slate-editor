@@ -1,4 +1,4 @@
-import React from "react";
+import React, { CSSProperties } from "react";
 import { IconProps } from "../assets/icon-props";
 
 export type OnMouseFn = (e: React.MouseEvent<HTMLDivElement>) => void;
@@ -6,9 +6,19 @@ export type OnClickFn = (format: string, e: React.MouseEvent<HTMLDivElement>) =>
 export type OnChangeColorFn = (color: string) => void;
 export type OnChangeFn = OnChangeColorFn;
 
+const kDefaultFillColor = "#909090";
+const kDefaultSelectedFillColor = "#009CDC";
+
+export interface IColors {
+  fill?: string;
+  background?: string;
+}
+
 export interface IBaseProps {
   format: string;
   SvgIcon: (props: IconProps) => JSX.Element;
+  colors?: IColors;
+  selectedColors?: IColors;
   tooltip: string;
   isActive: boolean;
   onMouseDown?: OnMouseFn;
@@ -22,9 +32,9 @@ export interface IProps extends IBaseProps {
   buttonSize: number;
 }
 export const ToolbarButton: React.FC<IProps> = (props: IProps) => {
-  const { format, SvgIcon, iconSize, buttonSize, tooltip, isActive,
+  const { format, SvgIcon, iconSize, buttonSize, tooltip, isActive, colors, selectedColors,
           onChange, onClick, onMouseDown, onSaveSelection, onRestoreSelection } = props;
-  const buttonStyle = {
+  const buttonStyle: CSSProperties = {
           width: buttonSize,
           height: buttonSize
         };
@@ -32,7 +42,15 @@ export const ToolbarButton: React.FC<IProps> = (props: IProps) => {
           width: iconSize,
           height: iconSize
         };
-  const fill = isActive ? "#009CDC" : "#909090";
+  const fill = isActive
+                ? (selectedColors?.fill || kDefaultSelectedFillColor)
+                : (colors?.fill || kDefaultFillColor);
+  if (isActive && selectedColors?.background) {
+    buttonStyle.backgroundColor = selectedColors.background;
+  }
+  if (!isActive && colors?.background) {
+    buttonStyle.backgroundColor = colors.background;
+  }
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
     onSaveSelection?.();
     onMouseDown?.(e);
