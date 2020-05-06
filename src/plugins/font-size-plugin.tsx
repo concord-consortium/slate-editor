@@ -4,7 +4,7 @@ import { Data } from "slate";
 const kFontSizeMinimum = .2;
 const kFontSizeMaximum = 4;
 const kFontSizeDelta = .1;
-export const kInitialSize = 1;
+const kInitialSize = 1;
 
 export const fontSizePlugin: Plugin = {
   commands: {

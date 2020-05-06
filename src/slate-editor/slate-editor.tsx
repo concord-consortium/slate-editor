@@ -7,7 +7,7 @@ import { renderSlateMark, renderSlateBlock } from "./slate-renderers";
 import { HotkeyMap, useHotkeyMap } from "../common/slate-hooks";
 import { EditorValue, EFormat, textToSlate } from "../common/slate-types";
 import { linkPlugin } from "../plugins/link-plugin";
-import { kInitialSize, fontSizePlugin } from "../plugins/font-size-plugin";
+import { fontSizePlugin } from "../plugins/font-size-plugin";
 
 import './slate-editor.scss';
 
@@ -72,8 +72,8 @@ const SlateEditor: React.FC<IProps> = (props: IProps) => {
                   : props.value || kEmptyEditorValue;
   const [prevValue, setPrevValue] = useState<EditorValue>(value);
 
-  const fontSize = value.data.has("fontSize") ? value.data.get("fontSize") : kInitialSize;
-  const style = {fontSize: `${fontSize}em`};
+  const fontSize = value.data.get("fontSize");
+  const style = fontSize ? {fontSize: `${fontSize}em`} : undefined;
 
   const handleChange = useCallback((change: OnChangeParam) => {
     const isContentChange = change.value.document !== prevValue.document;
