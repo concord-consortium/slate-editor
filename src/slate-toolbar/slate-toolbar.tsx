@@ -191,14 +191,14 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
       SvgIcon: IconFontDecrease,
       tooltip: getPlatformTooltip("decrease font"),
       isActive: false,
-      onClick: () => editor && editor.command("adjustFontSize", false)
+      onClick: () => editor && editor.command("decreaseFontSize")
     },
     {
       format: EMetaFormat.fontIncrease,
       SvgIcon: IconFontIncrease,
       tooltip: getPlatformTooltip("increase font"),
       isActive: false,
-      onClick: () => editor && editor.command("adjustFontSize", true)
+      onClick: () => editor && editor.command("increaseFontSize")
     }
   ];
   return (

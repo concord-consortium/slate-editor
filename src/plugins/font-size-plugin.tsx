@@ -8,14 +8,19 @@ export const kInitialSize = 1;
 
 export const fontSizePlugin: Plugin = {
   commands: {
-    adjustFontSize: function (editor: Editor, increase: boolean) {
+    increaseFontSize: function (editor: Editor) {
       const editorData: Data = editor.value.data;
       const currentFontSize = editorData.has("fontSize") ? editorData.get("fontSize") : kInitialSize;
-      const newFontSize = increase 
-                          ? Math.min(currentFontSize + kFontSizeDelta, kFontSizeMaximum) 
-                          : Math.max(currentFontSize - kFontSizeDelta, kFontSizeMinimum);
+      const newFontSize = Math.min(currentFontSize + kFontSizeDelta, kFontSizeMaximum);
       editor.setData(editorData.set("fontSize", newFontSize));
       return editor;
-    }
+    },
+    decreaseFontSize: function (editor: Editor) {
+      const editorData: Data = editor.value.data;
+      const currentFontSize = editorData.has("fontSize") ? editorData.get("fontSize") : kInitialSize;
+      const newFontSize = Math.max(currentFontSize - kFontSizeDelta, kFontSizeMinimum);
+      editor.setData(editorData.set("fontSize", newFontSize));
+      return editor;
+    }    
   },
 };
