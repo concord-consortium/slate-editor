@@ -41,6 +41,7 @@ const kDefaultHotkeyMap = {
 
 export interface SlateExchangeValue {
   object: "value";
+  data?: { [key: string]: any };
   document?: SlateDocument;
 }
 

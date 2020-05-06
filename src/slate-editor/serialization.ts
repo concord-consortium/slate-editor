@@ -100,9 +100,14 @@ export function serializeDocument(document: DocumentJSON): SlateDocument {
   return { ...keyProp(key), children, objTypes, ...data };
 }
 
-export function serializeValue(value: ValueJSON): SlateExchangeValue {
+export function serializeValueJSON(value: ValueJSON): SlateExchangeValue {
   const { document } = value;
   return { object: "value", document: document && serializeDocument(document) };
+}
+
+export function serializeValue(value: Value | ValueJSON): SlateExchangeValue {
+  const options = value?.data?.size ? { preserveData: true } : undefined;
+  return serializeValueJSON(Value.isValue(value) ? value.toJSON(options) : value);
 }
 
 export function deserializeMark(type: string, value: any): MarkJSON {
