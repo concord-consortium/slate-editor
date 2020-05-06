@@ -30,6 +30,7 @@ export const SlateContainer: React.FC<IProps> = (props: IProps) => {
   const handleEditorRef = useCallback((editor?: Editor) => {
     editorRef.current = editor;
     onEditorRef?.(editor);
+    setChangeCount(count => ++count);
   }, [onEditorRef]);
   const handleFocus = useCallback(() => {
     onFocus?.(editorRef.current);
