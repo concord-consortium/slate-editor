@@ -11,7 +11,7 @@ export const imagePlugin: Plugin = {
       editor.insertInline({
         type: EFormat.image,
         data: { src }
-      })      
+      });
       return editor;
     },
   }, 
@@ -24,7 +24,7 @@ export const imagePlugin: Plugin = {
   },
   // eslint-disable-next-line react/display-name
   renderInline: (props: RenderInlineProps, editor: Editor, next: () => any) => {
-    const { attributes, children, node } = props;
+    const { attributes, node } = props;
     if (node.type !== EFormat.image) return next();
     const { data } = node;
     const src: string = data.get("src");
