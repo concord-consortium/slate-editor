@@ -5,6 +5,12 @@ function getActiveColorMark(editor: Editor) {
   return editor.value.activeMarks.find(function(mark) { return mark?.type === EFormat.color; });
 }
 
+export function removeColorMarksFromSelection(editor: Editor) {
+  editor.value.marks.toArray()
+    .filter(mark => mark.type === EFormat.color)
+    .forEach(mark => editor.removeMark(mark));
+}
+
 export const colorPlugin: Plugin = {
   queries: {
     getActiveColor: function(editor: Editor) {
@@ -17,9 +23,8 @@ export const colorPlugin: Plugin = {
   },
   commands: {
     setColorMark: function(editor: Editor, color: string) {
-      const colorMark = getActiveColorMark(editor);
-      (colorMark ? editor.removeMark(colorMark) : editor)
-        .toggleMark({ type: EFormat.color, data: { color } });
+      removeColorMarksFromSelection(editor);
+      editor.addMark({ type: EFormat.color, data: { color } });
       return editor;
     }
   }
