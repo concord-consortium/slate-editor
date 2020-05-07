@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.0.6 - May 7, 2020
+
+- Toolbar tweaks
+
 ## Version 0.0.5 - May 7, 2020
 
 - Add support for inline images
