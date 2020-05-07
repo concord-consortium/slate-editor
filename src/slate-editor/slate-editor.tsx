@@ -69,13 +69,6 @@ function renderBlock(props: RenderBlockProps, editor: Editor, next: () => any) {
 }
 
 const slatePlugins = [colorPlugin, imagePlugin, linkPlugin, fontSizePlugin];
-const editorSchema = {
-  inlines: {
-    image: {
-      isVoid: true,
-    },
-  },
-};
 
 const SlateEditor: React.FC<IProps> = (props: IProps) => {
   const { onEditorRef, onValueChange, onContentChange, onFocus, onBlur, plugins } = props;
@@ -142,7 +135,6 @@ const SlateEditor: React.FC<IProps> = (props: IProps) => {
       onChange={handleChange}
       onFocus={handleFocus}
       onBlur={handleBlur}
-      schema={editorSchema}
     />
   );
 };

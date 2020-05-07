@@ -15,6 +15,13 @@ export const imagePlugin: Plugin = {
       return editor;
     },
   }, 
+  schema: {
+    inlines: {
+      image: {
+        isVoid: true,
+      }
+    }
+  },
   // eslint-disable-next-line react/display-name
   renderInline: (props: RenderInlineProps, editor: Editor, next: () => any) => {
     const { attributes, children, node } = props;
