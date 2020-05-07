@@ -17,7 +17,7 @@ import InputColor from "../assets/input-color";
 import IconFontIncrease from "../assets/icon-font-increase";
 import IconFontDecrease from "../assets/icon-font-decrease";
 import { Editor } from "slate-react";
-import { IButtonSpec } from "../editor-toolbar/editor-toolbar";
+import { IButtonSpec, IProps as IToolbarProps } from "../editor-toolbar/editor-toolbar";
 import { handleToggleListBlock, handleToggleMark, hasActiveMark, selectionContainsBlock,
           handleToggleSuperSubscript, handleToggleBlock }
         from "../slate-editor/slate-utils";
@@ -25,17 +25,28 @@ import { SelectionJSON } from "slate";
 import { hasActiveColorMark, handleColor } from "../plugins/color-plugin";
 import { EFormat, EMetaFormat } from "../common/slate-types";
 
-export interface IProps {
-  className?: string;
+export interface IProps extends IToolbarProps {
   editor?: Editor;
+  order?: Array<EFormat | EMetaFormat>;
   changeCount: number;
 }
 
-// let renderCount = 0;
+function sortButtons(buttons: IButtonSpec[], order: Array<EFormat | EMetaFormat>) {
+  const formatOrder: Record<string, number> = {};
+  order.forEach((format, index) => {
+    formatOrder[format] = index + 1;  // skip 0
+  });
+  buttons.forEach((button, index) => {
+    if (!formatOrder[button.format]) {
+      // unordered buttons come after ordered buttons in original order
+      formatOrder[button.format] = 101 + index;
+    }
+  });
+  buttons.sort((button1, button2) => formatOrder[button1.format] - formatOrder[button2.format]);
+}
 
 export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
-  // console.log("SlateToolbar.renderCount:", ++renderCount);
-  const { className, editor, ...others } = props;
+  const { className, editor, order, ...others } = props;
   const buttons: IButtonSpec[] = [
     {
       format: EFormat.bold,
@@ -201,6 +212,9 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
       onClick: () => editor && editor.command("increaseFontSize")
     }
   ];
+
+  order && sortButtons(buttons, order);
+
   return (
     <EditorToolbar
       className={`slate-toolbar ${props.className || ""}`}
