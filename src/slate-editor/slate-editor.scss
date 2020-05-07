@@ -22,4 +22,8 @@
       color: var(--selected-color);
     }
   }
+  img {
+    display: inline-block;
+    max-width: 100%;
+  }
 }

@@ -105,9 +105,6 @@ export function renderSlateBlock(blockName: string, attributes: unknown, childre
       return (<td {...attributes}>{children}</td>);
     case "block-quote":
       return (<blockquote {...attributes}>{children}</blockquote>);
-
-    // case "image":  // TODO: This is broken.
-    //   return (<img src={src} title={title} />);
     // case "link":   // TODO: This is broken.
     //   return (<a href={href} {...attributes}>{children}</a>);
 
