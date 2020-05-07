@@ -16,7 +16,6 @@ import IconUnderline from "../assets/icon-underline";
 import InputColor from "../assets/input-color";
 import IconFontIncrease from "../assets/icon-font-increase";
 import IconFontDecrease from "../assets/icon-font-decrease";
-import { Editor } from "slate-react";
 import { IButtonSpec, IProps as IToolbarProps } from "../editor-toolbar/editor-toolbar";
 import { handleToggleListBlock, handleToggleMark, hasActiveMark, selectionContainsBlock,
           handleToggleSuperSubscript, handleToggleBlock }
@@ -25,8 +24,7 @@ import { SelectionJSON } from "slate";
 import { hasActiveColorMark, handleColor } from "../plugins/color-plugin";
 import { EFormat, EMetaFormat } from "../common/slate-types";
 
-export interface IProps extends IToolbarProps {
-  editor?: Editor;
+export interface IProps extends Omit<IToolbarProps, "buttons"> {
   order?: Array<EFormat | EMetaFormat>;
   changeCount: number;
 }
