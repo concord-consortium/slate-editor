@@ -100,8 +100,8 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
       return {
         format: EFormat.color,
         SvgIcon: InputColor,
-        colors: { fill },
-        selectedColors: { fill },
+        colors: { ...props.colors, fill },
+        selectedColors: { ...props.selectedColors, fill },
         tooltip: getPlatformTooltip("color"),
         isActive: editor && editor.query("hasActiveColorMark"),
         onMouseDown: () => {
@@ -115,6 +115,20 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
         }
       };
     })(),
+    {
+      format: EFormat.image,
+      SvgIcon: IconImage,
+      tooltip: getPlatformTooltip("image"),
+      isActive: editor ? selectionContainsBlock(editor.value, EFormat.image) : false,
+      onClick: () => editor && editor.command("addImage")
+    }, 
+    {
+      format: EFormat.link,
+      SvgIcon: IconLink,
+      tooltip: getPlatformTooltip("link"),
+      isActive: editor && editor.query("isLinkActive"),
+      onClick: () => editor && editor.command("toggleLink")
+    },
     {
       format: EFormat.heading1,
       SvgIcon: IconHeading,
@@ -182,20 +196,6 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
       tooltip: getPlatformTooltip("bulleted list"),
       isActive: editor ? selectionContainsBlock(editor.value, EFormat.bulletedList) : false,
       onClick: () => editor && handleToggleListBlock(EFormat.bulletedList, editor)
-    },
-    {
-      format: EFormat.image,
-      SvgIcon: IconImage,
-      tooltip: getPlatformTooltip("image"),
-      isActive: editor ? selectionContainsBlock(editor.value, EFormat.image) : false,
-      onClick: () => editor && editor.command("addImage")
-    }, 
-    {
-      format: EFormat.link,
-      SvgIcon: IconLink,
-      tooltip: getPlatformTooltip("link"),
-      isActive: editor && editor.query("isLinkActive"),
-      onClick: () => editor && editor.command("toggleLink")
     },
     {
       format: EMetaFormat.fontDecrease,
