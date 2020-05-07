@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 0.0.5 - May 7, 2020
+
+- Add support for inline images
+- Improve behavior of text color button
+- Block quotes are no longer italicized by default
+
 ## Version 0.0.4 - May 6, 2020
 
 - Add font increase and decrease to toolbar
