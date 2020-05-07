@@ -1,20 +1,26 @@
-import { Editor } from "slate-react";
+import { Editor, Plugin } from "slate-react";
 import { EFormat } from "../common/slate-types";
-import { findActiveMark, handleToggleMark, hasActiveMark } from "../slate-editor/slate-utils";
 
-export function hasActiveColorMark(editor?: Editor) {
-  return editor ? hasActiveMark(editor.value, EFormat.color) : false;
+function getActiveColorMark(editor: Editor) {
+  return editor.value.activeMarks.find(function(mark) { return mark?.type === EFormat.color; });
 }
 
-export function handleColor(format: EFormat, color: string, editor?: Editor) {
-  if (!editor) return;
-  const markProps = { type: format, data: { color } };
-  // remove any existing color mark
-  const colorMark = findActiveMark(editor.value, format);
-  if (colorMark) {
-    editor.removeMark(colorMark);
+export const colorPlugin: Plugin = {
+  queries: {
+    getActiveColor: function(editor: Editor) {
+      const mark = getActiveColorMark(editor);
+      return mark && mark.data.get("color");
+    },
+    hasActiveColorMark: function(editor: Editor) {
+      return !!getActiveColorMark(editor);
+    }
+  },
+  commands: {
+    setColorMark: function(editor: Editor, color: string) {
+      const colorMark = getActiveColorMark(editor);
+      (colorMark ? editor.removeMark(colorMark) : editor)
+        .toggleMark({ type: EFormat.color, data: { color } });
+      return editor;
+    }
   }
-  // add the new color mark
-  // colorMark && (editor as any).setOperationFlag("merge", true);
-  handleToggleMark(markProps, editor);
-}
+};

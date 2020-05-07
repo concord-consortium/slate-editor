@@ -23,6 +23,18 @@
         display: flex;
         align-items: center;
         justify-content: center;
+
+        input[type="color"] {
+          padding: 0;
+        }
+
+        // fix color picker input appearance on Firefox
+        // cf. https://css-tricks.com/color-inputs-a-deep-dive-into-cross-browser-differences/
+        input[type="color"]::-moz-color-swatch {
+          width: 8.5px;
+          height: 8.5px;
+          margin-left: -2px;
+        }
       }
     }
   }
