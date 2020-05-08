@@ -20,19 +20,16 @@ export const ModalDialog: React.FC<IProps> = (props) => {
   const initialValues = inputFieldStrings.map(() => "");
   const [inputValues, setInputValue] = useState(initialValues);
   useEffect(() => {
-    const onDown = (e: any) => {
-      if (!e.target.classList.contains("modal-dialog-input", "modal-dialog-button")) {
-        console.log("prevent");
+    const onMouseDown = (e: any) => {
+      if (e.target.classList.contains("modal-cover")) {
         e.preventDefault();
-        //e.stopPropagation();
-        //e.stopImmediatePropagation();
       }   
     };
-    document.addEventListener("mousedown", onDown);
-    document.addEventListener("touchstart", onDown);
+    document.addEventListener("mousedown", onMouseDown, true);
+    document.addEventListener("touchstart", onMouseDown, true);
     return () => {
-      document.removeEventListener("mousedown", onDown);
-      document.removeEventListener("touchstart", onDown);
+      document.removeEventListener("mousedown", onMouseDown, true);
+      document.removeEventListener("touchstart", onMouseDown, true);
     };
   }, []);  
 
@@ -51,30 +48,33 @@ export const ModalDialog: React.FC<IProps> = (props) => {
   
   return (
       <div className="modal-dialog">
-        <div className="header" style={themeStyle}>
-          <div style={titleStyle}>{title}</div>
-        </div>
-        <div className="content">
-        {
-          inputFieldStrings.map((input, i) => {
-            return (
-              <div className="input-entry" key={`input-${i}`}>
-                <div className="label">{input}</div>
-                <input
-                  className={"modal-dialog-input"}
-                  autoFocus={i==0}
-                  onChange={handleValueChange(i)}
-                  type="text"
-                  value={inputValues[i]}
-                />
-              </div>
-            );
-          })
-        }
-        </div>
-        <div className="footer">
-          <button className={"modal-dialog-button"} style={themeStyle} onClick={handleOkClick}>OK</button>
-          <button className={"modal-dialog-button"} style={themeStyle} onClick={handleCancelClick}>CANCEL</button>
+        <div className="modal-cover"/>
+        <div className="dialog">
+          <div className="header" style={themeStyle}>
+            <div style={titleStyle}>{title}</div>
+          </div>
+          <div className="content">
+          {
+            inputFieldStrings.map((input, i) => {
+              return (
+                <div className="input-entry" key={`input-${i}`}>
+                  <div className="label">{input}</div>
+                  <input
+                    className={"modal-dialog-input"}
+                    autoFocus={i==0}
+                    onChange={handleValueChange(i)}
+                    type="text"
+                    value={inputValues[i]}
+                  />
+                </div>
+              );
+            })
+          }
+          </div>
+          <div className="footer">
+            <button className={"modal-dialog-button"} style={themeStyle} onClick={handleOkClick}>OK</button>
+            <button className={"modal-dialog-button"} style={themeStyle} onClick={handleCancelClick}>CANCEL</button>
+          </div>
         </div>
       </div>
   )
