@@ -1,0 +1,53 @@
+.modal-dialog {
+  position: fixed;
+  left: calc(50% - 200px);
+  top: 200px;
+  display: flex;
+  flex-direction: column;
+  width: 400px;
+  border: 2px solid #B3B3B3;  
+  border-radius: 6px;
+  box-shadow: -2px 2px 5px grey;
+  background-color: white;
+
+  .header {
+    height: 30px;
+    background-color: #A0A0A0;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px 5px 0 0;
+  } 
+  .content {
+    margin: 5px;
+    .label {
+      margin: 5px;
+    }      
+    input {
+      margin: 5px;
+      width: 375px;
+      height: 25px;
+    }
+  }    
+  .footer {
+    margin: 5px;
+    display: flex;
+    justify-content: flex-end;    
+  }  
+  button {
+    height: 40px;
+    min-width: 100px;
+    border: 2px solid #dfdfdf; 
+    background-color: #A0A0A0;
+    color: white; 
+    cursor: pointer;
+    border-radius: 6px;
+    &:hover {
+      opacity: .9;
+    }   
+    &:active {
+      opacity: .8;
+    }  
+  }
+}

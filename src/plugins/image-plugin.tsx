@@ -4,9 +4,10 @@ import { EFormat } from "../common/slate-types";
 
 export const imagePlugin: Plugin = {
   commands: {
-    addImage: function (editor: Editor) {
+    addImage: function (editor: Editor, srcValues: string[]) {
+      const src = srcValues[0];
       if (!editor) return editor;
-      const src = window.prompt("Enter the URL of the image:");
+      // const src = window.prompt("Enter the URL of the image:");
       if (!src) return editor;
       editor.insertInline({
         type: EFormat.image,
