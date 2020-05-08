@@ -23,9 +23,11 @@ import { handleToggleListBlock, handleToggleMark, hasActiveMark, selectionContai
 import { SelectionJSON } from "slate";
 import { EFormat, EMetaFormat } from "../common/slate-types";
 import { ModalDialog } from "./modal-dialog";
+import { ModalDialogPortal } from "./modal-dialog-portal";
 
 export interface IProps extends Omit<IToolbarProps, "buttons"> {
   order?: Array<EFormat | EMetaFormat>;
+  modalPortalRoot?: HTMLDivElement;
   changeCount: number;
 }
 
@@ -228,7 +230,22 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
     setShowDialog(false);
     inputFieldValues && editor && editor.command(dialogCommand, inputFieldValues);
   }
-  
+
+  const dialog = props.modalPortalRoot
+                  ? <ModalDialogPortal
+                      modalPortalRoot={props.modalPortalRoot}
+                      themeColor={props.colors?.background}
+                      title={dialogTitle}
+                      inputFieldStrings={dialogInputs}
+                      onClose={handleCloseDialog}
+                    />
+                  : <ModalDialog
+                      themeColor={props.colors?.background}
+                      title={dialogTitle}
+                      inputFieldStrings={dialogInputs}
+                      onClose={handleCloseDialog}
+                    />;  
+
   return (
     <div>
       <EditorToolbar
@@ -238,14 +255,7 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
         editor={editor}
         {...others}
         />
-      { showDialog && 
-        <ModalDialog
-          themeColor={props.colors?.background}
-          title={dialogTitle}
-          inputFieldStrings={dialogInputs}
-          onClose={handleCloseDialog}
-        />
-      }
+      { showDialog && dialog}
     </div>
   );
 };

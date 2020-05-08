@@ -12,6 +12,7 @@ export interface IProps {
 
 export const ModalDialog: React.FC<IProps> = (props) => {
   const { themeColor, fontColor, title, inputFieldStrings } = props;
+  
   // CSS styles
   const themeStyle = themeColor ? {backgroundColor: `${themeColor}`} : undefined;
   const titleStyle = fontColor ? {color: `${fontColor}`} : undefined;
@@ -60,7 +61,6 @@ export const ModalDialog: React.FC<IProps> = (props) => {
                 <div className="input-entry" key={`input-${i}`}>
                   <div className="label">{input}</div>
                   <input
-                    className={"modal-dialog-input"}
                     autoFocus={i==0}
                     onChange={handleValueChange(i)}
                     type="text"
@@ -72,8 +72,8 @@ export const ModalDialog: React.FC<IProps> = (props) => {
           }
           </div>
           <div className="footer">
-            <button className={"modal-dialog-button"} style={themeStyle} onClick={handleOkClick}>OK</button>
-            <button className={"modal-dialog-button"} style={themeStyle} onClick={handleCancelClick}>CANCEL</button>
+            <button style={themeStyle} onClick={handleOkClick}>OK</button>
+            <button style={themeStyle} onClick={handleCancelClick}>CANCEL</button>
           </div>
         </div>
       </div>
