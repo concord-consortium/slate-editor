@@ -23,8 +23,9 @@ export const colorPlugin: Plugin = {
   },
   commands: {
     setColorMark: function(editor: Editor, color: string) {
+      const kBlackColor = "#000000";
       removeColorMarksFromSelection(editor);
-      editor.addMark({ type: EFormat.color, data: { color } });
+      (color !== kBlackColor) && editor.addMark({ type: EFormat.color, data: { color } });
       return editor;
     }
   }
