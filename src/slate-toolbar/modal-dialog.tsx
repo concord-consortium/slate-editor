@@ -1,4 +1,5 @@
-import React, { useState, useEffect }  from "react";
+import React, { useState, useEffect, useRef }  from "react";
+import isEqual from "lodash/isEqual";
 
 import './modal-dialog.scss';
 
@@ -14,11 +15,11 @@ export interface IProps {
 
 export const ModalDialog: React.FC<IProps> = (props) => {
   const { themeColor, fontColor, title, inputFieldStrings } = props;
-  
+
   // CSS styles
   const themeStyle = themeColor ? {backgroundColor: `${themeColor}`} : undefined;
   const titleStyle = fontColor ? {color: `${fontColor}`} : undefined;
-  
+
   // useState useEffect hooks
   const initialValues = inputFieldStrings.map(() => "");
   const [inputValues, setInputValue] = useState(initialValues);
@@ -26,7 +27,7 @@ export const ModalDialog: React.FC<IProps> = (props) => {
     const onMouseDown = (e: any) => {
       if (e.target.classList.contains("modal-cover")) {
         e.preventDefault();
-      }   
+      }
     };
     document.addEventListener("mousedown", onMouseDown, true);
     document.addEventListener("touchstart", onMouseDown, true);
@@ -34,7 +35,13 @@ export const ModalDialog: React.FC<IProps> = (props) => {
       document.removeEventListener("mousedown", onMouseDown, true);
       document.removeEventListener("touchstart", onMouseDown, true);
     };
-  }, []);  
+  }, []);
+  const input1Ref = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (isEqual(initialValues, inputValues)) {
+      input1Ref?.current?.focus();
+    }
+  });
 
   // handlers
   const handleCancelClick = () => {
@@ -46,9 +53,9 @@ export const ModalDialog: React.FC<IProps> = (props) => {
   const handleValueChange = (index: number) => (e: any) => {
     const newArr = [...inputValues];
     newArr[index] = e.target.value;
-    setInputValue(newArr); 
+    setInputValue(newArr);
   };
-  
+
   return (
       <div className={`modal-dialog ${props.dialogClassName || ""}`}>
         <div className={`modal-cover ${props.coverClassName || ""}`}/>
@@ -63,10 +70,10 @@ export const ModalDialog: React.FC<IProps> = (props) => {
                 <div className="input-entry" key={`input-${i}`}>
                   <div className="label">{input}</div>
                   <input
-                    autoFocus={i===0}
                     onChange={handleValueChange(i)}
                     type="text"
                     value={inputValues[i]}
+                    ref={i===0 ? input1Ref : undefined}
                   />
                 </div>
               );
