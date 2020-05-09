@@ -32,7 +32,7 @@ export const linkPlugin: Plugin = {
       } else if (value.selection.isExpanded) {
         const settings: DisplayDialogSettings = { title: "Insert Link",
                                                   inputs: ["Enter the URL of the link:"],
-                                                  editorCommand: "insertLink" };
+                                                  editorCommand: "applyLink" };
         displayDialog(settings);
       } else {
         const settings: DisplayDialogSettings = { title: "Insert Link",
@@ -50,6 +50,11 @@ export const linkPlugin: Plugin = {
         .insertText(text)
         .moveFocusBackward(text.length)
         .command("wrapLink", href);
+      return editor;
+    },
+    applyLink: function (editor: Editor, dialogValues: string[]) {
+      const href = dialogValues[0];
+      editor.command("wrapLink", href);
       return editor;
     }
   },
