@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef }  from "react";
-import isEqual from "lodash/isEqual";
 
 import './modal-dialog.scss';
 
@@ -23,6 +22,7 @@ export const ModalDialog: React.FC<IProps> = (props) => {
   // useState useEffect hooks
   const initialValues = inputFieldStrings.map(() => "");
   const [inputValues, setInputValue] = useState(initialValues);
+  const [valueChange, setValueChange] = useState(false);
   useEffect(() => {
     const onMouseDown = (e: any) => {
       if (e.target.classList.contains("modal-cover")) {
@@ -38,7 +38,7 @@ export const ModalDialog: React.FC<IProps> = (props) => {
   }, []);
   const input1Ref = useRef<HTMLInputElement>(null);
   useEffect(() => {
-    if (isEqual(initialValues, inputValues)) {
+    if (!valueChange) {
       input1Ref?.current?.focus();
     }
   });
@@ -54,6 +54,7 @@ export const ModalDialog: React.FC<IProps> = (props) => {
     const newArr = [...inputValues];
     newArr[index] = e.target.value;
     setInputValue(newArr);
+    setValueChange(true);
   };
 
   return (
