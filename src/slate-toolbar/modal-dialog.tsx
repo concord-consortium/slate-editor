@@ -3,6 +3,8 @@ import React, { useState, useEffect }  from "react";
 import './modal-dialog.scss';
 
 export interface IProps {
+  coverClassName?: string;
+  dialogClassName?: string;
   themeColor?: string;
   fontColor?: string;
   title: string;
@@ -37,19 +39,19 @@ export const ModalDialog: React.FC<IProps> = (props) => {
   // handlers
   const handleCancelClick = () => {
     props.onClose(null);
-  }
+  };
   const handleOkClick = () => {
     props.onClose(inputValues);
-  }
+  };
   const handleValueChange = (index: number) => (e: any) => {
-    let newArr = [...inputValues];
+    const newArr = [...inputValues];
     newArr[index] = e.target.value;
     setInputValue(newArr); 
-  }
+  };
   
   return (
-      <div className="modal-dialog">
-        <div className="modal-cover"/>
+      <div className={`modal-dialog ${props.dialogClassName || ""}`}>
+        <div className={`modal-cover ${props.coverClassName || ""}`}/>
         <div className="dialog">
           <div className="header" style={themeStyle}>
             <div style={titleStyle}>{title}</div>
@@ -61,7 +63,7 @@ export const ModalDialog: React.FC<IProps> = (props) => {
                 <div className="input-entry" key={`input-${i}`}>
                   <div className="label">{input}</div>
                   <input
-                    autoFocus={i==0}
+                    autoFocus={i===0}
                     onChange={handleValueChange(i)}
                     type="text"
                     value={inputValues[i]}
@@ -77,5 +79,5 @@ export const ModalDialog: React.FC<IProps> = (props) => {
           </div>
         </div>
       </div>
-  )
-}
+  );
+};

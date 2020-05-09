@@ -4,7 +4,6 @@ import { EFormat } from "../common/slate-types";
 import { IProps as IEditorProps, SlateEditor } from "../slate-editor/slate-editor";
 import { SlateToolbar } from "../slate-toolbar/slate-toolbar";
 import { IProps as IPortalToolbarProps, SlateToolbarPortal } from "../slate-toolbar/slate-toolbar-portal";
-import { IProps as IPortalDialogProps } from "../slate-toolbar/modal-dialog-portal";
 import "./slate-container.scss";
 
 const hotkeyMap = {
@@ -20,13 +19,12 @@ interface IProps extends IEditorProps {
   className?: string;
   editorClassName?: string;
   toolbar?: IPortalToolbarProps;
-  modalPortalRoot?: HTMLDivElement;
 }
 
 export const SlateContainer: React.FC<IProps> = (props: IProps) => {
   const { className: toolbarClasses, portalRoot, ...toolbarOthers } = props.toolbar || {};
   const { className, editorClassName, onEditorRef, onValueChange, onContentChange,
-          onBlur, onFocus, modalPortalRoot, ...others } = props;
+          onBlur, onFocus, ...others } = props;
   const editorRef = useRef<Editor>();
   const [changeCount, setChangeCount] = useState(0);
   const handleEditorRef = useCallback((editor?: Editor) => {
@@ -47,14 +45,12 @@ export const SlateContainer: React.FC<IProps> = (props: IProps) => {
                         className={toolbarClasses}
                         editor={editorRef.current}
                         changeCount={changeCount}
-                        modalPortalRoot={modalPortalRoot}
                         {...toolbarOthers}
                       />
                     : <SlateToolbar
                         className={toolbarClasses}
                         editor={editorRef.current}
                         changeCount={changeCount}
-                        modalPortalRoot={modalPortalRoot}
                         {...toolbarOthers}
                       />;
   return (

@@ -14,12 +14,13 @@ export const PortalModalDialog = () => {
   const [portalRef, setportalRef] = useState();
   useEffect(() => {
     setportalRef(ref.current);
-  });
+  }, []);
   const [value, setValue] = useState(modalPortalText);
   return (
     <div>
       <div className="portal-container" ref={ref}></div>
-      <SlateContainer value={value} onValueChange={_value => setValue(_value)} modalPortalRoot={portalRef} />
+      <SlateContainer value={value} onValueChange={_value => setValue(_value)}
+                      toolbar={{ modalPortalRoot: portalRef }} />
     </div>
   );
 };
@@ -31,6 +32,6 @@ export const ColoredModalDialog = () => {
   const [value, setValue] = useState(coloredModalText);
   return (
     <SlateContainer value={value} onValueChange={_value => setValue(_value)}
-    toolbar={{ colors: { fill: "#ffffff", background: "#FF7FB6" }}} />
+                    toolbar={{ colors: { fill: "#ffffff", background: "#FF7FB6" }}} />
   );
 };

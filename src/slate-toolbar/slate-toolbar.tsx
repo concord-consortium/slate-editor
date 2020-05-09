@@ -28,6 +28,8 @@ import { ModalDialogPortal } from "./modal-dialog-portal";
 export interface IProps extends Omit<IToolbarProps, "buttons"> {
   order?: Array<EFormat | EMetaFormat>;
   modalPortalRoot?: HTMLDivElement;
+  modalCoverClassName?: string;
+  modalDialogClassName?: string;
   changeCount: number;
 }
 
@@ -229,17 +231,21 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
   const handleCloseDialog = (inputFieldValues: string[] | null) => {
     setShowDialog(false);
     inputFieldValues && editor && editor.command(dialogCommand, inputFieldValues);
-  }
+  };
 
   const dialog = props.modalPortalRoot
                   ? <ModalDialogPortal
                       modalPortalRoot={props.modalPortalRoot}
+                      coverClassName={props.modalCoverClassName}
+                      dialogClassName={props.modalDialogClassName}
                       themeColor={props.colors?.background}
                       title={dialogTitle}
                       inputFieldStrings={dialogInputs}
                       onClose={handleCloseDialog}
                     />
                   : <ModalDialog
+                      coverClassName={props.modalCoverClassName}
+                      dialogClassName={props.modalDialogClassName}
                       themeColor={props.colors?.background}
                       title={dialogTitle}
                       inputFieldStrings={dialogInputs}
