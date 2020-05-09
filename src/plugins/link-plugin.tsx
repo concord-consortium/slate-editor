@@ -2,6 +2,7 @@ import React from "react";
 import { Editor, Plugin, RenderInlineProps } from "slate-react";
 import { EFormat } from "../common/slate-types";
 import { hasActiveInline } from "../slate-editor/slate-utils";
+import { DisplayDialogFunction, DisplayDialogSettings } from "../slate-toolbar/slate-toolbar";
 
 export const linkPlugin: Plugin = {
   queries: {
@@ -10,18 +11,17 @@ export const linkPlugin: Plugin = {
     }
   },
   commands: {
-    toggleLink: function (editor: Editor) {
+    wrapLink: function (editor: Editor, href: string) {
+      editor.wrapInline({
+        type: EFormat.link,
+        data: { href },
+      });
+      editor.moveToEnd();
+      return editor;
+    },
+    toggleLink: function (editor: Editor, displayDialog: DisplayDialogFunction) {
       const { value } = editor;
       const hasLink = hasActiveInline(editor.value, EFormat.link);
-
-      function wrapLink(_editor: Editor, href: string) {
-        _editor.wrapInline({
-          type: EFormat.link,
-          data: { href },
-        });
-
-        _editor.moveToEnd();
-      }
 
       function unwrapLink(_editor: Editor) {
         _editor.unwrapInline(EFormat.link);
@@ -30,22 +30,26 @@ export const linkPlugin: Plugin = {
       if (hasLink) {
         editor.command(unwrapLink);
       } else if (value.selection.isExpanded) {
-        const href = window.prompt('Enter the URL of the link:');
-        if (!href) return editor;
-
-        editor.command(wrapLink, href);
+        const settings: DisplayDialogSettings = { title: "Insert Link",
+                                                  inputs: ["Enter the URL of the link:"],
+                                                  editorCommand: "insertLink" };
+        displayDialog(settings);
       } else {
-        const href = window.prompt('Enter the URL of the link:');
-        if (!href) return editor;
-
-        const text = window.prompt('Enter the text for the link:');
-        if (!text) return editor;
-
-        editor
-          .insertText(text)
-          .moveFocusBackward(text.length)
-          .command(wrapLink, href);
+        const settings: DisplayDialogSettings = { title: "Insert Link",
+                                                  inputs: ["Enter the URL of the link:",
+                                                           "Enter the text for the link:"],
+                                                  editorCommand: "insertLink" };
+        displayDialog(settings);
       }
+      return editor;
+    },
+    insertLink: function (editor: Editor, dialogValues: string[]) {
+      const href = dialogValues[0];
+      const text = dialogValues[1];
+      editor
+        .insertText(text)
+        .moveFocusBackward(text.length)
+        .command("wrapLink", href);
       return editor;
     }
   },

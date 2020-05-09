@@ -33,6 +33,16 @@ export interface IProps extends Omit<IToolbarProps, "buttons"> {
   changeCount: number;
 }
 
+export interface DisplayDialogSettings {
+  title: string;
+  inputs: string[];
+  editorCommand: string;
+}
+
+export interface DisplayDialogFunction {
+  (settings: DisplayDialogSettings): void;
+}
+
 function sortButtons(buttons: IButtonSpec[], order: Array<EFormat | EMetaFormat>) {
   const formatOrder: Record<string, number> = {};
   order.forEach((format, index) => {
@@ -52,7 +62,14 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
   const [showDialog, setShowDialog] = useState(false);
   const [dialogTitle, setDialogTitle] = useState("");
   const [dialogInputs, setDialogInputs] = useState([""]);
-  const [dialogCommand, setDialogCommand] = useState("");  
+  const [dialogCommand, setDialogCommand] = useState("");
+  const displayDialog = (settings: DisplayDialogSettings) => {
+    setDialogTitle(settings.title);
+    setDialogInputs(settings.inputs);
+    setDialogCommand(settings.editorCommand);
+    setShowDialog(true);
+  };
+
   const buttons: IButtonSpec[] = [
     {
       format: EFormat.bold,
@@ -129,19 +146,14 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
       SvgIcon: IconImage,
       tooltip: getPlatformTooltip("image"),
       isActive: editor ? selectionContainsBlock(editor.value, EFormat.image) : false,
-      onClick: () => { // editor && editor.command("addImage")
-        setDialogTitle("Insert Image");
-        setDialogInputs(["Enter the URL of the image:"]); 
-        setDialogCommand("addImage");
-        setShowDialog(true);
-      }
-    }, 
+      onClick: () => editor && editor.command("requestImage", displayDialog)
+    },
     {
       format: EFormat.link,
       SvgIcon: IconLink,
       tooltip: getPlatformTooltip("link"),
       isActive: editor && editor.query("isLinkActive"),
-      onClick: () => editor && editor.command("toggleLink")
+      onClick: () => editor && editor.command("toggleLink", displayDialog)
     },
     {
       format: EFormat.heading1,
@@ -250,7 +262,7 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
                       title={dialogTitle}
                       inputFieldStrings={dialogInputs}
                       onClose={handleCloseDialog}
-                    />;  
+                    />;
 
   return (
     <div>
