@@ -2,7 +2,7 @@ import React from "react";
 import { Editor, Plugin, RenderInlineProps } from "slate-react";
 import { EFormat } from "../common/slate-types";
 import { hasActiveInline } from "../slate-editor/slate-utils";
-import { DisplayDialogFunction, DisplayDialogSettings } from "../slate-toolbar/slate-toolbar";
+import { DisplayDialogFunction } from "../slate-toolbar/slate-toolbar";
 
 export const linkPlugin: Plugin = {
   queries: {
@@ -19,7 +19,7 @@ export const linkPlugin: Plugin = {
       editor.moveToEnd();
       return editor;
     },
-    toggleLink: function (editor: Editor, displayDialog: DisplayDialogFunction) {
+    configureLink: function (editor: Editor, displayDialog: DisplayDialogFunction) {
       const { value } = editor;
       const hasLink = hasActiveInline(editor.value, EFormat.link);
 
@@ -29,18 +29,14 @@ export const linkPlugin: Plugin = {
 
       if (hasLink) {
         editor.command(unwrapLink);
-      } else if (value.selection.isExpanded) {
-        const settings: DisplayDialogSettings = { title: "Insert Link",
-                                                  inputs: ["Enter the URL of the link:"],
-                                                  editorCommand: "applyLink" };
-        displayDialog(settings);
       } else {
-        const settings: DisplayDialogSettings = { title: "Insert Link",
-                                                  inputs: ["Enter the URL of the link:",
-                                                           "Enter the text for the link:"],
-                                                  editorCommand: "insertLink" };
-        displayDialog(settings);
-      }
+        const textPrompt = value.selection.isExpanded ? [] : ["Enter the text for the link:"];
+        displayDialog({
+          title: "Insert Link",
+          prompts: [...textPrompt, "Enter the URL of the link:"],
+          onAccept: (_editor, inputs) => _editor.command("insertLink", inputs)
+        });
+}
       return editor;
     },
     insertLink: function (editor: Editor, dialogValues: string[]) {

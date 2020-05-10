@@ -1,15 +1,16 @@
 import React from "react";
 import { Editor, Plugin, RenderInlineProps } from "slate-react";
 import { EFormat } from "../common/slate-types";
-import { DisplayDialogFunction, DisplayDialogSettings } from "../slate-toolbar/slate-toolbar";
+import { DisplayDialogFunction } from "../slate-toolbar/slate-toolbar";
 
 export const imagePlugin: Plugin = {
   commands: {
-    requestImage: function (editor: Editor, displayDialog: DisplayDialogFunction) {
-      const settings: DisplayDialogSettings = { title: "Insert Image",
-                                                inputs: ["Enter the URL of the image:"],
-                                                editorCommand: "addImage" };
-      displayDialog(settings);
+    configureImage: function (editor: Editor, displayDialog: DisplayDialogFunction) {
+      displayDialog({
+        title: "Insert Image",
+        prompts: ["Enter the URL of the image:"],
+        onAccept: (_editor, inputs) => _editor.command("addImage", inputs)
+      });
       return editor;
     },
     addImage: function (editor: Editor, dialogValues: string[]) {

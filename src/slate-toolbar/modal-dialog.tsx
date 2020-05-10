@@ -8,21 +8,20 @@ export interface IProps {
   themeColor?: string;
   fontColor?: string;
   title: string;
-  inputFieldStrings: string[];
-  onClose: (inputFieldValues: string[] | null) => void;
+  prompts: string[];
+  onClose: (inputs: string[] | null) => void;
 }
 
 export const ModalDialog: React.FC<IProps> = (props) => {
-  const { themeColor, fontColor, title, inputFieldStrings } = props;
+  const { themeColor, fontColor, title, prompts } = props;
 
   // CSS styles
   const themeStyle = themeColor ? {backgroundColor: `${themeColor}`} : undefined;
   const titleStyle = fontColor ? {color: `${fontColor}`} : undefined;
 
   // useState useEffect hooks
-  const initialValues = inputFieldStrings.map(() => "");
+  const initialValues = prompts.map(() => "");
   const [inputValues, setInputValue] = useState(initialValues);
-  const [valueChange, setValueChange] = useState(false);
   useEffect(() => {
     const onMouseDown = (e: any) => {
       if (e.target.classList.contains("modal-cover")) {
@@ -38,10 +37,8 @@ export const ModalDialog: React.FC<IProps> = (props) => {
   }, []);
   const input1Ref = useRef<HTMLInputElement>(null);
   useEffect(() => {
-    if (!valueChange) {
-      input1Ref?.current?.focus();
-    }
-  });
+    setTimeout(() => input1Ref?.current?.focus());
+  }, []);
 
   // handlers
   const handleCancelClick = () => {
@@ -54,7 +51,6 @@ export const ModalDialog: React.FC<IProps> = (props) => {
     const newArr = [...inputValues];
     newArr[index] = e.target.value;
     setInputValue(newArr);
-    setValueChange(true);
   };
 
   return (
@@ -66,7 +62,7 @@ export const ModalDialog: React.FC<IProps> = (props) => {
           </div>
           <div className="content">
           {
-            inputFieldStrings.map((input, i) => {
+            prompts.map((input, i) => {
               return (
                 <div className="input-entry" key={`input-${i}`}>
                   <div className="label">{input}</div>

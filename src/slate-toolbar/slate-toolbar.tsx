@@ -20,6 +20,7 @@ import { IButtonSpec, IProps as IToolbarProps } from "../editor-toolbar/editor-t
 import { handleToggleListBlock, handleToggleMark, hasActiveMark, selectionContainsBlock,
           handleToggleSuperSubscript, handleToggleBlock }
         from "../slate-editor/slate-utils";
+import { Editor } from "slate-react";
 import { SelectionJSON } from "slate";
 import { EFormat, EMetaFormat } from "../common/slate-types";
 import { ModalDialog } from "./modal-dialog";
@@ -35,8 +36,8 @@ export interface IProps extends Omit<IToolbarProps, "buttons"> {
 
 export interface DisplayDialogSettings {
   title: string;
-  inputs: string[];
-  editorCommand: string;
+  prompts: string[];
+  onAccept?: (editor: Editor, inputs: string[]) => void;
 }
 
 export interface DisplayDialogFunction {
@@ -60,13 +61,9 @@ function sortButtons(buttons: IButtonSpec[], order: Array<EFormat | EMetaFormat>
 export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
   const { className, editor, order, ...others } = props;
   const [showDialog, setShowDialog] = useState(false);
-  const [dialogTitle, setDialogTitle] = useState("");
-  const [dialogInputs, setDialogInputs] = useState([""]);
-  const [dialogCommand, setDialogCommand] = useState("");
+  const [dialogSettings, setDialogSettings] = useState<DisplayDialogSettings>();
   const displayDialog = (settings: DisplayDialogSettings) => {
-    setDialogTitle(settings.title);
-    setDialogInputs(settings.inputs);
-    setDialogCommand(settings.editorCommand);
+    setDialogSettings(settings);
     setShowDialog(true);
   };
 
@@ -146,14 +143,14 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
       SvgIcon: IconImage,
       tooltip: getPlatformTooltip("image"),
       isActive: editor ? selectionContainsBlock(editor.value, EFormat.image) : false,
-      onClick: () => editor && editor.command("requestImage", displayDialog)
+      onClick: () => editor && editor.command("configureImage", displayDialog)
     },
     {
       format: EFormat.link,
       SvgIcon: IconLink,
       tooltip: getPlatformTooltip("link"),
       isActive: editor && editor.query("isLinkActive"),
-      onClick: () => editor && editor.command("toggleLink", displayDialog)
+      onClick: () => editor && editor.command("configureLink", displayDialog)
     },
     {
       format: EFormat.heading1,
@@ -242,27 +239,29 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
   order && sortButtons(buttons, order);
   const handleCloseDialog = (inputFieldValues: string[] | null) => {
     setShowDialog(false);
-    inputFieldValues && editor && editor.command(dialogCommand, inputFieldValues);
+    editor && inputFieldValues && dialogSettings?.onAccept?.(editor, inputFieldValues);
   };
 
-  const dialog = props.modalPortalRoot
-                  ? <ModalDialogPortal
-                      modalPortalRoot={props.modalPortalRoot}
-                      coverClassName={props.modalCoverClassName}
-                      dialogClassName={props.modalDialogClassName}
-                      themeColor={props.colors?.background}
-                      title={dialogTitle}
-                      inputFieldStrings={dialogInputs}
-                      onClose={handleCloseDialog}
-                    />
-                  : <ModalDialog
-                      coverClassName={props.modalCoverClassName}
-                      dialogClassName={props.modalDialogClassName}
-                      themeColor={props.colors?.background}
-                      title={dialogTitle}
-                      inputFieldStrings={dialogInputs}
-                      onClose={handleCloseDialog}
-                    />;
+  const dialog = showDialog && dialogSettings
+                  ? (props.modalPortalRoot
+                      ? <ModalDialogPortal
+                          modalPortalRoot={props.modalPortalRoot}
+                          coverClassName={props.modalCoverClassName}
+                          dialogClassName={props.modalDialogClassName}
+                          themeColor={props.colors?.background}
+                          title={dialogSettings.title}
+                          prompts={dialogSettings.prompts}
+                          onClose={handleCloseDialog}
+                        />
+                      : <ModalDialog
+                          coverClassName={props.modalCoverClassName}
+                          dialogClassName={props.modalDialogClassName}
+                          themeColor={props.colors?.background}
+                          title={dialogSettings.title}
+                          prompts={dialogSettings.prompts}
+                          onClose={handleCloseDialog}
+                        />)
+                  : null;
 
   return (
     <div>
@@ -273,7 +272,7 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
         editor={editor}
         {...others}
         />
-      { showDialog && dialog}
+      {dialog}
     </div>
   );
 };
