@@ -47,6 +47,10 @@ export const ModalDialog: React.FC<IProps> = (props) => {
   const handleOkClick = () => {
     props.onClose(inputValues);
   };
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if ((e.key === "Enter") || (e.keyCode === 13)) return handleOkClick();
+    if ((e.key === "Escape") || (e.keyCode === 27)) return handleCancelClick();
+  };
   const handleValueChange = (index: number) => (e: any) => {
     const newArr = [...inputValues];
     newArr[index] = e.target.value;
@@ -56,7 +60,7 @@ export const ModalDialog: React.FC<IProps> = (props) => {
   return (
       <div className={`modal-dialog ${props.dialogClassName || ""}`}>
         <div className={`modal-cover ${props.coverClassName || ""}`}/>
-        <div className="dialog">
+        <div className="dialog" onKeyDown={handleKeyDown}>
           <div className="header" style={themeStyle}>
             <div style={titleStyle}>{title}</div>
           </div>
