@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 0.0.7 - May 11, 2020
+
+- Built-in modal dialog replaces system alert usage
+- Client configuration of undo/redo
+- Selecting black clears selected color
+
 ## Version 0.0.6 - May 7, 2020
 
 - Toolbar tweaks
@@ -37,6 +43,3 @@ Serialization support plus
 ## Version 0.0.1
 
 Initial release
-
-
-
