@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState }  from "react";
 import { EditorToolbar, getPlatformTooltip } from "../editor-toolbar/editor-toolbar";
 import IconBold from "../assets/icon-bold";
 import IconCode from "../assets/icon-code";
@@ -20,12 +20,28 @@ import { IButtonSpec, IProps as IToolbarProps } from "../editor-toolbar/editor-t
 import { handleToggleListBlock, handleToggleMark, hasActiveMark, selectionContainsBlock,
           handleToggleSuperSubscript, handleToggleBlock }
         from "../slate-editor/slate-utils";
+import { Editor } from "slate-react";
 import { SelectionJSON } from "slate";
 import { EFormat, EMetaFormat } from "../common/slate-types";
+import { ModalDialog } from "./modal-dialog";
+import { ModalDialogPortal } from "./modal-dialog-portal";
 
 export interface IProps extends Omit<IToolbarProps, "buttons"> {
   order?: Array<EFormat | EMetaFormat>;
+  modalPortalRoot?: HTMLDivElement;
+  modalCoverClassName?: string;
+  modalDialogClassName?: string;
   changeCount: number;
+}
+
+export interface DisplayDialogSettings {
+  title: string;
+  prompts: string[];
+  onAccept?: (editor: Editor, inputs: string[]) => void;
+}
+
+export interface DisplayDialogFunction {
+  (settings: DisplayDialogSettings): void;
 }
 
 function sortButtons(buttons: IButtonSpec[], order: Array<EFormat | EMetaFormat>) {
@@ -44,6 +60,15 @@ function sortButtons(buttons: IButtonSpec[], order: Array<EFormat | EMetaFormat>
 
 export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
   const { className, editor, order, ...others } = props;
+  const [showDialog, setShowDialog] = useState(false);
+  const [dialogSettings, setDialogSettings] = useState<DisplayDialogSettings>();
+  const displayDialog = (settings: DisplayDialogSettings) => {
+    setDialogSettings(settings);
+    // prevents focus-bouncing between editor and dialog
+    editor?.blur();
+    setShowDialog(true);
+  };
+
   const buttons: IButtonSpec[] = [
     {
       format: EFormat.bold,
@@ -120,14 +145,14 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
       SvgIcon: IconImage,
       tooltip: getPlatformTooltip("image"),
       isActive: editor ? selectionContainsBlock(editor.value, EFormat.image) : false,
-      onClick: () => editor && editor.command("addImage")
-    }, 
+      onClick: () => editor && editor.command("configureImage", displayDialog)
+    },
     {
       format: EFormat.link,
       SvgIcon: IconLink,
       tooltip: getPlatformTooltip("link"),
       isActive: editor && editor.query("isLinkActive"),
-      onClick: () => editor && editor.command("toggleLink")
+      onClick: () => editor && editor.command("configureLink", displayDialog)
     },
     {
       format: EFormat.heading1,
@@ -214,14 +239,42 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
   ];
 
   order && sortButtons(buttons, order);
+  const handleCloseDialog = (inputs: string[] | null) => {
+    setShowDialog(false);
+    editor && inputs && dialogSettings?.onAccept?.(editor, inputs);
+  };
+
+  const dialog = showDialog && dialogSettings
+                  ? (props.modalPortalRoot
+                      ? <ModalDialogPortal
+                          modalPortalRoot={props.modalPortalRoot}
+                          coverClassName={props.modalCoverClassName}
+                          dialogClassName={props.modalDialogClassName}
+                          themeColor={props.colors?.background}
+                          title={dialogSettings.title}
+                          prompts={dialogSettings.prompts}
+                          onClose={handleCloseDialog}
+                        />
+                      : <ModalDialog
+                          coverClassName={props.modalCoverClassName}
+                          dialogClassName={props.modalDialogClassName}
+                          themeColor={props.colors?.background}
+                          title={dialogSettings.title}
+                          prompts={dialogSettings.prompts}
+                          onClose={handleCloseDialog}
+                        />)
+                  : null;
 
   return (
-    <EditorToolbar
-      className={`slate-toolbar ${props.className || ""}`}
-      iconSize={16}
-      buttons={buttons}
-      editor={editor}
-      {...others}
-      />
+    <div>
+      <EditorToolbar
+        className={`slate-toolbar ${props.className || ""}`}
+        iconSize={16}
+        buttons={buttons}
+        editor={editor}
+        {...others}
+        />
+      {dialog}
+    </div>
   );
 };
