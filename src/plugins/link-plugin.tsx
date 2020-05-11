@@ -67,7 +67,7 @@ export const linkPlugin: Plugin = {
       return <a {...attributes}>{text}</a>;
     }
     return (
-      <a {...attributes} href={href} onDoubleClick={() => window.open(href)}>
+      <a {...attributes} href={href} rel="noopener noreferrer" onDoubleClick={() => window.open(href)}>
         {children}
       </a>
     );
