@@ -9,9 +9,10 @@ import { renderSlateMark, renderSlateBlock } from "./slate-renderers";
 import { HotkeyMap, useHotkeyMap } from "../common/slate-hooks";
 import { EditorValue, EFormat, textToSlate } from "../common/slate-types";
 import { colorPlugin } from "../plugins/color-plugin";
+import { EditorHistory, IOptions as IEditorHistoryOptions, NoEditorHistory } from "../plugins/editor-history";
 import { fontSizePlugin, getFontSize } from "../plugins/font-size-plugin";
-import { linkPlugin } from "../plugins/link-plugin";
 import { imagePlugin } from "../plugins/image-plugin";
+import { linkPlugin } from "../plugins/link-plugin";
 
 import './slate-editor.scss';
 
@@ -25,6 +26,7 @@ export interface IProps {
   value?: EditorValue | string;
   hotkeyMap?: HotkeyMap;
   plugins?: Plugins<Editor>;
+  history?: boolean | IEditorHistoryOptions;
   onEditorRef?: (editorRef?: Editor) => void;
   onValueChange?: (value: EditorValue) => void;
   onContentChange?: (content: SlateExchangeValue) => void;
@@ -38,9 +40,7 @@ const kDefaultHotkeyMap = {
         'mod+b': (editor: Editor) => editor.toggleMark(EFormat.bold),
         'mod+i': (editor: Editor) => editor.toggleMark(EFormat.italic),
         'mod+u': (editor: Editor) => editor.toggleMark(EFormat.underlined),
-        'mod+\\': (editor: Editor) => editor.toggleMark(EFormat.code),
-        'mod+z': (editor: Editor) => editor.undo(),
-        'mod+shift+z': (editor: Editor) => editor.redo()
+        'mod+\\': (editor: Editor) => editor.toggleMark(EFormat.code)
       };
 
 export interface SlateExchangeValue {
@@ -68,11 +68,14 @@ function renderBlock(props: RenderBlockProps, editor: Editor, next: () => any) {
   return renderedBlock || next();
 }
 
-const slatePlugins = [colorPlugin, imagePlugin, linkPlugin, fontSizePlugin];
+const defaultPlugins = [colorPlugin, fontSizePlugin, imagePlugin, linkPlugin];
 
 const SlateEditor: React.FC<IProps> = (props: IProps) => {
-  const { onEditorRef, onValueChange, onContentChange, onFocus, onBlur, plugins } = props;
-  const allPlugins = useMemo(() => [...slatePlugins, ...(plugins || [])], [plugins]);
+  const { history, onEditorRef, onValueChange, onContentChange, onFocus, onBlur, plugins } = props;
+  const historyPlugin = useMemo(() => history || (history == null)  // enabled by default
+                                        ? EditorHistory(typeof history === "object" ? history : undefined)
+                                        : NoEditorHistory(), [history]);
+  const allPlugins = useMemo(() => [...(plugins || []), ...defaultPlugins, historyPlugin], [historyPlugin, plugins]);
   const editorRef = useRef<Editor>();
   const value = typeof props.value === "string"
                   ? textToSlate(props.value)

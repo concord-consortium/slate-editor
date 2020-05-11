@@ -6,7 +6,6 @@ export default {
   title: "SlateEditor"
 };
 
-const initialValue = textToSlate("This editor-only example has no toolbar but keyboard shortcuts should work.");
 const hotkeyMap = {
         'mod+b': editor => editor.toggleMark(EFormat.bold),
         'mod+i': editor => editor.toggleMark(EFormat.italic),
@@ -14,21 +13,47 @@ const hotkeyMap = {
         'mod+\\': editor => editor.toggleMark(EFormat.code),
       };
 
-function handleEditorRef() {
-  // console.log("handleEditorRef");
-}
+const baseValue = "This editor-only example has no toolbar but keyboard shortcuts should work, ";
+const initialValueWithHistory = textToSlate(baseValue + "including mod+[shift]+z for undo/redo.");
 
-export const SlateEditor1 = () => {
-  const [value, setValue] = useState(initialValue);
+export const WithHistory = () => {
+  const [value, setValue] = useState(initialValueWithHistory);
   return (
     <SlateEditor
       className="slate-editor"
       value={value}
       onValueChange={_value => setValue(_value)}
       hotkeyMap={hotkeyMap}
-      onEditorRef={handleEditorRef}
       />
   );
 };
 
-// export const Secondary = () => <SlateEditor theme="secondary" />;
+const initialValueWithCustomHistory = textToSlate(baseValue + "including mod+ctrl+u/r for undo/redo.");
+
+export const WithCustomHistory = () => {
+  const [value, setValue] = useState(initialValueWithCustomHistory);
+  return (
+    <SlateEditor
+      className="slate-editor"
+      value={value}
+      onValueChange={_value => setValue(_value)}
+      hotkeyMap={hotkeyMap}
+      history={{ undoHotkey: "mod+ctrl+u", redoHotkey: "mod+ctrl+r" }}
+      />
+  );
+};
+
+const initialValueWithoutHistory = textToSlate(baseValue + "except undo/redo is disabled.");
+
+export const WithoutHistory = () => {
+  const [value, setValue] = useState(initialValueWithoutHistory);
+  return (
+    <SlateEditor
+      className="slate-editor"
+      value={value}
+      onValueChange={_value => setValue(_value)}
+      hotkeyMap={hotkeyMap}
+      history={false}
+      />
+  );
+};

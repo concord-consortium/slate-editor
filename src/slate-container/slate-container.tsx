@@ -10,9 +10,7 @@ const hotkeyMap = {
         'mod+b': (editor: Editor) => editor.toggleMark(EFormat.bold),
         'mod+i': (editor: Editor) => editor.toggleMark(EFormat.italic),
         'mod+u': (editor: Editor) => editor.toggleMark(EFormat.underlined),
-        'mod+\\': (editor: Editor) => editor.toggleMark(EFormat.code),
-        'mod+z': (editor: Editor) => editor.undo(),
-        'mod+shift+z': (editor: Editor) => editor.redo()
+        'mod+\\': (editor: Editor) => editor.toggleMark(EFormat.code)
       };
 
 interface IProps extends IEditorProps {
