@@ -37,7 +37,7 @@ export const linkPlugin: Plugin = {
           prompts: [...textPrompt, "Enter the URL of the link:"],
           onAccept: (_editor, inputs) => _editor.command(linkCmd, inputs)
         });
-}
+      }
       return editor;
     },
     insertLink: function (editor: Editor, dialogValues: string[]) {
@@ -67,7 +67,7 @@ export const linkPlugin: Plugin = {
       return <a {...attributes}>{text}</a>;
     }
     return (
-      <a {...attributes} href={href}>
+      <a {...attributes} href={href} onDoubleClick={() => window.open(href)}>
         {children}
       </a>
     );
