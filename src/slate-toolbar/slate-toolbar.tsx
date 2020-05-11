@@ -239,9 +239,9 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
   ];
 
   order && sortButtons(buttons, order);
-  const handleCloseDialog = (inputFieldValues: string[] | null) => {
+  const handleCloseDialog = (inputs: string[] | null) => {
     setShowDialog(false);
-    editor && inputFieldValues && dialogSettings?.onAccept?.(editor, inputFieldValues);
+    editor && inputs && dialogSettings?.onAccept?.(editor, inputs);
   };
 
   const dialog = showDialog && dialogSettings
