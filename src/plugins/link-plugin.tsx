@@ -31,17 +31,18 @@ export const linkPlugin: Plugin = {
         editor.command(unwrapLink);
       } else {
         const textPrompt = value.selection.isExpanded ? [] : ["Enter the text for the link:"];
+        const linkCmd = value.selection.isExpanded ? "applyLink" : "insertLink";
         displayDialog({
           title: "Insert Link",
           prompts: [...textPrompt, "Enter the URL of the link:"],
-          onAccept: (_editor, inputs) => _editor.command("insertLink", inputs)
+          onAccept: (_editor, inputs) => _editor.command(linkCmd, inputs)
         });
 }
       return editor;
     },
     insertLink: function (editor: Editor, dialogValues: string[]) {
-      const href = dialogValues[0];
-      const text = dialogValues[1];
+      const text = dialogValues[0];
+      const href = dialogValues[1];
       editor
         .insertText(text)
         .moveFocusBackward(text.length)

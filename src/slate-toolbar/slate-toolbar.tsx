@@ -64,6 +64,8 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
   const [dialogSettings, setDialogSettings] = useState<DisplayDialogSettings>();
   const displayDialog = (settings: DisplayDialogSettings) => {
     setDialogSettings(settings);
+    // prevents focus-bouncing between editor and dialog
+    editor?.blur();
     setShowDialog(true);
   };
 
