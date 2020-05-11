@@ -157,9 +157,11 @@ export function deserializeDocument(document: SlateDocument): DocumentJSON {
 
 export function deserializeValue(value: SlateExchangeValue): Value {
   const documentJSON = value.document && deserializeDocument(value.document);
+  const dataJSON = value.data ? { data: value.data } : {};
   const valueJSON: ValueJSON = {
     object: "value",
-    document: documentJSON
+    document: documentJSON,
+    ...dataJSON
   };
   return Value.fromJSON(valueJSON);
 }
