@@ -49,12 +49,6 @@ function sortButtons(buttons: IButtonSpec[], order: Array<EFormat | EMetaFormat>
   order.forEach((format, index) => {
     formatOrder[format] = index + 1;  // skip 0
   });
-  buttons.forEach((button, index) => {
-    if (!formatOrder[button.format]) {
-      // unordered buttons come after ordered buttons in original order
-      formatOrder[button.format] = 101 + index;
-    }
-  });
   buttons.sort((button1, button2) => formatOrder[button1.format] - formatOrder[button2.format]);
 }
 
@@ -69,7 +63,7 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
     setShowDialog(true);
   };
 
-  const buttons: IButtonSpec[] = [
+  let buttons: IButtonSpec[] = [
     {
       format: EFormat.bold,
       SvgIcon: IconBold,
@@ -237,8 +231,10 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
       onClick: () => editor && editor.command("increaseFontSize")
     }
   ];
-
-  order && sortButtons(buttons, order);
+  if (order) {
+    buttons = buttons.filter(button => order.includes(button.format));
+    sortButtons(buttons, order);
+  }
   const handleCloseDialog = (inputs: string[] | null) => {
     setShowDialog(false);
     editor && inputs && dialogSettings?.onAccept?.(editor, inputs);

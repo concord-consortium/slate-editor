@@ -40,7 +40,7 @@ export const Ordered = () => (
   <SlateToolbar
     orientation="vertical"
     colors={{ background: "#177991", fill: "#ffffff" }}
-    buttonsPerRow={9}
+    buttonsPerRow={5}
     order={["fontDecrease", "bold", "italic", "underlined", "deleted", "code", "superscript", "subscript", "color",
             "fontIncrease"]}
     />
