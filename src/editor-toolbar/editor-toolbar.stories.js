@@ -77,5 +77,6 @@ export const Colored = () => (
     colors={{ background: "#177991", fill: "#ffffff" }}
     iconSize={16}
     buttons={buttons}
+    onDidInvokeTool={format => console.log("Tool invoked:", format)}
     />
 );
