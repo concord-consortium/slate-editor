@@ -7,7 +7,7 @@ const kFontSizeDelta = .1;
 const kInitialSize = 1;
 
 export function getFontSize(value: Value) {
-  const fontSize = value.data.get("fontSize");
+  const fontSize = value.data?.get("fontSize");
   return fontSize ? +fontSize : undefined;
 }
 
