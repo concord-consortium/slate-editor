@@ -1,5 +1,13 @@
 # Changelog
 
+## Version 0.0.8 - May 12, 2020
+
+- Open link on double-click
+- Fix serialization of font size
+- Use pointer cursor over links and toolbar buttons
+- Client can remove tools from toolbar
+- Add onDidInvokeTool callback
+
 ## Version 0.0.7 - May 11, 2020
 
 - Built-in modal dialog replaces system alert usage
