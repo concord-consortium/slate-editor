@@ -6,6 +6,7 @@ export type OnMouseFn = (e: React.MouseEvent<HTMLDivElement>) => void;
 export type OnClickFn = (format: string, e: React.MouseEvent<HTMLDivElement>) => void;
 export type OnChangeColorFn = (color: string) => void;
 export type OnChangeFn = OnChangeColorFn;
+export type OnDidInvokeToolFn = (format: string) => void;
 
 const kDefaultFillColor = "#909090";
 const kDefaultSelectedFillColor = "#009CDC";
@@ -25,6 +26,7 @@ export interface IBaseProps {
   onMouseDown?: OnMouseFn;
   onClick?: OnClickFn;
   onChange?: OnChangeFn;
+  onDidInvokeTool?: OnDidInvokeToolFn;
   onSaveSelection?: () => void;
   onRestoreSelection?: () => void;
 }
@@ -34,7 +36,7 @@ export interface IProps extends IBaseProps {
 }
 export const ToolbarButton: React.FC<IProps> = (props: IProps) => {
   const { format, SvgIcon, iconSize, buttonSize, tooltip, isActive, colors, selectedColors,
-          onChange, onClick, onMouseDown, onSaveSelection, onRestoreSelection } = props;
+          onChange, onClick, onMouseDown, onDidInvokeTool, onSaveSelection, onRestoreSelection } = props;
   const buttonStyle: CSSProperties = {
           width: buttonSize,
           height: buttonSize
@@ -60,6 +62,7 @@ export const ToolbarButton: React.FC<IProps> = (props: IProps) => {
     onRestoreSelection?.();
     if (onClick) {
       onClick(format, e);
+      onDidInvokeTool?.(props.format);
       e.preventDefault();
     }
   };

@@ -1,5 +1,5 @@
 import React, { useCallback, useRef } from "react";
-import { IBaseProps, IColors, ToolbarButton } from "./toolbar-button";
+import { IBaseProps, IColors, OnDidInvokeToolFn, ToolbarButton } from "./toolbar-button";
 import { Editor } from "slate-react";
 import { SelectionJSON } from "slate";
 
@@ -18,6 +18,7 @@ export interface IProps {
   buttons: IButtonSpec[];
   editor?: Editor;
   show?: boolean;
+  onDidInvokeTool?: OnDidInvokeToolFn;
 }
 
 const kDefaultProps: Partial<IProps> = {
@@ -39,7 +40,8 @@ export const EditorToolbar: React.FC<IProps> = (iProps: IProps) => {
   // console.log("SlateEditor.renderCount:", ++renderCount);
 
   const props = { ...kDefaultProps, ...iProps } as Required<IProps>;
-  const { orientation, colors, selectedColors, buttonsPerRow, iconSize, buttonSize, buttons, editor } = props;
+  const { orientation, colors, selectedColors, buttonsPerRow, iconSize, buttonSize, buttons,
+          onDidInvokeTool, editor } = props;
   const longAxisButtonCount = buttonsPerRow || buttons.length;
   const crossAxisButtonCount = buttonsPerRow ? Math.ceil(buttons.length / buttonsPerRow) : 1;
   const toolbarLongExtent = longAxisButtonCount * buttonSize;
@@ -75,7 +77,7 @@ export const EditorToolbar: React.FC<IProps> = (iProps: IProps) => {
             const _iconSize = button.iconSize || iconSize;
             return (
               <ToolbarButton key={`key-${format}`} format={format} iconSize={_iconSize} buttonSize={buttonSize}
-                colors={colors} selectedColors={selectedColors}
+                colors={colors} selectedColors={selectedColors} onDidInvokeTool={onDidInvokeTool}
                 onSaveSelection={handleSaveSelection} onRestoreSelection={handleRestoreSelection} {...others} />
             );
           })
