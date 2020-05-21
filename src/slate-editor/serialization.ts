@@ -100,6 +100,13 @@ export function serializeDocument(document: DocumentJSON): SlateDocument {
   return { ...keyProp(key), children, objTypes, ...data };
 }
 
+export function serializeSelection(value: Value) {
+  const { document, selection } = value;
+  const nodes = document.getDescendantsAtRange(selection).toArray();
+  const objTypes: ObjectTypeMap = {};
+  return nodes.map(node => serializeNode(node.toJSON(), objTypes));
+}
+
 export function serializeValueJSON(value: ValueJSON): SlateExchangeValue {
   const { data: _data, document } = value;
   const { undos, redos, ...others } = _data || {};
