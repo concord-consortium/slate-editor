@@ -50,12 +50,17 @@ export const Ordered = () => (
     />
 );
 
-const hintedOrder = order.slice().reverse().map(f => ({ format: f, tooltip: `hint: ${f}`}) );
+const hintedOrder = order
+                      // show subset of tools
+                      .filter((f, i) => (i + 1) % 4 !== 0)
+                      .reverse()
+                      // override tooltips
+                      .map(f => ({ format: f, tooltip: `hint: ${f}`}) );
 export const OrderedHinted = () => (
   <SlateToolbar
     orientation="vertical"
     colors={{ background: "#177991", fill: "#ffffff" }}
-    buttonsPerRow={9}
+    buttonsPerRow={7}
     order={hintedOrder}
     />
 );
