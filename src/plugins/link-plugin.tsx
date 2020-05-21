@@ -8,6 +8,15 @@ export const linkPlugin: Plugin = {
   queries: {
     isLinkActive: function(editor: Editor) {
       return hasActiveInline(editor.value, EFormat.link);
+    },
+    isLinkEnabled: function(editor: Editor) {
+              // must be in a single block
+      return (editor.value.blocks.size <= 1) &&
+              // must have no selected inlines (click will insert link)
+              ((editor.value.inlines.size === 0) ||
+              // or have exactly one inline link selected (click will de-link)
+              ((editor.value.inlines.size === 1) &&
+                editor.value.inlines.every(inline => inline?.type === EFormat.link)));
     }
   },
   commands: {

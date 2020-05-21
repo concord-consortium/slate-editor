@@ -138,14 +138,16 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
       format: EFormat.image,
       SvgIcon: IconImage,
       tooltip: getPlatformTooltip("image"),
-      isActive: editor ? selectionContainsBlock(editor.value, EFormat.image) : false,
+      isActive: editor ? editor.query("isImageActive") : false,
+      isEnabled: editor ? editor.query("isImageEnabled") : false,
       onClick: () => editor && editor.command("configureImage", displayDialog)
     },
     {
       format: EFormat.link,
       SvgIcon: IconLink,
       tooltip: getPlatformTooltip("link"),
-      isActive: editor && editor.query("isLinkActive"),
+      isActive: editor ? editor.query("isLinkActive") : false,
+      isEnabled: editor ? editor.query("isLinkEnabled") : false,
       onClick: () => editor && editor.command("configureLink", displayDialog)
     },
     {
