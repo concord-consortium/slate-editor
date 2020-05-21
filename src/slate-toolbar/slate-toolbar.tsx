@@ -1,4 +1,4 @@
-import React, { useState }  from "react";
+import React, { useMemo, useState }  from "react";
 import { EditorToolbar, getPlatformTooltip } from "../editor-toolbar/editor-toolbar";
 import IconBold from "../assets/icon-bold";
 import IconCode from "../assets/icon-code";
@@ -22,12 +22,23 @@ import { handleToggleListBlock, handleToggleMark, hasActiveMark, selectionContai
         from "../slate-editor/slate-utils";
 import { Editor } from "slate-react";
 import { SelectionJSON } from "slate";
-import { EFormat, EMetaFormat } from "../common/slate-types";
+import { EFormat, EMetaFormat, ToolFormat } from "../common/slate-types";
 import { ModalDialog } from "./modal-dialog";
 import { ModalDialogPortal } from "./modal-dialog-portal";
 
+export interface IToolOrder {
+  format: ToolFormat;
+  tooltip?: string;
+}
+
+interface IndexedToolOrder extends IToolOrder {
+  index: number;
+}
+
+export type OrderEntry = ToolFormat | IToolOrder;
+
 export interface IProps extends Omit<IToolbarProps, "buttons"> {
-  order?: Array<EFormat | EMetaFormat>;
+  order?: OrderEntry[];
   modalPortalRoot?: HTMLDivElement;
   modalCoverClassName?: string;
   modalDialogClassName?: string;
@@ -44,12 +55,10 @@ export interface DisplayDialogFunction {
   (settings: DisplayDialogSettings): void;
 }
 
-function sortButtons(buttons: IButtonSpec[], order: Array<EFormat | EMetaFormat>) {
-  const formatOrder: Record<string, number> = {};
-  order.forEach((format, index) => {
-    formatOrder[format] = index + 1;  // skip 0
-  });
-  buttons.sort((button1, button2) => formatOrder[button1.format] - formatOrder[button2.format]);
+function isToolEntryFormat(entry: OrderEntry, format: ToolFormat) {
+  return typeof entry === "string"
+          ? entry === format
+          : entry?.format === format;
 }
 
 export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
@@ -63,7 +72,7 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
     setShowDialog(true);
   };
 
-  let buttons: IButtonSpec[] = [
+  const buttons: IButtonSpec[] = [
     {
       format: EFormat.bold,
       SvgIcon: IconBold,
@@ -233,10 +242,32 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
       onClick: () => editor && editor.command("increaseFontSize")
     }
   ];
-  if (order) {
-    buttons = buttons.filter(button => order.includes(button.format));
-    sortButtons(buttons, order);
-  }
+
+  const _buttons = useMemo(() => {
+    if (!order) return buttons;
+    const orderMap: Record<string, IndexedToolOrder> = {};
+    order.forEach((entry, index) => {
+            // normalize entries and add index
+            const mapEntry = typeof entry === "string"
+                              ? { format: entry, index: index + 1 }
+                              : { ...entry, index: index + 1 };
+            orderMap[mapEntry.format] = mapEntry;
+          });
+    const b = buttons
+                // make a copy of the array
+                .slice()
+                // filter out the unspecified buttons
+                .filter(button => order.find(entry => isToolEntryFormat(entry, button.format)))
+                // use client-provided tooltip overrides
+                .map(button => {
+                  const hint = orderMap[button.format].tooltip;
+                  const tooltip = hint ? { tooltip: getPlatformTooltip(hint) } : {};
+                  return { ...button, ...tooltip };
+                });
+    b.sort((button1, button2) => orderMap[button1.format].index - orderMap[button2.format].index);
+    return b;
+  }, [buttons, order]);
+
   const handleCloseDialog = (inputs: string[] | null) => {
     setShowDialog(false);
     editor && inputs && dialogSettings?.onAccept?.(editor, inputs);
@@ -268,7 +299,7 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
       <EditorToolbar
         className={`slate-toolbar ${props.className || ""}`}
         iconSize={16}
-        buttons={buttons}
+        buttons={_buttons}
         editor={editor}
         {...others}
         />
