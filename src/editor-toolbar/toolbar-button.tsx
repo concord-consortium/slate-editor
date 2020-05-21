@@ -23,6 +23,7 @@ export interface IBaseProps {
   selectedColors?: IColors;
   tooltip: string;
   isActive: boolean;
+  isEnabled?: boolean;
   onMouseDown?: OnMouseFn;
   onClick?: OnClickFn;
   onChange?: OnChangeFn;
@@ -35,7 +36,7 @@ export interface IProps extends IBaseProps {
   buttonSize: number;
 }
 export const ToolbarButton: React.FC<IProps> = (props: IProps) => {
-  const { format, SvgIcon, iconSize, buttonSize, tooltip, isActive, colors, selectedColors,
+  const { format, SvgIcon, iconSize, buttonSize, tooltip, isActive, isEnabled, colors, selectedColors,
           onChange, onClick, onMouseDown, onDidInvokeTool, onSaveSelection, onRestoreSelection } = props;
   const buttonStyle: CSSProperties = {
           width: buttonSize,
@@ -58,7 +59,7 @@ export const ToolbarButton: React.FC<IProps> = (props: IProps) => {
     onSaveSelection?.();
     onMouseDown?.(e);
   };
-  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleEnabledClick = (e: React.MouseEvent<HTMLDivElement>) => {
     onRestoreSelection?.();
     if (onClick) {
       onClick(format, e);
@@ -66,6 +67,11 @@ export const ToolbarButton: React.FC<IProps> = (props: IProps) => {
       e.preventDefault();
     }
   };
+  const handleDisabledClick = () => {
+    onRestoreSelection?.();
+  };
+  // enabled by default
+  const handleClick = isEnabled === false ? handleDisabledClick : handleEnabledClick;
   const onChangeProps = onChange ? { onChange } : {};
   const iconProps = { width: iconSize, height: iconSize, fill, ...onChangeProps };
   return (

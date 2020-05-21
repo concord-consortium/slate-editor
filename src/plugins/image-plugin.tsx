@@ -1,9 +1,18 @@
 import React from "react";
 import { Editor, Plugin, RenderInlineProps } from "slate-react";
 import { EFormat } from "../common/slate-types";
+import { hasActiveInline } from "../slate-editor/slate-utils";
 import { DisplayDialogFunction } from "../slate-toolbar/slate-toolbar";
 
 export const imagePlugin: Plugin = {
+  queries: {
+    isImageActive: function(editor: Editor) {
+      return hasActiveInline(editor.value, EFormat.image);
+    },
+    isImageEnabled: function(editor: Editor) {
+      return (editor.value.blocks.size <= 1) && (editor.value.inlines.size === 0);
+    }
+  },
   commands: {
     configureImage: function (editor: Editor, displayDialog: DisplayDialogFunction) {
       displayDialog({
