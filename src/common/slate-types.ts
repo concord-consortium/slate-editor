@@ -34,6 +34,8 @@ export enum EMetaFormat {
   fontDecrease = "fontDecrease"
 }
 
+export type ToolFormat = EFormat | EMetaFormat;
+
 export type EditorValue = Value;
 export type EditorContent = Document;
 

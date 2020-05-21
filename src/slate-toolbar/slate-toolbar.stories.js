@@ -36,12 +36,26 @@ export const ThreeColumns = () => (
     />
 );
 
+const order = [
+        "fontDecrease", "bold", "italic", "underlined", "deleted", "code", "superscript", "subscript", "color",
+        "fontIncrease", "heading1", "heading2", "heading3", "block-quote", "bulleted-list", "ordered-list", "image", "link"
+      ];
+
 export const Ordered = () => (
   <SlateToolbar
     orientation="vertical"
     colors={{ background: "#177991", fill: "#ffffff" }}
-    buttonsPerRow={5}
-    order={["fontDecrease", "bold", "italic", "underlined", "deleted", "code", "superscript", "subscript", "color",
-            "fontIncrease"]}
+    buttonsPerRow={9}
+    order={order}
+    />
+);
+
+const hintedOrder = order.slice().reverse().map(f => ({ format: f, tooltip: `hint: ${f}`}) );
+export const OrderedHinted = () => (
+  <SlateToolbar
+    orientation="vertical"
+    colors={{ background: "#177991", fill: "#ffffff" }}
+    buttonsPerRow={9}
+    order={hintedOrder}
     />
 );
