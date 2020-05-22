@@ -1,18 +1,18 @@
 import React, { useCallback, useRef, useState, useMemo } from "react";
 import { Editor, OnChangeParam, Plugins, RenderBlockProps, RenderMarkProps } from "slate-react";
-import { Value } from "slate";
+import { Plugin, Value } from "slate";
 import find from "lodash/find";
 import isEqual from "lodash/isEqual";
 import size from "lodash/size";
-import { SlateDocument, serializeValue } from "./serialization";
+import { SlateDocument, serializeValue } from "../serialization/serialization";
 import { renderSlateMark, renderSlateBlock } from "./slate-renderers";
 import { HotkeyMap, useHotkeyMap } from "../common/slate-hooks";
 import { EditorValue, EFormat, textToSlate } from "../common/slate-types";
-import { colorPlugin } from "../plugins/color-plugin";
+import { ColorPlugin } from "../plugins/color-plugin";
 import { EditorHistory, IOptions as IEditorHistoryOptions, NoEditorHistory } from "../plugins/editor-history";
-import { fontSizePlugin, getFontSize } from "../plugins/font-size-plugin";
-import { imagePlugin } from "../plugins/image-plugin";
-import { linkPlugin } from "../plugins/link-plugin";
+import { FontSizePlugin, getFontSize } from "../plugins/font-size-plugin";
+import { ImagePlugin } from "../plugins/image-plugin";
+import { LinkPlugin } from "../plugins/link-plugin";
 
 import './slate-editor.scss';
 
@@ -64,11 +64,11 @@ function renderMark(props: RenderMarkProps, editor: Editor, next: () => any) {
 }
 
 function renderBlock(props: RenderBlockProps, editor: Editor, next: () => any) {
-  const renderedBlock = renderSlateBlock(props.node.type, props.attributes, props.children);
+  const renderedBlock = renderSlateBlock(props.node, props.attributes, props.children);
   return renderedBlock || next();
 }
 
-const defaultPlugins = [colorPlugin, fontSizePlugin, imagePlugin, linkPlugin];
+const defaultPlugins: Plugin<Editor>[] = [ColorPlugin(), FontSizePlugin(), ImagePlugin(), LinkPlugin()];
 
 const SlateEditor: React.FC<IProps> = (props: IProps) => {
   const { history, onEditorRef, onValueChange, onContentChange, onFocus, onBlur, plugins } = props;

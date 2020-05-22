@@ -13,12 +13,14 @@ export enum EFormat {
   color = "color",
 
   // blocks
+  paragraph = "paragraph",
   heading1 = "heading1",
   heading2 = "heading2",
   heading3 = "heading3",
   heading4 = "heading4",
   heading5 = "heading5",
   heading6 = "heading6",
+  horizontalRule = "horizontal-rule",
   blockQuote = "block-quote",
   listItem = "list-item",
   numberedList = "ordered-list",
@@ -46,8 +48,9 @@ export function isMarkFormat(format: EFormat) {
 }
 
 export function isBlockFormat(format: EFormat) {
-  return [EFormat.heading1, EFormat.heading2, EFormat.heading3, EFormat.heading4, EFormat.heading5,
-          EFormat.heading6, EFormat.blockQuote, EFormat.listItem, EFormat.numberedList, EFormat.bulletedList]
+  return [EFormat.paragraph, EFormat.heading1, EFormat.heading2, EFormat.heading3, EFormat.heading4,
+          EFormat.heading5, EFormat.heading6, EFormat.horizontalRule, EFormat.blockQuote, EFormat.listItem,
+          EFormat.numberedList, EFormat.bulletedList]
           .includes(format);
 }
 

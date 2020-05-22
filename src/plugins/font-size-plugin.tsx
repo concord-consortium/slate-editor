@@ -15,24 +15,26 @@ function setFontSize(editor: Editor, fontSize: number) {
   fontSize && editor.setData(editor.value.data.set("fontSize", "" + Math.round(10 * fontSize) / 10));
 }
 
-export const fontSizePlugin: Plugin = {
-  queries: {
-    getFontSize: function(editor: Editor) {
-      return getFontSize(editor.value);
-    }
-  },
-  commands: {
-    increaseFontSize: function (editor: Editor) {
-      const currentFontSize = getFontSize(editor.value) || kInitialSize;
-      const newFontSize = Math.min(currentFontSize + kFontSizeDelta, kFontSizeMaximum);
-      setFontSize(editor, newFontSize);
-      return editor;
+export function FontSizePlugin(): Plugin {
+  return {
+    queries: {
+      getFontSize: function(editor: Editor) {
+        return getFontSize(editor.value);
+      }
     },
-    decreaseFontSize: function (editor: Editor) {
-      const currentFontSize = getFontSize(editor.value) || kInitialSize;
-      const newFontSize = Math.max(currentFontSize - kFontSizeDelta, kFontSizeMinimum);
-      setFontSize(editor, newFontSize);
-      return editor;
+    commands: {
+      increaseFontSize: function (editor: Editor) {
+        const currentFontSize = getFontSize(editor.value) || kInitialSize;
+        const newFontSize = Math.min(currentFontSize + kFontSizeDelta, kFontSizeMaximum);
+        setFontSize(editor, newFontSize);
+        return editor;
+      },
+      decreaseFontSize: function (editor: Editor) {
+        const currentFontSize = getFontSize(editor.value) || kInitialSize;
+        const newFontSize = Math.max(currentFontSize - kFontSizeDelta, kFontSizeMinimum);
+        setFontSize(editor, newFontSize);
+        return editor;
+      }
     }
-  },
-};
+  };
+}

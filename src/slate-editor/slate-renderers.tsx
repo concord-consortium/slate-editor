@@ -1,8 +1,9 @@
 import React, { ReactNode } from "react";
 import findLast from "lodash/findLast";
-import { RenderMarkProps } from "slate-react";
-import { Mark } from "slate";
+import { Block, Mark } from "slate";
+import { RenderAttributes, RenderMarkProps } from "slate-react";
 import { EFormat } from "../common/slate-types";
+import { renderColorMark } from "../plugins/color-plugin";
 
 // These renderers are used by the Slate editor to translate a mark or block
 // into its HTML representation.
@@ -12,8 +13,8 @@ const markLayers: Record<string, number> = {
   "color": 1
 };
 
-function renderOneSlateMark(props: RenderMarkProps) {
-  const { mark: { type, data }, attributes, children } = props;
+export function renderOneSlateMark(mark: Mark, attributes: RenderAttributes, children: ReactNode) {
+  const { type } = mark;
   switch (type) {
     case "bold":
       return (<strong {...attributes}>{children}</strong>);
@@ -32,10 +33,8 @@ function renderOneSlateMark(props: RenderMarkProps) {
     case "subscript":
       return (<sub {...attributes}>{children}</sub>);
     case "color": {
-      const color = data.get("color");
-      // color shouldn't change when text is selected
-      const styleColors = { color, "--selected-color": color };
-      return (<span className="text-color" style={styleColors} {...attributes}>{children}</span>);
+      // we can't move this into the plugin due to the ordering issues described below
+      return renderColorMark(mark, attributes, children);
     }
     default:
       return (<span {...attributes}>{children}</span>);
@@ -50,7 +49,7 @@ function renderOneSlateMark(props: RenderMarkProps) {
 // rendering the mark that should be rendered at the appropriate mark render index
 // rather than rendering the mark that slate actually asked us to render.
 export function renderSlateMark(props: RenderMarkProps) {
-  const { mark, marks: originalMarks, ...others } = props;
+  const { mark, marks: originalMarks } = props;
   const marks: Mark[] = originalMarks.toArray();
   const requestedIndex = marks.findIndex(_mark => _mark.type === mark.type);
   const textColorMark = findLast(marks, _mark => _mark.type === EFormat.color);
@@ -58,12 +57,12 @@ export function renderSlateMark(props: RenderMarkProps) {
   orderedMarks.sort((a: Mark, b: Mark) => (markLayers[a.type] || 0) - (markLayers[b.type] || 0));
   textColorMark && orderedMarks.push(textColorMark);
   if (requestedIndex < orderedMarks.length) {
-    return renderOneSlateMark({ mark: orderedMarks[requestedIndex], marks: originalMarks, ...others});
+    return renderOneSlateMark(orderedMarks[requestedIndex], props.attributes, props.children);
   }
 }
 
-export function renderSlateBlock(blockName: string, attributes: unknown, children: ReactNode) {
-  switch (blockName) {
+export function renderSlateBlock(block: Block, attributes: RenderAttributes, children: ReactNode) {
+  switch (block.type) {
     case "heading1":
       return (<h1 {...attributes}>{children}</h1>);
     case "heading2":
@@ -86,7 +85,7 @@ export function renderSlateBlock(blockName: string, attributes: unknown, childre
     case "list-item":
       return (<li {...attributes}>{children}</li>);
     case "horizontal-rule":
-      return (<hr />);
+      return (<hr {...attributes}/>);
 
     // Note: Tables, as implemented in the current de-serializer, do not
     // nest a <tbody> element within the <table>. A new rule could easily
