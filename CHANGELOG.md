@@ -1,5 +1,12 @@
 # Changelog
 
+## Version 0.0.9 - May 27, 2020
+
+- Support client-specified tooltips for toolbar buttons
+- Don't allow inlines to wrap other inlines
+- Add `serializeSelection()` with storybook example
+- Fix lint scripts on Windows
+
 ## Version 0.0.8 - May 12, 2020
 
 - Open link on double-click
