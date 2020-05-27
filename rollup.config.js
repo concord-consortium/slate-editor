@@ -33,14 +33,7 @@ export default {
     typescript(),
     commonjs({
       include: ["node_modules/**"],
-      exclude: ["**/*.stories.js"],
-      // cf. https://github.com/rollup/rollup-plugin-commonjs/issues/290#issuecomment-537683484
-      namedExports: {
-        "esrever": Object.keys(esrever),
-        "immutable": Object.keys(immutable),
-        "react": Object.keys(React),
-        "react-dom": Object.keys(ReactDOM)
-      }
+      exclude: ["**/*.stories.js"]
     }),
     sass({
       output: "build/index.css"
