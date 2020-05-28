@@ -37,7 +37,7 @@ const simpleBlocksRule: Rule = {
   },
   serialize: function(obj, children) {
     const { object, type } = obj;
-    if ((object === "block") && isBlockFormat(type)) {
+    if ((object === "block") && ((type === "") || isBlockFormat(type))) {
       const block: Block = obj;
       return renderSlateBlock(block, getRenderAttributesFromNode(block), children);
     }
