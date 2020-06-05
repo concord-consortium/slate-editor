@@ -4,7 +4,7 @@ import keys from "lodash/keys";
 import map from "lodash/map";
 import size from "lodash/size";
 import values from "lodash/values";
-import { SlateExchangeValue } from "./slate-editor";
+import { SlateExchangeValue } from "../slate-editor/slate-editor";
 
 // xxxJSON types correspond to [Classic] Slate 0.47 types
 type ElementJSON = BlockJSON | InlineJSON;
