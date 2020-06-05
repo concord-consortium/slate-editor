@@ -64,7 +64,6 @@ export function serializeTextNode(node: TextJSON): SlateText {
 }
 
 export function serializeChildren(nodes: NodeJSON[], objTypes: ObjectTypeMap): SlateNode[] {
-  // eslint-disable-next-line @typescript-eslint/no-use-before-define
   return nodes.map(node => serializeNode(node, objTypes));
 }
 
@@ -134,7 +133,6 @@ export function deserializeTextNode(node: SlateText): TextJSON {
 }
 
 export function deserializeChildren(children: SlateNode[], objTypes: ObjectTypeMap): ChildJSON[] {
-  // eslint-disable-next-line @typescript-eslint/no-use-before-define
   return children.map(child => deserializeNode(child, objTypes));
 }
 

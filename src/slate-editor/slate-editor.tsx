@@ -1,18 +1,22 @@
 import React, { useCallback, useRef, useState, useMemo } from "react";
-import { Editor, OnChangeParam, Plugins, RenderBlockProps, RenderMarkProps } from "slate-react";
+import { Editor, OnChangeParam, Plugins } from "slate-react";
 import { Plugin, Value } from "slate";
 import find from "lodash/find";
 import isEqual from "lodash/isEqual";
 import size from "lodash/size";
 import { SlateDocument, serializeValue } from "../serialization/serialization";
-import { renderSlateMark, renderSlateBlock } from "./slate-renderers";
 import { HotkeyMap, useHotkeyMap } from "../common/slate-hooks";
 import { EditorValue, EFormat, textToSlate } from "../common/slate-types";
 import { ColorPlugin } from "../plugins/color-plugin";
+import { CoreBlocksPlugin } from "../plugins/core-blocks-plugin";
+import { CoreInlinesPlugin } from "../plugins/core-inlines-plugin";
+import { CoreMarksPlugin } from "../plugins/core-marks-plugin";
 import { EditorHistory, IOptions as IEditorHistoryOptions, NoEditorHistory } from "../plugins/editor-history";
 import { FontSizePlugin, getFontSize } from "../plugins/font-size-plugin";
 import { ImagePlugin } from "../plugins/image-plugin";
 import { LinkPlugin } from "../plugins/link-plugin";
+import { ListPlugin } from "../plugins/list-plugin";
+import { TablePlugin } from "../plugins/table-plugin";
 
 import './slate-editor.scss';
 
@@ -58,17 +62,12 @@ function isValueDataChange(value1: Value, value2: Value) {
   return !isEqual(extractUserDataJSON(value1), extractUserDataJSON(value2));
 }
 
-function renderMark(props: RenderMarkProps, editor: Editor, next: () => any) {
-  const renderedMark = renderSlateMark(props);
-  return renderedMark || next();
-}
-
-function renderBlock(props: RenderBlockProps, editor: Editor, next: () => any) {
-  const renderedBlock = renderSlateBlock(props.node, props.attributes, props.children);
-  return renderedBlock || next();
-}
-
-const defaultPlugins: Plugin<Editor>[] = [ColorPlugin(), FontSizePlugin(), ImagePlugin(), LinkPlugin()];
+const defaultPlugins: Plugin<Editor>[] = [
+        CoreMarksPlugin(), ColorPlugin(),                   // marks
+        ImagePlugin(), LinkPlugin(), CoreInlinesPlugin(),   // inlines
+        ListPlugin(), TablePlugin(), CoreBlocksPlugin(),    // blocks
+        FontSizePlugin()
+      ];
 
 const SlateEditor: React.FC<IProps> = (props: IProps) => {
   const { history, onEditorRef, onValueChange, onContentChange, onFocus, onBlur, plugins } = props;
@@ -132,8 +131,6 @@ const SlateEditor: React.FC<IProps> = (props: IProps) => {
       ref={handleEditorRef}
       value={value}
       plugins={allPlugins}
-      renderMark={renderMark}
-      renderBlock={renderBlock}
       onKeyDown={handleKeyDown}
       onChange={handleChange}
       onFocus={handleFocus}

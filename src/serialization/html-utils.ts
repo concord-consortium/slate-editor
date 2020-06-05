@@ -1,36 +1,90 @@
 import { RenderAttributes } from "slate-react";
 import { Block, Inline, Mark } from "slate";
-import camelcaseKeys from "camelcase-keys";
 import classNames from "classnames/dedupe";
 import parseStyle from "style-to-object";
 
-export function getDataFromElement(el: Element, attrs?: string[]) {
-  let hasAttr = false;
-  const data: Record<string, string> = {};
-  ['class', 'style', ...(attrs || [])]
-    .forEach(attr => {
-      const value = el.getAttribute(attr);
-      if (value) {
-        data[attr] = value;
-        hasAttr = true;
-      }
-    });
-  return hasAttr ? { data } : undefined;
+export function toReactAttributeKey(key: string) {
+  return key.toLowerCase()
+            .replace("class", "className")
+            .replace("colspan", "colSpan")
+            .replace("rowspan", "rowSpan");
 }
 
-export function getRenderAttributesFromNode(obj: Block | Inline | Mark): RenderAttributes {
+export function toReactStyleKey(key: string) {
+  // https://github.com/facebook/react/blob/5f6b75dd265cd831d2c4e407c4580b9cd7d996f5/packages/react-dom/src/shared/DOMProperty.js#L447-L448
+  const CAMELIZE = /[-:]([a-z])/g;
+  return key.replace(CAMELIZE, token => token[1].toUpperCase());
+}
+
+export function toReactStyle(styleStr?: string): React.CSSProperties | undefined {
+  const style: Record<string, string> = {};
+  let count = 0;
+  styleStr && parseStyle(styleStr, (name, value) => {
+                // convert to react key format (ignoring custom css properties)
+                const key = /^--.*/.test(name) ? name : toReactStyleKey(name);
+                style[key] = value;
+                ++count;
+              });
+  return count ? style as React.CSSProperties : undefined;
+}
+
+export function getDataFromElement(el: Element, _data?: Record<string, string>) {
+  if (!el.hasAttributes()) return { data: _data };
+  const data: Record<string, string> = _data || {};
+  for (let i = 0; i < el.attributes.length; ++i) {
+    const key = el.attributes[i].name.toLowerCase();
+    data[key] = el.attributes[i].value;
+  }
+  return { data };
+}
+
+export function getRenderAttributesFromNode(obj: Block | Inline | Mark, omitProps?: string[]): RenderAttributes {
   const { data } = obj;
-  const className: string | undefined = data.get('class');
-  const _className = className ? { className } : undefined;
-  const styleStr: string | undefined = data.get('style');
-  const parsedStyle = styleStr && parseStyle(styleStr);
-  const style = parsedStyle && camelcaseKeys(parsedStyle, { exclude: [/^-.*/] });
-  const _style = style ? { style } : undefined;
-  return { ..._className, ..._style };
+  const renderAttrs: Record<string, string | React.CSSProperties> = {};
+  data.forEach((value, key: string) => {
+    const _key = toReactAttributeKey(key);
+    if (!omitProps || !omitProps?.find(prop => prop === _key)) {
+      renderAttrs[_key] = _key === "style"
+                            ? toReactStyle(value)
+                            : value;
+    }
+  });
+  return renderAttrs;
 }
 
 export function mergeClassStrings(classes1?: string, classes2?: string) {
   const c1 = classes1?.split(" ").filter(c => !!c);
   const c2 = classes2?.split(" ").filter(c => !!c);
   return classNames(c1, c2) || undefined;
+}
+
+export function normalizeStyleString(style: string) {
+  return style.replace(/: /g, ":")
+              .replace(/; /g, ";")
+              .replace(/;$/, "");
+}
+
+export function normalizeHtml(html: string) {
+  // find style attributes in html
+  const styleRegex = /style="(.*?)"/g;
+  const styleMatches: Array<RegExpExecArray> = [];
+  let execResult: RegExpExecArray | any;
+  while ((execResult = styleRegex.exec(html)) != null) {
+    styleMatches.push(execResult);
+  }
+  // normalize style attributes
+  let normalized = html;
+  styleMatches.forEach(match => {
+    const normalizedStyle = normalizeStyleString(match[1]);
+    normalized = normalized.replace(match[0], `style="${normalizedStyle}"`);
+  });
+  // decode escaped HTML entities
+  // normalized = entities.decode(normalized);
+  // normalize remaining html tags
+  return normalized
+          // some activities use &rsquo; for an apostrophe, but there's no reason to escape it
+          .replace(/&rsquo;/, "’")
+          .replace(/ \/>/g, "/>")
+          // we don't serialize rel attributes of anchor tags
+          .replace(/ rel=".*?"/g, "");
 }
