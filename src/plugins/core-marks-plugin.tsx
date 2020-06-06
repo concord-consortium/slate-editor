@@ -38,11 +38,14 @@ kTagToFormatMap["s"] = EFormat.deleted;
 kTagToFormatMap["strike"] = EFormat.deleted;
 
 function getTagForMark(mark: Mark) {
-  const { type, data } = mark;
-  const formatValue = data.get(type);
-  return typeof formatValue === "string"
-          ? formatValue
-          : kFormatToTagMap[type];
+  // auto-convert mark tags for consistency with TinyMCE editor
+  return kFormatToTagMap[mark.type];
+
+  // const { type, data } = mark;
+  // const formatValue = data.get(type);
+  // return typeof formatValue === "string"
+  //         ? formatValue
+  //         : kFormatToTagMap[type];
 }
 
 function getHandledMarkAtIndex(props: RenderMarkProps, index: number): Mark | undefined {

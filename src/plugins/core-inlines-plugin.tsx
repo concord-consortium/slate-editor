@@ -1,4 +1,5 @@
 import React, { ReactNode } from "react";
+import _size from "lodash/size";
 import { Inline, Node } from "slate";
 import { Editor, RenderAttributes, RenderInlineProps } from "slate-react";
 import { getRenderAttributesFromNode, getDataFromElement } from "../serialization/html-utils";
@@ -24,16 +25,17 @@ export const kLegacyEmptyInlineTags = [
 ];
 // void in the Slate sense of not having editable contents
 const kLegacyVoidNonEmptyInlineTags = [
-  "audio", "iframe", "picture", "script", "style", "video"
+  "audio", "iframe", "picture", "video"
 ];
 export const kLegacyContentInlineTags = [
-  "abbr", "acronym", "big", "cite", "dfn", "font", "label", "q", "samp", "small"
+  "abbr", "acronym", "big", "cite", "dfn", "label", "q", "samp", "small", /* "textarea" */
 ];
+export const kLegacyConvertedInlineTags = ["font"];
 export const kLegacyNonEmptyInlineTags = [...kLegacyContentInlineTags, ...kLegacyVoidNonEmptyInlineTags];
 export const kLegacyVoidInlineTags = [...kLegacyEmptyInlineTags, ...kLegacyVoidNonEmptyInlineTags];
-export const kLegacyInlineTags = [...kLegacyContentInlineTags, ...kLegacyVoidInlineTags];
+export const kLegacyInlineTags = [...kLegacyConvertedInlineTags, ...kLegacyContentInlineTags, ...kLegacyVoidInlineTags];
 
-// other block tags handled as generic blocks
+// other inline tags handled as generic inlines
 kLegacyInlineTags.forEach(tag => kTagToFormatMap[tag] = EFormat.inline);
 
 function isCoreInline(node: Node) {
@@ -44,6 +46,16 @@ export function getTagForInline(node: Node): string | undefined {
   if (!Inline.isInline(node) || !isCoreInline(node)) return undefined;
   const { type: format, data } = node;
   return data.get("tag") || kFormatToTagMap[format];
+}
+
+export function getRenderTagForInline(node: Node): string | undefined {
+  if (!Inline.isInline(node) || !isCoreInline(node)) return undefined;
+  const { type: format, data } = node;
+  const tag = data.get("tag");
+  // <font> tags are converted to styled <span> tags
+  return tag && (tag !== "font")
+          ? tag
+          : kFormatToTagMap[format];
 }
 
 function isVoidInline(node: Node) {
@@ -61,7 +73,36 @@ function getDataFromInlineElement(el: Element) {
   return getDataFromElement(el, { tag });
 }
 
+function getRenderAttributesFromFontInline(inline: Inline): RenderAttributes {
+  const { data } = inline;
+  const fontStyle: React.CSSProperties = {};
+  const color = data.get("color");
+  if (color) fontStyle.color = color;
+  const face = data.get("face");
+  if (face) fontStyle.fontFamily = face;
+  const size: string | undefined = data.get("size");
+  if (size) {
+    let index = 0;
+    if (/^\d$/.test(size))        index = +size;
+    else if (/^-\d$/.test(size))  index = 3 - +size[1];
+    else if (/^\+\d$/.test(size))  index = 3 + +size[1];
+    if (index) {
+      index = Math.max(1, Math.min(7, index)) - 1;
+      fontStyle.fontSize = ["xx-small", "small", "medium", "large", "x-large", "xx-large", "xxx-large"][index];
+    }
+  }
+  const atteributes = getRenderAttributesFromNode(inline, ["tag", "color", "face", "size"]);
+  const style = { ...fontStyle, ...(atteributes?.style || {})};
+  if (_size(style)) {
+    atteributes.style = style;
+  }
+  return atteributes;
+}
+
 function getRenderAttributesFromInline(inline: Inline): RenderAttributes {
+  if (getTagForInline(inline) === "font") {
+    return getRenderAttributesFromFontInline(inline);
+  }
   return getRenderAttributesFromNode(inline, ["tag"]);
 }
 
@@ -86,7 +127,7 @@ export function CoreInlinesPlugin(): HtmlSerializablePlugin {
       }
     },
     serialize: function(obj, children) {
-      const tag = getTagForInline(obj);
+      const tag = getRenderTagForInline(obj);
       if (tag) {
         const inline: Inline = obj;
         const attributes = getRenderAttributesFromInline(inline);
@@ -106,7 +147,7 @@ export function CoreInlinesPlugin(): HtmlSerializablePlugin {
   
     renderInline: (props: RenderInlineProps, editor: Editor, next: () => any) => {
       const { attributes, children, node } = props;
-      const tag = getTagForInline(node);
+      const tag = getRenderTagForInline(node);
       return tag
               ? renderInlineAsTag(tag, node, { ...getRenderAttributesFromInline(node), ...attributes }, children)
               : next();

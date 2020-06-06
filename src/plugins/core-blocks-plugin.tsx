@@ -40,7 +40,7 @@ export const kLegacyBlockTags = [
   "address", "article", "aside",
   "dd", "dl", "dt", // description list tags
   "details", "fieldset", "figcaption", "figure",
-  "footer", "header", "hgroup", "main", "nav", "section"
+  "footer", "form", "header", "hgroup", "nav", "section"
 ];
 kLegacyBlockTags.forEach(tag => kTagToFormatMap[tag] = EFormat.block);
 

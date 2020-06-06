@@ -29,10 +29,17 @@ export function isInlineOfType(node: Node | undefined, format: EFormat) {
   return Inline.isInline(node) && (node.type === format);
 }
 
+// returns whether there is a selected block of the specified type.
+// value.blocks represents the closest selected block(s), i.e. it may
+// indicate that a list item is selected without indicating its list.
 export function hasBlock(value: Value, format: EFormat) {
   return value.blocks.some(node => isBlockOfType(node, format));
 }
 
+// returns whether the selection touches any block of the specified type.
+// this is a more expansive notion of selection than value.blocks, which
+// includes any top-level blocks touched as well, e.g. if the caret is in
+// a list item the top-level block will be returned as well.
 export function selectionContainsBlock(value: Value, format: EFormat) {
   const { document, selection } = value;
   const nodes = document.getDescendantsAtRange(selection);

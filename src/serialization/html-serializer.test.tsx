@@ -65,16 +65,33 @@ describe("htmlToSlate(), slateToHtml()", () => {
   });
 
   it("can [de]serialize alternate/deprecated mark formats", () => {
-    [
-      `<p><b><i><s>b: bold, i: italic, s: strikethrough</s></i></b></p>`,
-      `<p><strike>strike: strikethrough</strike></p>`
-    ].forEach(html => expect(slateToHtml(htmlToSlate(html))).toBe(html));
+    [ // auto-convert alternate mark tags to current mark tags
+      { in: `<p><b>bold</b></p>`, out: `<p><strong>bold</strong></p>` },
+      { in: `<p><i>italic</i></p>`, out: `<p><em>italic</em></p>` },
+      { in: `<p><s>strikethrough</s></p>`, out: `<p><del>strikethrough</del></p>` },
+      { in: `<p><strike>strikethrough</strike></p>`, out: `<p><del>strikethrough</del></p>` }
+    ].forEach(t => expect(slateToHtml(htmlToSlate(t.in))).toBe(t.out));
   });
 
   it("can [de]serialize alternate/deprecated block formats", () => {
     kLegacyBlockTags
       .map(tag => `<${tag} ${tag}-attr="${tag}-value">${tag}</${tag}>`)
       .forEach(html => expect(slateToHtml(htmlToSlate(html))).toBe(html));
+  });
+
+  it("strips dangerous tags", () => {
+    const input = `<script script-attr="value">console.log()</script>` +
+                  `<style style-attr="value">.foo { width: 100% }</style>` +
+                  `<p>paragraph</p>`;
+    const expected = `<p>paragraph</p>`;
+    expect(slateToHtml(htmlToSlate(input))).toBe(expected);
+  });
+
+  it("ignores unsupported tags", () => {
+    ["html", "link", "meta", "body", "main"]
+      .map(tag => ({ in: `<${tag} ${tag}-attr="${tag}-value">${tag}</${tag}>`,
+                    out: `<p>${tag}</p>` }))
+      .forEach(t => expect(slateToHtml(htmlToSlate(t.in))).toBe(t.out));
   });
 
   it("can [de]serialize alternate/deprecated inline formats", () => {
@@ -84,6 +101,31 @@ describe("htmlToSlate(), slateToHtml()", () => {
     kLegacyEmptyInlineTags
       .map(tag => `<p><${tag} ${tag}-attr="${tag}-value"/></p>`)
       .forEach(html => expect(slateToHtml(htmlToSlate(html))).toBe(html));
+  });
+
+  it("converts <font> tags to styled <span> tags", () => {
+    [
+      { in: `<p><font color="#aabbcc">font color</font></p>`,
+        out: `<p><span style="color:#aabbcc">font color</span></p>` },
+      { in: `<p><font face="helvetica">font face</font></p>`,
+        out: `<p><span style="font-family:helvetica">font face</span></p>` },
+      { in: `<p><font size="1">font size</font></p>`,
+        out: `<p><span style="font-size:xx-small">font size</span></p>` },
+      { in: `<p><font size="3">font size</font></p>`,
+        out: `<p><span style="font-size:medium">font size</span></p>` },
+      { in: `<p><font size="7">font size</font></p>`,
+        out: `<p><span style="font-size:xxx-large">font size</span></p>` },
+      { in: `<p><font size="8">font size</font></p>`,
+        out: `<p><span style="font-size:xxx-large">font size</span></p>` },
+      { in: `<p><font size="-1">font size</font></p>`,
+        out: `<p><span style="font-size:small">font size</span></p>` },
+      { in: `<p><font size="+1">font size</font></p>`,
+        out: `<p><span style="font-size:large">font size</span></p>` },
+      { in: `<p><font size="+2">font size</font></p>`,
+        out: `<p><span style="font-size:x-large">font size</span></p>` },
+      { in: `<p><font style="text-align:center" size="4">font size</font></p>`,
+        out: `<p><span style="font-size:large;text-align:center">font size</span></p>` },
+    ].forEach(t => expect(slateToHtml(htmlToSlate(t.in))).toBe(t.out));
   });
 
   it("can [de]serialize links", () => {

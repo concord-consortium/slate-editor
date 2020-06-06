@@ -6,9 +6,9 @@ import { EFormat } from "../common/slate-types";
 import { hasBlock, isBlockOfType } from "../slate-editor/slate-utils";
 import { HtmlSerializablePlugin } from "./html-serializable-plugin";
 
-function renderNodeAsTag(tableTag: string, node: Block, attributes: RenderAttributes,
+function renderNodeAsTag(tag: string, node: Block, attributes: RenderAttributes,
                           children: ReactNode, isSerializing = false) {
-  return React.createElement(tableTag, attributes, children);
+  return React.createElement(tag, attributes, children);
 }
 
 const kTagToFormatMap: Record<string, string> = {
