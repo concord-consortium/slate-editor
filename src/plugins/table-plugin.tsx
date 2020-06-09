@@ -32,14 +32,20 @@ for (const tag in kTagToFormatMap) {
   kFormatToTagMap[format] = tag;
 }
 
-function isTableCell(node: Node | null) {
+function isTableCell(node?: Node | null) {
   return (node?.object === "block") && ((node?.type === "table-cell") || (node?.type === "table-header-cell"));
 }
 
-function selectedCellCount(editor: Editor) {
-  const { document, selection } = editor.value;
-  const nodes = document.getDescendantsAtRange(selection).toArray();
-  return nodes.reduce((prev: number, node: Node) => isTableCell(node) ? ++prev : prev, 0);
+interface ISelectionInfo {
+  selectedBlocks: number;
+  selectedCells: number;
+}
+
+function getSelectionInfo(editor: Editor): ISelectionInfo {
+  const { blocks } = editor.value;
+  let selectedCells = 0;
+  blocks.forEach(node => isTableCell(node) && ++selectedCells);
+  return { selectedBlocks: blocks.size, selectedCells };
 }
 
 function isCaretAtStart(editor: Editor) {
@@ -52,6 +58,25 @@ function isCaretAtEnd(editor: Editor) {
   const { document, selection: { isCollapsed, end } } = editor.value;
   const endNode = isCollapsed && document.getDescendant(end.key);
   return !!endNode && end.isAtEndOfNode(endNode);
+}
+
+// returns true if an expanded selection could be normalized for editing
+// returns false if an expanded selection should not allow editing
+// returns undefined if this function has no opinion (collapsed selection, not a table cell, etc.)
+function normalizeExpandedSelection(editor: Editor) {
+  const { document, selection: { isExpanded, start, end } } = editor.value;
+  if (!isExpanded) return undefined;
+  const { selectedBlocks, selectedCells } = getSelectionInfo(editor);
+  if (selectedCells === 0) return undefined;
+  if ((selectedCells === 1) && (selectedBlocks === 1)) return true;
+  if (selectedBlocks > 2) return false;
+  const startNode = document.getDescendant(start.key);
+  const endNode = document.getDescendant(end.key);
+  if ((selectedBlocks === 2) && startNode && endNode && end.isAtStartOfNode(endNode)) {
+    editor.select(editor.value.selection.moveEndToEndOfNode(startNode));
+    return true;
+  }
+  return false;
 }
 
 function prevTableCell(editor: Editor) {
@@ -78,7 +103,8 @@ function nextTableCell(editor: Editor) {
  */
 
 const handleTab: EventHook<React.KeyboardEvent> = (event, editor, next) => {
-  if (selectedCellCount(editor)) {
+  const { selectedCells } = getSelectionInfo(editor);
+  if (selectedCells) {
     const tabCell = event.shiftKey ? prevTableCell(editor) : nextTableCell(editor);
     tabCell && editor.moveToRangeOfNode(tabCell);
     event.preventDefault();
@@ -112,11 +138,14 @@ const handleBackspace: EventHook<React.KeyboardEvent> = (event, editor, next) =>
   const { value } = editor;
   const { selection } = value;
   const { isCollapsed } = selection;
-  const selectedCells = selectedCellCount(editor);
+  const { selectedBlocks, selectedCells } = getSelectionInfo(editor);
       // can backspace outside a table unless the caret is immediately after a table
   if (((selectedCells === 0) && !(isCaretAtStart(editor) && prevTableCell(editor))) ||
       // can delete the text inside a table cell, but not beyond the cell
-      ((selectedCells === 1) && (!isCollapsed || (selection.start.offset !== 0)))) {
+      ((selectedCells === 1) && (selectedBlocks === 1) &&
+        (!isCollapsed || (selection.start.offset !== 0))) ||
+      // can delete text in a cell if an expanded selection can be normalized to one cell
+      normalizeExpandedSelection(editor)) {
     return next();
   }
   // also can't delete if more than one cell is selected
@@ -133,11 +162,14 @@ const handleDelete: EventHook<React.KeyboardEvent> = (event, editor, next) => {
   const { value } = editor;
   const { selection } = value;
   const { isCollapsed } = selection;
-  const selectedCells = selectedCellCount(editor);
+  const { selectedBlocks, selectedCells } = getSelectionInfo(editor);
       // can delete outside a table unless the caret is immediately before a table
   if (((selectedCells === 0) && !(isCaretAtEnd(editor) && nextTableCell(editor))) ||
       // can delete the text inside a table cell, but not beyond the cell
-      ((selectedCells === 1) && (!isCollapsed || (selection.end.offset !== value.startText.text.length)))) {
+      ((selectedCells === 1) && (selectedBlocks === 1) &&
+        (!isCollapsed || (selection.end.offset !== value.startText.text.length))) ||
+      // can delete text in a cell if an expanded selection can be normalized to one cell
+      normalizeExpandedSelection(editor)) {
     return next();
   }
   // also can't delete if more than one cell is selected
@@ -181,6 +213,15 @@ export function TablePlugin(): HtmlSerializablePlugin {
       return tag
               ? renderNodeAsTag(tag, node, { ...getRenderAttributesFromNode(node), ...attributes }, children)
               : next();
+    },
+
+    onBeforeInput: (event, editor, next) => {
+      if (normalizeExpandedSelection(editor) === false) {
+        event.preventDefault();
+      }
+      else {
+        return next();
+      }
     },
 
     onKeyDown: (event, editor, next) => {
