@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 0.1.0 - June 9, 2020
+
+- Support import/export of HTML content
+- Support import/export of HTML tables
+- All content handling moved into plugins
+
 ## Version 0.0.9 - May 27, 2020
 
 - Support client-specified tooltips for toolbar buttons
