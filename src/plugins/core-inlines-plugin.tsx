@@ -73,6 +73,8 @@ function getDataFromInlineElement(el: Element) {
   return getDataFromElement(el, { tag });
 }
 
+// convert <font> tag to style attributes for a <span> tag
+// cf. https://developer.mozilla.org/en-US/docs/Web/HTML/Element/font
 function getRenderAttributesFromFontInline(inline: Inline): RenderAttributes {
   const { data } = inline;
   const fontStyle: React.CSSProperties = {};
@@ -85,18 +87,18 @@ function getRenderAttributesFromFontInline(inline: Inline): RenderAttributes {
     let index = 0;
     if (/^\d$/.test(size))        index = +size;
     else if (/^-\d$/.test(size))  index = 3 - +size[1];
-    else if (/^\+\d$/.test(size))  index = 3 + +size[1];
+    else if (/^\+\d$/.test(size)) index = 3 + +size[1];
     if (index) {
       index = Math.max(1, Math.min(7, index)) - 1;
       fontStyle.fontSize = ["xx-small", "small", "medium", "large", "x-large", "xx-large", "xxx-large"][index];
     }
   }
-  const atteributes = getRenderAttributesFromNode(inline, ["tag", "color", "face", "size"]);
-  const style = { ...fontStyle, ...(atteributes?.style || {})};
+  const attributes = getRenderAttributesFromNode(inline, ["tag", "color", "face", "size"]);
+  const style = { ...fontStyle, ...(attributes?.style || {})};
   if (_size(style)) {
-    atteributes.style = style;
+    attributes.style = style;
   }
-  return atteributes;
+  return attributes;
 }
 
 function getRenderAttributesFromInline(inline: Inline): RenderAttributes {
@@ -144,7 +146,7 @@ export function CoreInlinesPlugin(): HtmlSerializablePlugin {
       }
       return next();
     },
-  
+
     renderInline: (props: RenderInlineProps, editor: Editor, next: () => any) => {
       const { attributes, children, node } = props;
       const tag = getRenderTagForInline(node);
