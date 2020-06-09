@@ -1,83 +1,63 @@
-import HtmlSerializer, { Rule } from "slate-html-serializer";
-import { Block, Mark, Value } from "slate";
-import { getDataFromElement, getRenderAttributesFromNode } from "./html-utils";
-import { renderSlateBlock, renderOneSlateMark } from "../slate-editor/slate-renderers";
-import { isBlockFormat, isMarkFormat } from "../common/slate-types";
-import { htmlRule as colorRule } from "../plugins/color-plugin";
-import { htmlRule as imageRule } from "../plugins/image-plugin";
-import { htmlRule as linkRule } from "../plugins/link-plugin";
+import React, { ReactNode } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import HtmlSerializer from "slate-html-serializer";
+import { Value } from "slate";
+import { HtmlSerializationRule } from "../plugins/html-serializable-plugin";
+import { ColorPlugin } from "../plugins/color-plugin";
+import { CoreBlocksPlugin } from "../plugins/core-blocks-plugin";
+import { CoreInlinesPlugin } from "../plugins/core-inlines-plugin";
+import { CoreMarksPlugin } from "../plugins/core-marks-plugin";
+import { ImagePlugin } from "../plugins/image-plugin";
+import { LinkPlugin } from "../plugins/link-plugin";
+import { ListPlugin } from "../plugins/list-plugin";
+import { TablePlugin } from "../plugins/table-plugin";
 
-// map from html tag => block format
-const kBlockTags: Record<string, string> = {
-        blockquote: "block-quote",
-        h1: "heading1",
-        h2: "heading2",
-        h3: "heading3",
-        h4: "heading4",
-        h5: "heading5",
-        h6: "heading6",
-        hr: "horizontal-rule",
-        li: "list-item",
-        ol: "ordered-list",
-        p: "paragraph",
-        ul: "bulleted-list"
-      };
-const simpleBlocksRule: Rule = {
-  deserialize: function(el, next) {
-    const type = kBlockTags[el.tagName.toLowerCase()];
-    if (type) {
-      const data = getDataFromElement(el);
+// A modified version of the TEXT_RULE from the slate-html-serializer with
+// special handling for &nbsp;
+const TEXT_RULE: HtmlSerializationRule = {
+  deserialize(el) {
+    if (el.tagName && el.tagName.toLowerCase() === 'br') {
       return {
-        object: 'block',
-        type: type,
-        ...data,
-        nodes: next(el.childNodes),
+        object: 'text',
+        text: '\n',
+        marks: [],
+      };
+    }
+
+    if (el.nodeName === '#text') {
+      if (el.nodeValue && el.nodeValue.match(/<!--.*?-->/)) return;
+
+      return {
+        object: 'text',
+        text: el.nodeValue,
+        marks: [],
       };
     }
   },
-  serialize: function(obj, children) {
-    const { object, type } = obj;
-    if ((object === "block") && ((type === "") || isBlockFormat(type))) {
-      const block: Block = obj;
-      return renderSlateBlock(block, getRenderAttributesFromNode(block), children);
+
+  serialize(obj, children) {
+    if (obj.object === 'string') {
+      return children.split('\n').reduce((array, text, i) => {
+        if (i !== 0) array.push(<br key={i} />);
+        // encode non-breaking spaces (for visibility)
+        array.push(text.replace(/\u00A0/g, "&nbsp;"));
+        return array;
+      }, [] as ReactNode[]);
     }
+  },
+
+  postSerialize: function(html) {
+    // After encoding non-breaking spaces in the TEXT_RULE above,
+    // renderToStaticMarkup() re-escapes so we have to unescape.
+    return html.replace(/&amp;nbsp;/g, "&nbsp;");
   }
 };
 
-// map from html tag => mark format
-const kMarkTags: Record<string, string> = {
-        code: "code",
-        del: "deleted",
-        em: "italic",
-        mark: "inserted",
-        strong: "bold",
-        sub: "subscript",
-        sup: "superscript",
-        u: "underlined"
-      };
-const simpleMarksRule: Rule = {
-  deserialize(el, next) {
-    const type = kMarkTags[el.tagName.toLowerCase()];
-    if (type) {
-      const data = getDataFromElement(el);
-      return {
-        object: 'mark',
-        type: type,
-        ...data,
-        nodes: next(el.childNodes),
-      };
-    }
-  },
-  serialize(obj, children) {
-    const { object, type } = obj;
-    if ((object === 'mark') && isMarkFormat(type)) {
-      const mark: Mark = obj;
-      return renderOneSlateMark(mark, getRenderAttributesFromNode(mark), children);
-    }
-  },
-};
-
-const rules: Rule[] = [colorRule, imageRule, linkRule, simpleBlocksRule, simpleMarksRule];
+const rules: HtmlSerializationRule[] = [
+        ColorPlugin(), CoreMarksPlugin(),
+        ImagePlugin(), LinkPlugin(), CoreInlinesPlugin(),
+        ListPlugin(), TablePlugin(), CoreBlocksPlugin(),
+        TEXT_RULE];
 
 const htmlSerializer = new HtmlSerializer({ rules });
 
@@ -86,5 +66,13 @@ export function htmlToSlate(html: string) {
 }
 
 export function slateToHtml(value: Value) {
-  return htmlSerializer.serialize(value);
+  const blocks = htmlSerializer.serialize(value, { render: false });
+  // we render each top-level block element separately, so they each end up on their own line.
+  const htmlStrings = blocks.map(block => renderToStaticMarkup(<body>{block}</body>).slice(6, -7));
+  let html = htmlStrings.join("\n");
+  for (const rule of rules) {
+    // give plugins a chance to post-process the generated HTML
+    rule.postSerialize && (html = rule.postSerialize(html));
+  }
+  return html;
 }

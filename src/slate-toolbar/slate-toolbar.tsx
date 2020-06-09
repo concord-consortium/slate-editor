@@ -17,8 +17,7 @@ import InputColor from "../assets/input-color";
 import IconFontIncrease from "../assets/icon-font-increase";
 import IconFontDecrease from "../assets/icon-font-decrease";
 import { IButtonSpec, IProps as IToolbarProps } from "../editor-toolbar/editor-toolbar";
-import { handleToggleListBlock, handleToggleMark, hasActiveMark, selectionContainsBlock,
-          handleToggleSuperSubscript, handleToggleBlock }
+import { hasActiveMark, selectionContainsBlock, handleToggleSuperSubscript }
         from "../slate-editor/slate-utils";
 import { Editor } from "slate-react";
 import { SelectionJSON } from "slate";
@@ -77,49 +76,49 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
       format: EFormat.bold,
       SvgIcon: IconBold,
       tooltip: getPlatformTooltip("bold (mod-b)"),
-      isActive: editor ? hasActiveMark(editor.value, EFormat.bold) : false,
-      onClick: () => editor && handleToggleMark(EFormat.bold, editor)
+      isActive: !!editor && hasActiveMark(editor.value, EFormat.bold),
+      onClick: () => editor?.command("toggleMark", EFormat.bold)
     },
     {
       format: EFormat.italic,
       SvgIcon: IconItalic,
       tooltip: getPlatformTooltip("italic (mod-i)"),
-      isActive: editor ? hasActiveMark(editor.value, EFormat.italic) : false,
-      onClick: () => editor && handleToggleMark(EFormat.italic, editor)
+      isActive: !!editor && hasActiveMark(editor.value, EFormat.italic),
+      onClick: () => editor?.command("toggleMark", EFormat.italic)
     },
     {
       format: EFormat.underlined,
       SvgIcon: IconUnderline,
       tooltip: getPlatformTooltip("underline (mod-u)"),
-      isActive: editor ? hasActiveMark(editor.value, EFormat.underlined) : false,
-      onClick: () => editor && handleToggleMark(EFormat.underlined, editor)
+      isActive: !!editor && hasActiveMark(editor.value, EFormat.underlined),
+      onClick: () => editor?.command("toggleMark", EFormat.underlined)
     },
     {
       format: EFormat.deleted,
       SvgIcon: IconStrikethrough,
       tooltip: getPlatformTooltip("strikethrough"),
-      isActive: editor ? hasActiveMark(editor.value, EFormat.deleted) : false,
-      onClick: () => editor && handleToggleMark(EFormat.deleted, editor)
+      isActive: !!editor && hasActiveMark(editor.value, EFormat.deleted),
+      onClick: () => editor?.command("toggleMark", EFormat.deleted, editor)
     },
     {
       format: EFormat.code,
       SvgIcon: IconCode,
       tooltip: getPlatformTooltip("code (mod-\\)"),
-      isActive: editor ? hasActiveMark(editor.value, EFormat.code) : false,
-      onClick: () => editor && handleToggleMark(EFormat.code, editor)
+      isActive: !!editor && hasActiveMark(editor.value, EFormat.code),
+      onClick: () => editor?.command("toggleMark", EFormat.code, editor)
     },
     {
       format: EFormat.superscript,
       SvgIcon: IconSuperscript,
       tooltip: getPlatformTooltip("superscript"),
-      isActive: editor ? hasActiveMark(editor.value, EFormat.superscript) : false,
+      isActive: !!editor && hasActiveMark(editor.value, EFormat.superscript),
       onClick: () => editor && handleToggleSuperSubscript(EFormat.superscript, editor)
     },
     {
       format: EFormat.subscript,
       SvgIcon: IconSubscript,
       tooltip: getPlatformTooltip("subscript"),
-      isActive: editor ? hasActiveMark(editor.value, EFormat.subscript) : false,
+      isActive: !!editor && hasActiveMark(editor.value, EFormat.subscript),
       onClick: () => editor && handleToggleSuperSubscript(EFormat.subscript, editor)
     },
     (() => {
@@ -131,7 +130,7 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
         colors: { ...props.colors, fill },
         selectedColors: { ...props.selectedColors, fill },
         tooltip: getPlatformTooltip("color"),
-        isActive: editor && editor.query("hasActiveColorMark"),
+        isActive: !!editor && editor.query("hasActiveColorMark"),
         onMouseDown: () => {
           // cache selection - interaction with platform color picker can blur
           selection = editor && editor.value.selection.toJSON();
@@ -139,7 +138,7 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
         onChange: (value: string) => {
           // restore the selection
           editor && selection && editor.select(selection);
-          return editor && editor.command("setColorMark", value);
+          return editor?.command("setColorMark", value);
         }
       };
     })(),
@@ -147,40 +146,40 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
       format: EFormat.image,
       SvgIcon: IconImage,
       tooltip: getPlatformTooltip("image"),
-      isActive: editor ? editor.query("isImageActive") : false,
-      isEnabled: editor ? editor.query("isImageEnabled") : false,
-      onClick: () => editor && editor.command("configureImage", displayDialog)
+      isActive: !!editor && editor.query("isImageActive"),
+      isEnabled: !!editor && editor.query("isImageEnabled"),
+      onClick: () => editor?.command("configureImage", displayDialog)
     },
     {
       format: EFormat.link,
       SvgIcon: IconLink,
       tooltip: getPlatformTooltip("link"),
-      isActive: editor ? editor.query("isLinkActive") : false,
-      isEnabled: editor ? editor.query("isLinkEnabled") : false,
-      onClick: () => editor && editor.command("configureLink", displayDialog)
+      isActive: !!editor && editor.query("isLinkActive"),
+      isEnabled: !!editor && editor.query("isLinkEnabled"),
+      onClick: () => editor?.command("configureLink", displayDialog)
     },
     {
       format: EFormat.heading1,
       SvgIcon: IconHeading,
       tooltip: getPlatformTooltip("heading 1"),
-      isActive: editor ? selectionContainsBlock(editor.value, EFormat.heading1) : false,
-      onClick: () => editor && handleToggleBlock(EFormat.heading1, editor)
+      isActive: !!editor && selectionContainsBlock(editor.value, EFormat.heading1),
+      onClick: () => editor?.command("toggleBlock", EFormat.heading1)
     },
     {
       format: EFormat.heading2,
       SvgIcon: IconHeading,
       iconSize: 14,
       tooltip: getPlatformTooltip("heading 2"),
-      isActive: editor ? selectionContainsBlock(editor.value, EFormat.heading2) : false,
-      onClick: () => editor && handleToggleBlock(EFormat.heading2, editor)
+      isActive: !!editor && selectionContainsBlock(editor.value, EFormat.heading2),
+      onClick: () => editor?.command("toggleBlock", EFormat.heading2)
     },
     {
       format: EFormat.heading3,
       SvgIcon: IconHeading,
       iconSize: 12,
       tooltip: getPlatformTooltip("heading 3"),
-      isActive: editor ? selectionContainsBlock(editor.value, EFormat.heading3) : false,
-      onClick: () => editor && handleToggleBlock(EFormat.heading3, editor)
+      isActive: !!editor && selectionContainsBlock(editor.value, EFormat.heading3),
+      onClick: () => editor?.command("toggleBlock", EFormat.heading3)
     },
     // {
     //   format: EFormat.heading4,
@@ -188,7 +187,7 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
     //   iconSize: 10,
     //   tooltip: getPlatformTooltip("heading 4"),
     //   isActive: editor ? hasMark(editor.value, EFormat.heading4) : false,
-    //   onClick: () => editor && handleToggleBlock(EFormat.heading4, editor)
+    //   onClick: () => editor?.command("toggleBlock", EFormat.heading4)
     // },
     // {
     //   format: EFormat.heading5,
@@ -196,7 +195,7 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
     //   iconSize: 8,
     //   tooltip: getPlatformTooltip("heading 5"),
     //   isActive: editor ? hasMark(editor.value, EFormat.heading5) : false,
-    //   onClick: () => editor && handleToggleBlock(EFormat.heading5, editor)
+    //   onClick: () => editor?.command("toggleBlock", EFormat.heading5)
     // },
     // {
     //   format: EFormat.heading6,
@@ -204,42 +203,42 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
     //   iconSize: 6,
     //   tooltip: getPlatformTooltip("heading 6"),
     //   isActive: editor ? hasMark(editor.value, EFormat.heading6) : false,
-    //   onClick: () => editor && handleToggleBlock(EFormat.heading6, editor)
+    //   onClick: () => editor?.command("toggleBlock", EFormat.heading6)
     // },
     {
       format: EFormat.blockQuote,
       SvgIcon: IconQuote,
       tooltip: getPlatformTooltip("block quote"),
-      isActive: editor ? selectionContainsBlock(editor.value, EFormat.blockQuote) : false,
-      onClick: () => editor && handleToggleBlock(EFormat.blockQuote, editor)
+      isActive: !!editor && selectionContainsBlock(editor.value, EFormat.blockQuote),
+      onClick: () => editor?.command("toggleBlock", EFormat.blockQuote)
     },
     {
       format: EFormat.numberedList,
       SvgIcon: IconNumberedList,
       tooltip: getPlatformTooltip("numbered list"),
-      isActive: editor ? selectionContainsBlock(editor.value, EFormat.numberedList) : false,
-      onClick: () => editor && handleToggleListBlock(EFormat.numberedList, editor)
+      isActive: !!editor && selectionContainsBlock(editor.value, EFormat.numberedList),
+      onClick: () => editor?.command("toggleBlock", EFormat.numberedList)
     },
     {
       format: EFormat.bulletedList,
       SvgIcon: IconBulletedList,
       tooltip: getPlatformTooltip("bulleted list"),
-      isActive: editor ? selectionContainsBlock(editor.value, EFormat.bulletedList) : false,
-      onClick: () => editor && handleToggleListBlock(EFormat.bulletedList, editor)
+      isActive: !!editor && selectionContainsBlock(editor.value, EFormat.bulletedList),
+      onClick: () => editor?.command("toggleBlock", EFormat.bulletedList)
     },
     {
       format: EMetaFormat.fontDecrease,
       SvgIcon: IconFontDecrease,
       tooltip: getPlatformTooltip("decrease font"),
       isActive: false,
-      onClick: () => editor && editor.command("decreaseFontSize")
+      onClick: () => editor?.command("decreaseFontSize")
     },
     {
       format: EMetaFormat.fontIncrease,
       SvgIcon: IconFontIncrease,
       tooltip: getPlatformTooltip("increase font"),
       isActive: false,
-      onClick: () => editor && editor.command("increaseFontSize")
+      onClick: () => editor?.command("increaseFontSize")
     }
   ];
 

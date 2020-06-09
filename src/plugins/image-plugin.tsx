@@ -1,11 +1,11 @@
 import React, { ReactNode } from "react";
 import { Inline } from "slate";
-import { Rule } from "slate-html-serializer";
-import { Editor, Plugin, RenderAttributes, RenderInlineProps } from "slate-react";
+import { Editor, RenderAttributes, RenderInlineProps } from "slate-react";
 import { EFormat } from "../common/slate-types";
 import { hasActiveInline } from "../slate-editor/slate-utils";
 import { DisplayDialogFunction } from "../slate-toolbar/slate-toolbar";
 import { getDataFromElement, getRenderAttributesFromNode, mergeClassStrings } from "../serialization/html-utils";
+import { HtmlSerializablePlugin } from "./html-serializable-plugin";
 import "./image-plugin.scss";
 
 const kImageHighlightClass = "cc-image-highlight";
@@ -28,29 +28,27 @@ function renderImage(node: Inline, attributes: RenderAttributes, children: React
 
 const kImageTag = "img";
 
-export const htmlRule: Rule = {
-  deserialize: function(el, next) {
-    if (el.tagName.toLowerCase() === kImageTag) {
-      const data = getDataFromElement(el, ["src"]);
-      return {
-        object: "inline",
-        type: EFormat.image,
-        ...data,
-        nodes: next(el.childNodes),
-      };
-    }
-  },
-  serialize: function(obj, children) {
-    const { object, type } = obj;
-    if ((object === "inline") && (type === EFormat.image)) {
-      const image: Inline = obj;
-      return renderImage(image, getRenderAttributesFromNode(image), children, { isSerializing: true });
-    }
-  }
-};
-
-export function ImagePlugin(): Plugin {
+export function ImagePlugin(): HtmlSerializablePlugin {
   return {
+    deserialize: function(el, next) {
+      if (el.tagName.toLowerCase() === kImageTag) {
+        const data = getDataFromElement(el);
+        return {
+          object: "inline",
+          type: EFormat.image,
+          ...data,
+          nodes: next(el.childNodes),
+        };
+      }
+    },
+    serialize: function(obj, children) {
+      const { object, type } = obj;
+      if ((object === "inline") && (type === EFormat.image)) {
+        const image: Inline = obj;
+        return renderImage(image, getRenderAttributesFromNode(image), children, { isSerializing: true });
+      }
+    },
+
     queries: {
       isImageActive: function(editor: Editor) {
         return hasActiveInline(editor.value, EFormat.image);
@@ -86,17 +84,18 @@ export function ImagePlugin(): Plugin {
         }
       }
     },
-    // eslint-disable-next-line react/display-name
+
     renderInline: (props: RenderInlineProps, editor: Editor, next: () => any) => {
       const { attributes, node, children } = props;
       if (node.type !== EFormat.image) return next();
+      const dataAttrs = getRenderAttributesFromNode(node);
 
       const options: IRenderOptions = {
               isSerializing: false,
               isHighlighted: props.isSelected || props.isFocused,
               onClick: () => editor.moveFocusToStartOfNode(node)
             };
-      return renderImage(node, attributes, children, options);
+      return renderImage(node, { ...dataAttrs, ...attributes }, children, options);
     }
   };
 }

@@ -8,7 +8,7 @@ describe("Slate Editor types", () => {
       const isMark = isMarkFormat(format) ? 1 : 0;
       const isInline = isInlineFormat(format) ? 1 : 0;
       const isBlock = isBlockFormat(format) ? 1 : 0;
-      expect(isMark + isInline + isBlock).toBe(1);
+      expect(`${format}: ${isMark + isInline + isBlock}`).toBe(`${format}: 1`);
     });
 });
   it("doesn't classify invalid formats", () => {

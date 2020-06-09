@@ -63,6 +63,7 @@
     "babel-preset-react-app": "^9.1.2",
     "eslint": "^7.1.0",
     "eslint-config-react": "^1.1.7",
+    "eslint-plugin-eslint-comments": "^3.2.0",
     "eslint-plugin-react": "^7.20.0",
     "eslint-plugin-react-hooks": "^4.0.4",
     "identity-obj-proxy": "^3.0.0",
@@ -81,7 +82,6 @@
     "typescript": "^3.9.3"
   },
   "dependencies": {
-    "camelcase-keys": "^6.2.2",
     "classnames": "^2.2.6",
     "immutable": "^3.8.2",
     "is-hotkey": "^0.1.6",
