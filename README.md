@@ -49,6 +49,8 @@ Note that these links can be inadvertently undone when performing other npm task
 1. Create/push a tag for the new version (e.g. v0.1.0) and a description (e.g. Release 0.1.0)
     - This can be done in a local git client or on the releases page of the Github repository
 1. Publish new release on releases page of Github repository
+1. Test a dry-run of publishing the package to the npm repository
+    - `npm publish --access public --dry-run`
 1. Publish the package to the npm repository
     - `npm publish --access public`
 
