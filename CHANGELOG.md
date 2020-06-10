@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.1.1 - June 9, 2020
+
+- Update README
+- Export additional symbols
+
 ## Version 0.1.0 - June 9, 2020
 
 - Support import/export of HTML content

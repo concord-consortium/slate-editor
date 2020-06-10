@@ -36,6 +36,42 @@ $ npm link @concord-consortium/slate-editor # to link to the `slate-editor` libr
 
 Note that these links can be inadvertently undone when performing other npm tasks like npm install, so if things stop working you may need to refresh the links.
 
+## Publishing
+
+1. Verify that everything builds correctly
+    - `npm run build`
+1. Update the version number in `package.json` and `package-lock.json`
+    - `npm version --no-git-tag-version [patch|minor|major]`
+1. Update the `CHANGELOG.md` with a description of the new version
+1. Commit and push the changes either directly or via Github pull request
+1. Verify that everything still builds correctly
+    - `npm run build`
+1. Create/push a tag for the new version (e.g. v0.1.0) and a description (e.g. Release 0.1.0)
+    - This can be done in a local git client or on the releases page of the Github repository
+1. Publish the package to the npm repository
+    - `npm publish --access public`
+
+## Serialization and import/export
+
+Editor content can be serialized to/from JSON, HTML, or plain text (lossy).
+
+#### JSON
+
+- `deserializeValue(value: SlateExchangeValue): EditorValue`
+- `serializeValue(value: EditorValue): SlateExchangeValue`
+- `deserializeDocument(document: SlateDocument): DocumentJSON`
+- `serializeDocument(document: DocumentJSON): SlateDocument`
+
+#### HTML
+
+- `htmlToSlate(html: string): EditorValue`
+- `slateToHtml(value: EditorValue): string`
+
+#### Text (lossy)
+
+- `textToSlate(text: string): EditorValue`
+- `slateToText(value: EditorValue): string`
+
 ## References
 
 - Slate: https://slatejs.org

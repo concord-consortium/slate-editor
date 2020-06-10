@@ -1,9 +1,16 @@
-export { slateToText, textToSlate } from "./common/slate-types";
-export { deserializeDocument, deserializeValue } from "./serialization/serialization";
+export { DocumentJSON } from "slate";
+export { EditorContent, EditorValue, slateToText, textToSlate } from "./common/slate-types";
+export { HtmlSerializablePlugin } from "./plugins/html-serializable-plugin";
+export { htmlToSlate, slateToHtml } from "./serialization/html-serializer";
+export { deserializeDocument, deserializeValue, serializeDocument, serializeValue, SlateDocument
+        } from "./serialization/serialization";
 export { SlateContainer } from "./slate-container/slate-container";
-export { SlateEditor } from "./slate-editor/slate-editor";
-export { SlateToolbar } from "./slate-toolbar/slate-toolbar";
-export { EditorToolbar } from "./editor-toolbar/editor-toolbar";
+export { SlateEditor, SlateExchangeValue } from "./slate-editor/slate-editor";
+export { DisplayDialogFunction, DisplayDialogSettings, IToolOrder, OrderEntry, SlateToolbar
+        } from "./slate-toolbar/slate-toolbar";
+export { EditorToolbar, IButtonSpec, getPlatformTooltip } from "./editor-toolbar/editor-toolbar";
+export { IColors, OnChangeColorFn, OnChangeFn, OnClickFn, OnDidInvokeToolFn, OnMouseFn, ToolbarButton
+        } from "./editor-toolbar/toolbar-button";
 import "./slate-container/slate-container.scss";
 import "./slate-editor/slate-editor.scss";
 import "./editor-toolbar/editor-toolbar.scss";
