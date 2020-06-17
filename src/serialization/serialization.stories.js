@@ -22,7 +22,7 @@ export const Serialization = () => {
         <SlateContainer
           value={value}
           onValueChange={_value => setValue(_value)}
-          onContentChange={_content => setContent(_content)}
+          onContentChange={_value => setContent(serializeValue(_value))}
         />
       </div>
       <div className="panel output">

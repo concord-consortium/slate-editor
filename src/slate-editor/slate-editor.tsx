@@ -4,7 +4,6 @@ import { Plugin, Value } from "slate";
 import find from "lodash/find";
 import isEqual from "lodash/isEqual";
 import size from "lodash/size";
-import { SlateDocument, serializeValue } from "../serialization/serialization";
 import { HotkeyMap, useHotkeyMap } from "../common/slate-hooks";
 import { EditorValue, EFormat, textToSlate } from "../common/slate-types";
 import { ColorPlugin } from "../plugins/color-plugin";
@@ -33,7 +32,7 @@ export interface IProps {
   history?: boolean | IEditorHistoryOptions;
   onEditorRef?: (editorRef?: Editor) => void;
   onValueChange?: (value: EditorValue) => void;
-  onContentChange?: (content: SlateExchangeValue) => void;
+  onContentChange?: (value: EditorValue) => void;
   onFocus?: (editor?: Editor) => void;
   onBlur?: (editor?: Editor) => void;
   style?: React.CSSProperties;
@@ -46,12 +45,6 @@ const kDefaultHotkeyMap = {
         'mod+u': (editor: Editor) => editor.toggleMark(EFormat.underlined),
         'mod+\\': (editor: Editor) => editor.toggleMark(EFormat.code)
       };
-
-export interface SlateExchangeValue {
-  object: "value";
-  data?: { [key: string]: any };
-  document?: SlateDocument;
-}
 
 function extractUserDataJSON(value: Value) {
   const { data: _data } = value.toJSON({ preserveData: true });
@@ -90,7 +83,7 @@ const SlateEditor: React.FC<IProps> = (props: IProps) => {
                               isValueDataChange(change.value, prevValue);
     setPrevValue(change.value);
     onValueChange?.(change.value);
-    isContentChange && onContentChange?.(serializeValue(change.value));
+    isContentChange && onContentChange?.(change.value);
   }, [prevValue, onValueChange, onContentChange]);
 
   const hotkeyFnMap = useHotkeyMap(props.hotkeyMap || kDefaultHotkeyMap);

@@ -4,7 +4,6 @@ import keys from "lodash/keys";
 import map from "lodash/map";
 import size from "lodash/size";
 import values from "lodash/values";
-import { SlateExchangeValue } from "../slate-editor/slate-editor";
 
 // xxxJSON types correspond to [Classic] Slate 0.47 types
 type ElementJSON = BlockJSON | InlineJSON;
@@ -33,6 +32,12 @@ export interface SlateDocument {
   children: SlateNode[];
   // types map used for conversion back to Classic Slate (0.47)
   objTypes: ObjectTypeMap;
+}
+
+export interface SlateExchangeValue {
+  object: "value";
+  data?: { [key: string]: any };
+  document?: SlateDocument;
 }
 
 function typeProp(type?: string) {
