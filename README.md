@@ -8,13 +8,17 @@ The setup of this project was patterned after [https://blog.harveydelaney.com/cr
 
 ### Local development/testing
 
-For local library development we use [Storybook](https://storybook.js.org/) to organize and run test cases. To run the Storybook examples:
+There are npm scripts to handle the basics of development:
 
 ```
 $ npm run lint        # run linter
 $ npm run test        # run unit tests
 $ npm run build       # perform build
+```
 
+For local library development we use [Storybook](https://storybook.js.org/) to organize and run test cases. To run the Storybook examples:
+
+```
 $ npm run storybook   # launch storybook
 ```
 

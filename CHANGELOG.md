@@ -1,5 +1,13 @@
 # Changelog
 
+## Version 0.2.0 - June 25, 2020
+
+- Fix behavior of marks imported via `htmlToSlate()`
+- BREAKING: `onContentChange()` argument is now a raw `EditorValue` rather than a serialized JSON value so that clients can choose a serialization model.
+- add `getContentHeight()` function
+- fix style-handling bug in `SlateEditor`
+- Update dependencies
+
 ## Version 0.1.1 - June 9, 2020
 
 - Update README
