@@ -3,7 +3,7 @@ import { Mark } from "slate";
 import { RenderAttributes, RenderMarkProps } from "slate-react";
 import { getRenderIndexOfMark } from "../slate-editor/slate-utils";
 import { EFormat } from "../common/slate-types";
-import { getRenderAttributesFromNode, getDataFromElement } from "../serialization/html-utils";
+import { getRenderAttributesFromNode } from "../serialization/html-utils";
 import { HtmlSerializablePlugin } from "./html-serializable-plugin";
 
 function renderMarkAsTag(tag: string, mark: Mark, attributes: RenderAttributes,
@@ -90,7 +90,16 @@ export function CoreMarksPlugin(): HtmlSerializablePlugin {
         return {
           object: "mark",
           type: format,
-          ...getDataFromElement(el, { [format]: tag }),
+          // Adding data attributes in this way allows us to (1) preserve the original tag (e.g. <b> vs. <strong>)
+          // and (2) preserve any attributes that may have been associated with the tag. Unfortunately, it also
+          // wreaks havoc with Slate's mark management because marks are compared by value, so two bold marks
+          // with different tags/attributes no longer compare as equal resulting in toggleMark() not working as
+          // expected, neighboring bold marks not being combined properly, etc. Given that of the original
+          // benefits, we are not taking advantage of (1) because we are following TinyMCE's example and simply
+          // converting legacy tags to their current equivalents and there are no known examples of attributes
+          // being applied to mark tags (2), we simply disable this functionality for now. Leaving it commented
+          // out for now in case we encounter an argument for going back.
+          // ...getDataFromElement(el, { [format]: tag }),
           nodes: next(el.childNodes),
         };
       }
