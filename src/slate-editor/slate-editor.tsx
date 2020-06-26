@@ -82,7 +82,8 @@ const SlateEditor: React.FC<IProps> = (props: IProps) => {
   const [prevValue, setPrevValue] = useState<EditorValue>(value);
 
   const fontSize = getFontSize(value);
-  const style = fontSize ? {fontSize: `${fontSize}em`} : undefined;
+  const fontStyle = fontSize ? {fontSize: `${fontSize}em`} : undefined;
+  const style = { ...props.style, ...fontStyle };
 
   const handleChange = useCallback((change: OnChangeParam) => {
     const isContentChange = (change.value.document !== prevValue.document) ||
