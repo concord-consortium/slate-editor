@@ -1,5 +1,12 @@
 # Changelog
 
+## Version 0.2.1 - June 26, 2020
+
+- [really] Fix behavior of marks imported via `htmlToSlate()`
+- [really] BREAKING: `onContentChange()` argument is now a raw `EditorValue` rather than a serialized JSON value so that clients can choose a serialization model.
+
+Note: Previous version failed to include a necessary PR.
+
 ## Version 0.2.0 - June 25, 2020
 
 - Fix behavior of marks imported via `htmlToSlate()`
