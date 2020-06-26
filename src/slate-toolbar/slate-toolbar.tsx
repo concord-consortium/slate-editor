@@ -26,7 +26,7 @@ import { ModalDialog } from "./modal-dialog";
 import { ModalDialogPortal } from "./modal-dialog-portal";
 
 export interface IToolOrder {
-  format: ToolFormat;
+  format: string;
   tooltip?: string;
 }
 
@@ -34,7 +34,7 @@ interface IndexedToolOrder extends IToolOrder {
   index: number;
 }
 
-export type OrderEntry = ToolFormat | IToolOrder;
+export type OrderEntry = string | IToolOrder;
 
 export interface IProps extends Omit<IToolbarProps, "buttons"> {
   order?: OrderEntry[];

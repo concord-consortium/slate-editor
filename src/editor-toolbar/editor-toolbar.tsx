@@ -10,6 +10,7 @@ export interface IButtonSpec extends IBaseProps {
 export interface IProps {
   className?: string;
   orientation?: "horizontal" | "vertical";
+  padding?: number;
   colors?: IColors;
   selectedColors?: IColors;
   buttonsPerRow?: number;
@@ -34,18 +35,15 @@ export function getPlatformTooltip(str: string) {
   return str.replace("mod-", modKey);
 }
 
-// let renderCount = 0;
-
 export const EditorToolbar: React.FC<IProps> = (iProps: IProps) => {
-  // console.log("SlateEditor.renderCount:", ++renderCount);
-
   const props = { ...kDefaultProps, ...iProps } as Required<IProps>;
   const { orientation, colors, selectedColors, buttonsPerRow, iconSize, buttonSize, buttons,
-          onDidInvokeTool, editor } = props;
+          onDidInvokeTool, padding, editor } = props;
   const longAxisButtonCount = buttonsPerRow || buttons.length;
   const crossAxisButtonCount = buttonsPerRow ? Math.ceil(buttons.length / buttonsPerRow) : 1;
-  const toolbarLongExtent = longAxisButtonCount * buttonSize;
-  const toolbarCrossExtent = crossAxisButtonCount * buttonSize;
+  const kPadding = padding || 0;
+  const toolbarLongExtent = longAxisButtonCount * buttonSize + 2 * kPadding;
+  const toolbarCrossExtent = crossAxisButtonCount * buttonSize + 2 * kPadding;
   const toolbarSize = orientation === "vertical"
           ? { width: toolbarCrossExtent, height: toolbarLongExtent }
           : { width: toolbarLongExtent, height: toolbarCrossExtent };

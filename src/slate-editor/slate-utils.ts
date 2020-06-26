@@ -2,6 +2,23 @@ import { Block, MarkProperties, Inline, Node, Text, Value } from "slate";
 import { Editor, RenderMarkProps } from "slate-react";
 import { EFormat } from "../common/slate-types";
 
+export function getBoundingRectForBlock(editor: Editor, block?: Node) {
+  const { document } = editor.value;
+  const path = block && document.getPath(block.key) || undefined;
+  // eslint-disable-next-line react/no-find-dom-node
+  const elt: HTMLElement = path && editor.findDOMNode(path) as any;
+  return elt?.getBoundingClientRect();
+}
+
+export function getContentHeight(editor: Editor) {
+  const { document } = editor.value;
+  const firstBounds = getBoundingRectForBlock(editor, document.nodes.first());
+  const lastBounds = getBoundingRectForBlock(editor, document.nodes.last());
+  return firstBounds && lastBounds
+          ? lastBounds.bottom - firstBounds.top
+          : undefined;
+}
+
 export function getRenderIndexOfMark(props: RenderMarkProps) {
   const { mark, marks } = props;
   let markIndex = -1;
