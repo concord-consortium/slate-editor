@@ -44,8 +44,9 @@ describe("htmlToSlate(), slateToHtml()", () => {
 
   it("can [de]serialize class and style attributes", () => {
     [
-      `<p><em class="em-class">mark with class</em></p>`,
-      `<p><em style="font-style:italic">mark with inline style</em></p>`,
+      // We no longer preserve attributes associated with mark tags
+      // `<p><em class="em-class">mark with class</em></p>`,
+      // `<p><em style="font-style:italic">mark with inline style</em></p>`,
       `<p class="foo-class bar-class">paragraph with classes</p>`,
       `<p style="float:right">paragraph with inline style</p>`,
       `<p style="float:right;text-align:center">paragraph with multiple inline styles</p>`
