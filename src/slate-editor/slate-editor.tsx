@@ -1,6 +1,6 @@
 import React, { useCallback, useRef, useState, useMemo } from "react";
 import { Editor, OnChangeParam, Plugins } from "slate-react";
-import { Plugin, Value } from "slate";
+import { Node, Plugin, Value } from "slate";
 import find from "lodash/find";
 import isEqual from "lodash/isEqual";
 import size from "lodash/size";
@@ -15,6 +15,7 @@ import { FontSizePlugin, getFontSize } from "../plugins/font-size-plugin";
 import { ImagePlugin } from "../plugins/image-plugin";
 import { LinkPlugin } from "../plugins/link-plugin";
 import { ListPlugin } from "../plugins/list-plugin";
+import { OnLoadPlugin } from "../plugins/on-load-plugin";
 import { TablePlugin } from "../plugins/table-plugin";
 
 import './slate-editor.scss';
@@ -31,6 +32,7 @@ export interface IProps {
   plugins?: Plugins<Editor>;
   history?: boolean | IEditorHistoryOptions;
   onEditorRef?: (editorRef?: Editor) => void;
+  onLoad?: (node: Node) => void;
   onValueChange?: (value: EditorValue) => void;
   onContentChange?: (value: EditorValue) => void;
   onFocus?: (editor?: Editor) => void;
@@ -42,8 +44,7 @@ const kEmptyEditorValue = textToSlate("");
 const kDefaultHotkeyMap = {
         'mod+b': (editor: Editor) => editor.toggleMark(EFormat.bold),
         'mod+i': (editor: Editor) => editor.toggleMark(EFormat.italic),
-        'mod+u': (editor: Editor) => editor.toggleMark(EFormat.underlined),
-        'mod+\\': (editor: Editor) => editor.toggleMark(EFormat.code)
+        'mod+u': (editor: Editor) => editor.toggleMark(EFormat.underlined)
       };
 
 function extractUserDataJSON(value: Value) {
@@ -63,11 +64,13 @@ const defaultPlugins: Plugin<Editor>[] = [
       ];
 
 const SlateEditor: React.FC<IProps> = (props: IProps) => {
-  const { history, onEditorRef, onValueChange, onContentChange, onFocus, onBlur, plugins } = props;
+  const { history, onEditorRef, onLoad, onValueChange, onContentChange, onFocus, onBlur, plugins } = props;
+  const onLoadPlugin = useMemo(() => OnLoadPlugin(onLoad), [onLoad]);
   const historyPlugin = useMemo(() => history || (history == null)  // enabled by default
                                         ? EditorHistory(typeof history === "object" ? history : undefined)
                                         : NoEditorHistory(), [history]);
-  const allPlugins = useMemo(() => [...(plugins || []), ...defaultPlugins, historyPlugin], [historyPlugin, plugins]);
+  const allPlugins = useMemo(() => [...(plugins || []), ...defaultPlugins, onLoadPlugin, historyPlugin],
+                            [onLoadPlugin, historyPlugin, plugins]);
   const editorRef = useRef<Editor>();
   const value = typeof props.value === "string"
                   ? textToSlate(props.value)

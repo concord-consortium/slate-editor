@@ -13,6 +13,7 @@ const kImageHighlightClass = "cc-image-highlight";
 interface IRenderOptions {
   isSerializing?: boolean;
   isHighlighted?: boolean;
+  onLoad?: () => void;
   onClick?: () => void;
 }
 function renderImage(node: Inline, attributes: RenderAttributes, children: ReactNode, options?: IRenderOptions) {
@@ -20,9 +21,10 @@ function renderImage(node: Inline, attributes: RenderAttributes, children: React
   const highlightClass = options?.isHighlighted && !options?.isSerializing ? kImageHighlightClass : undefined;
   const classes = mergeClassStrings(highlightClass, attributes.className);
   const src: string = data.get("src");
+  const onLoad = options?.isSerializing ? undefined : options?.onLoad;
   const onClick = options?.isSerializing ? undefined : options?.onClick;
   return (
-    <img className={classes} src={src} onClick={onClick} {...attributes}/>
+    <img className={classes} src={src} onClick={onClick} onLoad={onLoad} {...attributes}/>
   );
 }
 
@@ -93,6 +95,7 @@ export function ImagePlugin(): HtmlSerializablePlugin {
       const options: IRenderOptions = {
               isSerializing: false,
               isHighlighted: props.isSelected || props.isFocused,
+              onLoad: () => editor.command("onLoad", node),
               onClick: () => editor.moveFocusToStartOfNode(node)
             };
       return renderImage(node, { ...dataAttrs, ...attributes }, children, options);
