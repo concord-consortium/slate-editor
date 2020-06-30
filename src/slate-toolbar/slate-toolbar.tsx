@@ -22,7 +22,7 @@ import { hasActiveMark, selectionContainsBlock, handleToggleSuperSubscript }
 import { Editor } from "slate-react";
 import { SelectionJSON } from "slate";
 import { EFormat, EMetaFormat, ToolFormat } from "../common/slate-types";
-import { ModalDialog } from "./modal-dialog";
+import { ModalDialog, IRow, IFieldValues } from "./modal-dialog";
 import { ModalDialogPortal } from "./modal-dialog-portal";
 
 export interface IToolOrder {
@@ -46,8 +46,9 @@ export interface IProps extends Omit<IToolbarProps, "buttons"> {
 
 export interface DisplayDialogSettings {
   title: string;
-  prompts: string[];
-  onAccept?: (editor: Editor, inputs: string[]) => void;
+  rows: IRow[];
+  values: IFieldValues;
+  onAccept?: (editor: Editor, values: IFieldValues) => void;
 }
 
 export interface DisplayDialogFunction {
@@ -268,9 +269,9 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
     return b;
   }, [buttons, order]);
 
-  const handleCloseDialog = (inputs: string[] | null) => {
+  const handleCloseDialog = (values?: IFieldValues) => {
     setShowDialog(false);
-    editor && inputs && dialogSettings?.onAccept?.(editor, inputs);
+    editor && values && dialogSettings?.onAccept?.(editor, values);
   };
 
   const themeColor = props.colors?.themeColor || props.colors?.buttonColors?.background;
@@ -282,7 +283,8 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
                           dialogClassName={props.modalDialogClassName}
                           themeColor={themeColor}
                           title={dialogSettings.title}
-                          prompts={dialogSettings.prompts}
+                          rows={dialogSettings.rows}
+                          values={dialogSettings.values}
                           onClose={handleCloseDialog}
                         />
                       : <ModalDialog
@@ -290,7 +292,8 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
                           dialogClassName={props.modalDialogClassName}
                           themeColor={themeColor}
                           title={dialogSettings.title}
-                          prompts={dialogSettings.prompts}
+                          rows={dialogSettings.rows}
+                          values={dialogSettings.values}
                           onClose={handleCloseDialog}
                         />)
                   : null;

@@ -3,6 +3,7 @@ import { Inline } from "slate";
 import { Editor, RenderAttributes, RenderInlineProps } from "slate-react";
 import { EFormat } from "../common/slate-types";
 import { hasActiveInline } from "../slate-editor/slate-utils";
+import { IFieldValues } from "../slate-toolbar/modal-dialog";
 import { DisplayDialogFunction } from "../slate-toolbar/slate-toolbar";
 import { getDataFromElement, getRenderAttributesFromNode, mergeClassStrings } from "../serialization/html-utils";
 import { HtmlSerializablePlugin } from "./html-serializable-plugin";
@@ -21,10 +22,12 @@ function renderImage(node: Inline, attributes: RenderAttributes, children: React
   const highlightClass = options?.isHighlighted && !options?.isSerializing ? kImageHighlightClass : undefined;
   const classes = mergeClassStrings(highlightClass, attributes.className);
   const src: string = data.get("src");
+  const alt: string = data.get("alt");
   const onLoad = options?.isSerializing ? undefined : options?.onLoad;
   const onClick = options?.isSerializing ? undefined : options?.onClick;
   return (
-    <img className={classes} src={src} onClick={onClick} onLoad={onLoad} {...attributes}/>
+    <img className={classes} src={src} alt={alt} title={alt}
+        onLoad={onLoad} onClick={onClick} {...attributes}/>
   );
 }
 
@@ -63,18 +66,39 @@ export function ImagePlugin(): HtmlSerializablePlugin {
       configureImage: function (editor: Editor, displayDialog: DisplayDialogFunction) {
         displayDialog({
           title: "Insert Image",
-          prompts: ["Enter the URL of the image:"],
-          onAccept: (_editor, inputs) => _editor.command("addImage", inputs)
+          rows: [
+            { name: "source", type: "input", label: "Source URL:" },
+            { name: "description", type: "input", label: "Description:" },
+            { name: "dimensions", type: "label", label: "Dimensions:" },
+            [
+              { name: "width", type: "input", charSize: 6 },
+              { name: "x", type: "label", label: "x" },
+              { name: "height", type: "input", charSize: 6 },
+              { name: "spacer", type: "label", label: "\u00a0" },
+              { name: "constrain", type: "checkbox", label: "Constrain proportions" },
+            ],
+            {
+              name: "placement", type: "select", label: "Placement:",
+              options: [
+                { value: "inline", label: "Inline" },
+                { value: "float-left", label: "Float left" },
+                { value: "float-right", label: "Float right" },
+              ]
+            }
+          ],
+          values: { constrain: "true", placement: "inline" },
+          onAccept: (_editor, values) => _editor.command("addImage", values)
         });
         return editor;
       },
-      addImage: function (editor: Editor, dialogValues: string[]) {
-        const src = dialogValues[0];
+      addImage: function (editor: Editor, values: IFieldValues) {
+        const src = values.source;
+        const alt = values.description;
         if (!editor) return editor;
         if (!src) return editor;
         editor.insertInline({
           type: EFormat.image,
-          data: { src }
+          data: { src, alt }
         });
         return editor;
       },
