@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.3.0 - June 30, 2020
+
+- Improve focus/blur handling
+- Add onLoad callback to assist clients with sizing of images
+
 ## Version 0.2.1 - June 26, 2020
 
 - [really] Fix behavior of marks imported via `htmlToSlate()`
