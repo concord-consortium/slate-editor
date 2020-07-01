@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState, useMemo } from "react";
+import React, { useCallback, useMemo, useRef } from "react";
 import { Editor, OnChangeParam, Plugins } from "slate-react";
 import { Node, Plugin, Value } from "slate";
 import find from "lodash/find";
@@ -75,19 +75,25 @@ const SlateEditor: React.FC<IProps> = (props: IProps) => {
   const value = typeof props.value === "string"
                   ? textToSlate(props.value)
                   : props.value || kEmptyEditorValue;
-  const [prevValue, setPrevValue] = useState<EditorValue>(value);
 
   const fontSize = getFontSize(value);
   const fontStyle = fontSize ? {fontSize: `${fontSize}em`} : undefined;
   const style = { ...props.style, ...fontStyle };
 
-  const handleChange = useCallback((change: OnChangeParam) => {
-    const isContentChange = (change.value.document !== prevValue.document) ||
-                              isValueDataChange(change.value, prevValue);
-    setPrevValue(change.value);
+  const handleChange = (change: OnChangeParam) => {
+    const isContentChange = (change.value.document !== value.document) ||
+                              isValueDataChange(change.value, value);
+    const isFocused = change.value.selection.isFocused;
+    const isFocusChange = isFocused !== value.selection.isFocused;
+    // base our onFocus/onBlur callbacks on Slate value changes, _not_
+    // on the Editor's onFocus/onBlur callbacks (which are browser-based).
+    // cf. https://github.com/ianstormtaylor/slate/issues/2640#issuecomment-476447608
+    // cf. https://github.com/ianstormtaylor/slate/issues/2434#issuecomment-577783398
+    isFocusChange && isFocused && onFocus?.(editorRef.current);
     onValueChange?.(change.value);
     isContentChange && onContentChange?.(change.value);
-  }, [prevValue, onValueChange, onContentChange]);
+    isFocusChange && !isFocused && onBlur?.(editorRef.current);
+  };
 
   const hotkeyFnMap = useHotkeyMap(props.hotkeyMap || kDefaultHotkeyMap);
   const handleKeyDown = useCallback((e: React.KeyboardEvent<Element>, editor: Editor, next: () => any) => {
@@ -104,22 +110,6 @@ const SlateEditor: React.FC<IProps> = (props: IProps) => {
     onEditorRef?.(editorRef.current);
   }, [onEditorRef]);
 
-  // For focus/blur, by default Slate will synchronize its internal model with
-  // the browser's focus/blur "eventually" in an asynchronous fashion. When
-  // there are multiple editors on the screen, focusing/blurring one can cause
-  // others to blur/focus in response, which can then result in stale responses.
-  // Immediately calling focus/blur in the appropriate callback forces Slate
-  // to synchronize the model immediately.
-  // cf. https://github.com/ianstormtaylor/slate/issues/2097#issuecomment-464935337
-  const handleFocus = useCallback((event, editor) => {
-    editor.focus();
-    onFocus?.(editor);
-  }, [onFocus]);
-  const handleBlur = useCallback((event, editor) => {
-    editor.blur();
-    onBlur?.(editor);
-  }, [onBlur]);
-
   return (
     <Editor
       data-testid="slate-editor"
@@ -130,8 +120,6 @@ const SlateEditor: React.FC<IProps> = (props: IProps) => {
       plugins={allPlugins}
       onKeyDown={handleKeyDown}
       onChange={handleChange}
-      onFocus={handleFocus}
-      onBlur={handleBlur}
     />
   );
 };
