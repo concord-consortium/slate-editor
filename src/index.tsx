@@ -10,8 +10,8 @@ export { SlateEditor } from "./slate-editor/slate-editor";
 export { getContentHeight } from "./slate-editor/slate-utils";
 export { DisplayDialogFunction, DisplayDialogSettings, IToolOrder, OrderEntry, SlateToolbar
         } from "./slate-toolbar/slate-toolbar";
-export { EditorToolbar, IButtonSpec, getPlatformTooltip } from "./editor-toolbar/editor-toolbar";
-export { IColors, OnChangeColorFn, OnChangeFn, OnClickFn, OnDidInvokeToolFn, OnMouseFn, ToolbarButton
+export { EditorToolbar, IButtonSpec, IToolbarColors, getPlatformTooltip } from "./editor-toolbar/editor-toolbar";
+export { OnChangeColorFn, OnChangeFn, OnClickFn, OnDidInvokeToolFn, OnMouseFn, ToolbarButton
         } from "./editor-toolbar/toolbar-button";
 import "./slate-container/slate-container.scss";
 import "./slate-editor/slate-editor.scss";

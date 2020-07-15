@@ -32,6 +32,8 @@ export const ColoredModalDialog = () => {
   const [value, setValue] = useState(coloredModalText);
   return (
     <SlateContainer value={value} onValueChange={_value => setValue(_value)}
-                    toolbar={{ colors: { fill: "#ffffff", background: "#FF7FB6" }}} />
+                    toolbar={{ colors: {
+                                buttonColors: { fill: "#ffffff", background: "#FF7FB6" }
+                            }}} />
   );
 };

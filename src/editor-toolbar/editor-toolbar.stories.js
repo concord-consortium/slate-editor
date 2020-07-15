@@ -74,7 +74,7 @@ export const Vertical = () => (
 export const Colored = () => (
   <EditorToolbar
     orientation="vertical"
-    colors={{ background: "#177991", fill: "#ffffff" }}
+    colors={{buttonColors: { background: "#177991", fill: "#ffffff" }}}
     iconSize={16}
     buttons={buttons}
     onDidInvokeTool={format => console.log("Tool invoked:", format)}

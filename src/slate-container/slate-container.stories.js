@@ -20,8 +20,10 @@ export const ColoredToolbarSelectedFill = () => {
   const [value, setValue] = useState(coloredText);
   return (
     <SlateContainer value={value} onValueChange={_value => setValue(_value)}
-    toolbar={{ colors: { fill: "#ffffff", background: "#177991" },
-                selectedColors: { fill: "#72bfca", background: "#177991" } }} />
+      toolbar={{ colors: {
+                  buttonColors: { fill: "#ffffff", background: "#177991" },
+                  selectedColors: { fill: "#72bfca", background: "#177991" }
+              }}} />
   );
 };
 
@@ -31,8 +33,38 @@ export const ColoredToolbarSelectedBackground = () => {
   const [value, setValue] = useState(backgroundText);
   return (
     <SlateContainer value={value} onValueChange={_value => setValue(_value)}
-    toolbar={{ colors: { fill: "#ffffff", background: "#177991" },
-                selectedColors: { fill: "#177991", background: "#72bfca" } }} />
+      toolbar={{ colors: {
+                  buttonColors: { fill: "#ffffff", background: "#177991" },
+                  selectedColors: { fill: "#177991", background: "#72bfca" }
+              }}} />
+  );
+};
+
+const themeColorText = "This example demonstrates a toolbar with black icons on a white background.";
+
+export const BlackOnWhiteToolbar = () => {
+  const [value, setValue] = useState(themeColorText);
+  return (
+    <SlateContainer value={value} onValueChange={_value => setValue(_value)}
+      toolbar={{ colors: {
+                  buttonColors: { fill: "#000000", background: "#ffffff" },
+                  selectedColors: { fill: "#ffffff", background: "#000000" },
+                  themeColor: "#177991"
+              }}} />
+  );
+};
+
+const themeColorText2 = "This example demonstrates a toolbar with white icons on a black background.";
+
+export const WhiteOnBlackToolbar = () => {
+  const [value, setValue] = useState(themeColorText2);
+  return (
+    <SlateContainer value={value} onValueChange={_value => setValue(_value)}
+      toolbar={{ colors: {
+                  buttonColors: { fill: "#ffffff", background: "#000000" },
+                  selectedColors: { fill: "#000000", background: "#ffffff" },
+                  themeColor: "#177991"
+              }}} />
   );
 };
 

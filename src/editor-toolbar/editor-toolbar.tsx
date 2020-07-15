@@ -1,5 +1,5 @@
 import React, { useCallback, useRef } from "react";
-import { IBaseProps, IColors, OnDidInvokeToolFn, ToolbarButton } from "./toolbar-button";
+import { IBaseProps, IButtonColors, OnDidInvokeToolFn, ToolbarButton } from "./toolbar-button";
 import { Editor } from "slate-react";
 import { SelectionJSON } from "slate";
 
@@ -7,12 +7,17 @@ export interface IButtonSpec extends IBaseProps {
   iconSize?: number;
 }
 
+export interface IToolbarColors {
+  buttonColors?: IButtonColors;
+  selectedColors?: IButtonColors;
+  themeColor?: string;
+}
+
 export interface IProps {
   className?: string;
   orientation?: "horizontal" | "vertical";
   padding?: number;
-  colors?: IColors;
-  selectedColors?: IColors;
+  colors?: IToolbarColors;
   buttonsPerRow?: number;
   iconSize?: number;
   buttonSize?: number;
@@ -37,7 +42,7 @@ export function getPlatformTooltip(str: string) {
 
 export const EditorToolbar: React.FC<IProps> = (iProps: IProps) => {
   const props = { ...kDefaultProps, ...iProps } as Required<IProps>;
-  const { orientation, colors, selectedColors, buttonsPerRow, iconSize, buttonSize, buttons,
+  const { orientation, colors, buttonsPerRow, iconSize, buttonSize, buttons,
           onDidInvokeTool, padding, editor } = props;
   const longAxisButtonCount = buttonsPerRow || buttons.length;
   const crossAxisButtonCount = buttonsPerRow ? Math.ceil(buttons.length / buttonsPerRow) : 1;
@@ -47,8 +52,8 @@ export const EditorToolbar: React.FC<IProps> = (iProps: IProps) => {
   const toolbarSize = orientation === "vertical"
           ? { width: toolbarCrossExtent, height: toolbarLongExtent }
           : { width: toolbarLongExtent, height: toolbarCrossExtent };
-  const toolbarStyle = colors?.background
-                        ? { backgroundColor: colors.background, ...toolbarSize }
+  const toolbarStyle = colors?.buttonColors?.background
+                        ? { backgroundColor: colors.buttonColors.background, ...toolbarSize }
                         : toolbarSize;
   const orientationClass = orientation || "horizontal";
 
@@ -75,7 +80,7 @@ export const EditorToolbar: React.FC<IProps> = (iProps: IProps) => {
             const _iconSize = button.iconSize || iconSize;
             return (
               <ToolbarButton key={`key-${format}`} format={format} iconSize={_iconSize} buttonSize={buttonSize}
-                colors={colors} selectedColors={selectedColors} onDidInvokeTool={onDidInvokeTool}
+                colors={colors?.buttonColors} selectedColors={colors?.selectedColors} onDidInvokeTool={onDidInvokeTool}
                 onSaveSelection={handleSaveSelection} onRestoreSelection={handleRestoreSelection} {...others} />
             );
           })

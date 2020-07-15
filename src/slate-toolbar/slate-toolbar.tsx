@@ -127,8 +127,8 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
       return {
         format: EFormat.color,
         SvgIcon: InputColor,
-        colors: { ...props.colors, fill },
-        selectedColors: { ...props.selectedColors, fill },
+        colors: { ...props.colors?.buttonColors, fill },
+        selectedColors: { ...props.colors?.selectedColors, fill },
         tooltip: getPlatformTooltip("color"),
         isActive: !!editor && editor.query("hasActiveColorMark"),
         onMouseDown: () => {
@@ -272,13 +272,14 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
     editor && inputs && dialogSettings?.onAccept?.(editor, inputs);
   };
 
+  const themeColor = props.colors?.themeColor || props.colors?.buttonColors?.background;
   const dialog = showDialog && dialogSettings
                   ? (props.modalPortalRoot
                       ? <ModalDialogPortal
                           modalPortalRoot={props.modalPortalRoot}
                           coverClassName={props.modalCoverClassName}
                           dialogClassName={props.modalDialogClassName}
-                          themeColor={props.colors?.background}
+                          themeColor={themeColor}
                           title={dialogSettings.title}
                           prompts={dialogSettings.prompts}
                           onClose={handleCloseDialog}
@@ -286,7 +287,7 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
                       : <ModalDialog
                           coverClassName={props.modalCoverClassName}
                           dialogClassName={props.modalDialogClassName}
-                          themeColor={props.colors?.background}
+                          themeColor={themeColor}
                           title={dialogSettings.title}
                           prompts={dialogSettings.prompts}
                           onClose={handleCloseDialog}
