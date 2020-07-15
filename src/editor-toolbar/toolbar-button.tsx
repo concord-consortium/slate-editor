@@ -11,7 +11,7 @@ export type OnDidInvokeToolFn = (format: string) => void;
 const kDefaultFillColor = "#909090";
 const kDefaultSelectedFillColor = "#009CDC";
 
-export interface IColors {
+export interface IButtonColors {
   fill?: string;
   background?: string;
 }
@@ -19,8 +19,8 @@ export interface IColors {
 export interface IBaseProps {
   format: EFormat | EMetaFormat;
   SvgIcon: (props: IconProps) => JSX.Element;
-  colors?: IColors;
-  selectedColors?: IColors;
+  colors?: IButtonColors;
+  selectedColors?: IButtonColors;
   tooltip: string;
   isActive: boolean;
   isEnabled?: boolean;
