@@ -14,6 +14,7 @@ module.exports = async ({ config, mode }) => {
       presets: [['react-app', { flow: false, typescript: true }]],
     },
   });
+  config.resolve.alias['slate-react'] = '@concord-consortium/slate-react';
   config.resolve.extensions.push('.ts', '.tsx');
 
   return config;
