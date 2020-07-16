@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 0.4.0 - July 16, 2020
+
+- Support `themeColor` prop for toolbar (used for dialog color)
+- Fix IME bugs (improve Chinese/Japanese/etc. keyboard support)
+- Update dependencies
+
 ## Version 0.3.0 - June 30, 2020
 
 - Improve focus/blur handling
