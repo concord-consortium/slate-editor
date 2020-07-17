@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.4.3 - July 17, 2020
+
+- AUto-scroll to selection after toolbar clicks
+
 ## Version 0.4.2 - July 16, 2020
 
 - Fix dialog text color

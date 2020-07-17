@@ -47,12 +47,12 @@ Note that these links can be inadvertently undone when performing other npm task
 1. Update the version number in `package.json` and `package-lock.json`
     - `npm version --no-git-tag-version [patch|minor|major]`
 1. Update the `CHANGELOG.md` with a description of the new version
-1. Commit and push the changes either directly or via Github pull request
+1. Commit and push the changes either directly or via GitHub pull request
 1. Verify that everything still builds correctly
     - `npm run build`
 1. Create/push a tag for the new version (e.g. v0.1.0) and a description (e.g. Release 0.1.0)
-    - This can be done in a local git client or on the releases page of the Github repository
-1. Publish new release on releases page of Github repository
+    - This can be done in a local git client or on the releases page of the GitHub repository
+1. Publish new release on releases page of GitHub repository
 1. Test a dry-run of publishing the package to the npm repository
     - `npm publish --access public --dry-run`
 1. Publish the package to the npm repository
