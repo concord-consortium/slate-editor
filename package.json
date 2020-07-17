@@ -1,6 +1,6 @@
 {
   "name": "@concord-consortium/slate-editor",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "Slate-based rich text editor component for use in CC projects",
   "main": "build/index.js",
   "module": "build/index.esm.js",

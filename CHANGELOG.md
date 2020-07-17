@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.4.2 - July 16, 2020
+
+- Fix dialog text color
+
 ## Version 0.4.1 - July 16, 2020
 
 - Support `themeColor` prop for toolbar (used for dialog color)
