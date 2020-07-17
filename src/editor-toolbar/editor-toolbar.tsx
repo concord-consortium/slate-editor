@@ -68,6 +68,9 @@ export const EditorToolbar: React.FC<IProps> = (iProps: IProps) => {
   const handleRestoreSelection = useCallback(() => {
     editor && editor.select(savedSelection.current);
   }, [editor]);
+  const handleUserActionPerformed = useCallback(() => {
+    editor && editor.command("setUserActionPerformed");
+  }, [editor]);
 
   if (iProps.show === false) return null;
 
@@ -81,7 +84,8 @@ export const EditorToolbar: React.FC<IProps> = (iProps: IProps) => {
             return (
               <ToolbarButton key={`key-${format}`} format={format} iconSize={_iconSize} buttonSize={buttonSize}
                 colors={colors?.buttonColors} selectedColors={colors?.selectedColors} onDidInvokeTool={onDidInvokeTool}
-                onSaveSelection={handleSaveSelection} onRestoreSelection={handleRestoreSelection} {...others} />
+                onSaveSelection={handleSaveSelection} onRestoreSelection={handleRestoreSelection}
+                onUserActionPerformed={handleUserActionPerformed} {...others} />
             );
           })
         }

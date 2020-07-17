@@ -30,14 +30,15 @@ export interface IBaseProps {
   onDidInvokeTool?: OnDidInvokeToolFn;
   onSaveSelection?: () => void;
   onRestoreSelection?: () => void;
+  onUserActionPerformed?: () => void;
 }
 export interface IProps extends IBaseProps {
   iconSize: number;
   buttonSize: number;
 }
 export const ToolbarButton: React.FC<IProps> = (props: IProps) => {
-  const { format, SvgIcon, iconSize, buttonSize, tooltip, isActive, isEnabled, colors, selectedColors,
-          onChange, onClick, onMouseDown, onDidInvokeTool, onSaveSelection, onRestoreSelection } = props;
+  const { format, SvgIcon, iconSize, buttonSize, tooltip, isActive, isEnabled, colors, selectedColors, onChange,
+          onClick, onMouseDown, onDidInvokeTool, onSaveSelection, onRestoreSelection, onUserActionPerformed } = props;
   const buttonStyle: CSSProperties = {
           width: buttonSize,
           height: buttonSize
@@ -57,10 +58,12 @@ export const ToolbarButton: React.FC<IProps> = (props: IProps) => {
   }
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
     onSaveSelection?.();
+    onUserActionPerformed?.();
     onMouseDown?.(e);
   };
   const handleEnabledClick = (e: React.MouseEvent<HTMLDivElement>) => {
     onRestoreSelection?.();
+    onUserActionPerformed?.();
     if (onClick) {
       onClick(format, e);
       onDidInvokeTool?.(props.format);
