@@ -83,7 +83,7 @@
     "typescript": "^3.9.7"
   },
   "dependencies": {
-    "@concord-consortium/slate-react": "^0.22.10-cc.2",
+    "@concord-consortium/slate-react": "^0.22.10-cc.3",
     "classnames": "^2.2.6",
     "immutable": "^3.8.2",
     "is-hotkey": "^0.1.6",
