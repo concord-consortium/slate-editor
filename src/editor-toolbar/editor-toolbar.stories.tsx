@@ -74,6 +74,17 @@ export const Vertical = () => (
     />
 );
 
+export const WithGap = () => {
+  const _buttons = buttons.slice();
+  _buttons.splice(3, 0, { format: null });
+  return (
+    <EditorToolbar
+      iconSize={16}
+      buttons={_buttons}
+      />
+  );
+};
+
 export const Colored = () => (
   <EditorToolbar
     orientation="vertical"

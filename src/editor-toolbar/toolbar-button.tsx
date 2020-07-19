@@ -17,12 +17,12 @@ export interface IButtonColors {
 }
 
 export interface IBaseProps {
-  format: EFormat | EMetaFormat;
-  SvgIcon: (props: IconProps) => JSX.Element;
+  format: EFormat | EMetaFormat | null;
+  SvgIcon?: (props: IconProps) => JSX.Element;
   colors?: IButtonColors;
   selectedColors?: IButtonColors;
-  tooltip: string;
-  isActive: boolean;
+  tooltip?: string;
+  isActive?: boolean;
   isEnabled?: boolean;
   onMouseDown?: OnMouseFn;
   onClick?: OnClickFn;
@@ -50,7 +50,7 @@ export const ToolbarButton: React.FC<IProps> = (props: IProps) => {
   const fill = isActive
                 ? (selectedColors?.fill || kDefaultSelectedFillColor)
                 : (colors?.fill || kDefaultFillColor);
-  if (isActive && selectedColors?.background) {
+  if (format && isActive && selectedColors?.background) {
     buttonStyle.backgroundColor = selectedColors.background;
   }
   else if (colors?.background) {
@@ -64,9 +64,9 @@ export const ToolbarButton: React.FC<IProps> = (props: IProps) => {
   const handleEnabledClick = (e: React.MouseEvent<HTMLDivElement>) => {
     onRestoreSelection?.();
     onUserActionPerformed?.();
-    if (onClick) {
+    if (format && onClick) {
       onClick(format, e);
-      onDidInvokeTool?.(props.format);
+      onDidInvokeTool?.(format);
       e.preventDefault();
     }
   };
@@ -80,9 +80,10 @@ export const ToolbarButton: React.FC<IProps> = (props: IProps) => {
   return (
     <div className="toolbar-button" style={buttonStyle} title={tooltip}
           onMouseDown={handleMouseDown} onClick={handleClick}>
-      <div className="toolbar-icon-wrapper" style={wrapperStyle}>
-        <SvgIcon className="toolbar-button-icon" {...iconProps} />
-      </div>
+      {!!format && SvgIcon &&
+        <div className="toolbar-icon-wrapper" style={wrapperStyle}>
+          <SvgIcon className="toolbar-button-icon" {...iconProps} />
+        </div>}
     </div>
   );
 };
