@@ -16,7 +16,7 @@ const hotkeyMap = {
 interface IProps extends IEditorProps {
   className?: string;
   editorClassName?: string;
-  toolbar?: IPortalToolbarProps;
+  toolbar?: Omit<IPortalToolbarProps, "changeCount">;
 }
 
 export const SlateContainer: React.FC<IProps> = (props: IProps) => {

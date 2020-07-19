@@ -53,7 +53,7 @@ export const ToolbarButton: React.FC<IProps> = (props: IProps) => {
   if (isActive && selectedColors?.background) {
     buttonStyle.backgroundColor = selectedColors.background;
   }
-  if (!isActive && colors?.background) {
+  else if (colors?.background) {
     buttonStyle.backgroundColor = colors.background;
   }
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {

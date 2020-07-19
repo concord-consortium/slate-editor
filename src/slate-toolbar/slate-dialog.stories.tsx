@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState } from "react";
+import { textToSlate } from "../common/slate-types";
 import { SlateContainer } from "../slate-container/slate-container";
 
 export default {
@@ -10,12 +11,12 @@ const modalPortalText = "This example demonstrates rendering the modal dialog in
                   " The dialog is rendered in a portal-container div adjacent to the slate-container div.";
 
 export const PortalModalDialog = () => {
-  const ref = useRef();
-  const [portalRef, setportalRef] = useState();
+  const ref = useRef<HTMLDivElement>(null);
+  const [portalRef, setportalRef] = useState<HTMLDivElement>();
   useEffect(() => {
-    setportalRef(ref.current);
+    setportalRef(ref.current || undefined);
   }, []);
-  const [value, setValue] = useState(modalPortalText);
+  const [value, setValue] = useState(textToSlate(modalPortalText));
   return (
     <div>
       <div className="portal-container" ref={ref}></div>
@@ -29,7 +30,7 @@ const coloredModalText = "This example demonstrates a modal dialog with custom c
                          " The header and button background colors of the modal dialog are adjusted.";
 
 export const ColoredModalDialog = () => {
-  const [value, setValue] = useState(coloredModalText);
+  const [value, setValue] = useState(textToSlate(coloredModalText));
   return (
     <SlateContainer value={value} onValueChange={_value => setValue(_value)}
                     toolbar={{ colors: {

@@ -1,5 +1,7 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { Editor } from "slate-react";
 import { SlateContainer } from "./slate-container";
+import { textToSlate } from "../common/slate-types";
 
 export default {
   title: "SlateContainer"
@@ -8,7 +10,7 @@ export default {
 const combinedText = "This example demonstrates a combined toolbar/editor with minimal configuration.";
 
 export const Combined = () => {
-  const [value, setValue] = useState(combinedText);
+  const [value, setValue] = useState(textToSlate(combinedText));
   return (
     <SlateContainer value={value} onValueChange={_value => setValue(_value)} />
   );
@@ -17,7 +19,7 @@ export const Combined = () => {
 const coloredText = "This example demonstrates a toolbar with custom colors with the selection indicated by a change in the fill color.";
 
 export const ColoredToolbarSelectedFill = () => {
-  const [value, setValue] = useState(coloredText);
+  const [value, setValue] = useState(textToSlate(coloredText));
   return (
     <SlateContainer value={value} onValueChange={_value => setValue(_value)}
       toolbar={{ colors: {
@@ -30,7 +32,7 @@ export const ColoredToolbarSelectedFill = () => {
 const backgroundText = "This example demonstrates a toolbar with custom colors with the selection indicated by a change in the fill and background colors.";
 
 export const ColoredToolbarSelectedBackground = () => {
-  const [value, setValue] = useState(backgroundText);
+  const [value, setValue] = useState(textToSlate(backgroundText));
   return (
     <SlateContainer value={value} onValueChange={_value => setValue(_value)}
       toolbar={{ colors: {
@@ -43,7 +45,7 @@ export const ColoredToolbarSelectedBackground = () => {
 const themeColorText = "This example demonstrates a toolbar with black icons on a white background.";
 
 export const BlackOnWhiteToolbar = () => {
-  const [value, setValue] = useState(themeColorText);
+  const [value, setValue] = useState(textToSlate(themeColorText));
   return (
     <SlateContainer value={value} onValueChange={_value => setValue(_value)}
       toolbar={{ colors: {
@@ -57,7 +59,7 @@ export const BlackOnWhiteToolbar = () => {
 const themeColorText2 = "This example demonstrates a toolbar with white icons on a black background.";
 
 export const WhiteOnBlackToolbar = () => {
-  const [value, setValue] = useState(themeColorText2);
+  const [value, setValue] = useState(textToSlate(themeColorText2));
   return (
     <SlateContainer value={value} onValueChange={_value => setValue(_value)}
       toolbar={{ colors: {
@@ -72,23 +74,23 @@ const portalText = "This example demonstrates rendering the toolbar in a React p
                   " it can be attached at an arbitrary point in the DOM outside the React" +
                   " hierarchy) as well as hiding/showing the toolbar on blur/focus.";
 export const Portal = () => {
-  const editorRef = useRef();
-  const blurTimer = useRef();
+  const editorRef = useRef<Editor>();
+  const blurTimer = useRef<NodeJS.Timeout>();
   const [isFocused, setIsFocused] = useState(false);
-  const [value, setValue] = useState(portalText);
-  const [portalRoot, setPortalRoot] = useState();
+  const [value, setValue] = useState(textToSlate(portalText));
+  const [portalRoot, setPortalRoot] = useState<HTMLDivElement>();
   useLayoutEffect(() => {
     const storyRoot = document.getElementById('root');
     const _portalRoot = document.createElement('div');
     _portalRoot.className = 'react-toolbar-portal';
-    storyRoot && storyRoot.appendChild(_portalRoot);
+    storyRoot?.appendChild(_portalRoot);
     setPortalRoot(_portalRoot);
-    return (() => storyRoot && storyRoot.removeChild(_portalRoot));
+    return (() => { storyRoot?.removeChild(_portalRoot); });
   }, []);
   const onFocus = useCallback(() => {
     if (blurTimer.current) {
       clearTimeout(blurTimer.current);
-      blurTimer.current = null;
+      blurTimer.current = undefined;
     }
     setTimeout(() => setIsFocused(true));
   }, []);
@@ -99,13 +101,14 @@ export const Portal = () => {
     if (blurTimer.current) return;
     blurTimer.current = setTimeout(() => {
       setIsFocused(false);
-      blurTimer.current = null;
+      blurTimer.current = undefined;
     }, 100);
   }, []);
   useEffect(() => {
-    const onDown = (e) => {
-      if (!e.target.closest(".slate-container, .slate-toolbar")) {
-        editorRef.current && editorRef.current.blur();
+    const onDown = (e: MouseEvent | TouchEvent) => {
+      const elt = e.target as HTMLElement | null;
+      if (!elt?.closest(".slate-container, .slate-toolbar")) {
+        editorRef.current && editorRef.current?.blur();
       }
     };
     document.addEventListener("mousedown", onDown);
