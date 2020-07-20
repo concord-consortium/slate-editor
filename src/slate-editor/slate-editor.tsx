@@ -11,6 +11,7 @@ import { CoreBlocksPlugin } from "../plugins/core-blocks-plugin";
 import { CoreInlinesPlugin } from "../plugins/core-inlines-plugin";
 import { CoreMarksPlugin } from "../plugins/core-marks-plugin";
 import { EditorHistory, IOptions as IEditorHistoryOptions, NoEditorHistory } from "../plugins/editor-history";
+import { EmitterPlugin} from "../plugins/emitter-plugin";
 import { FontSizePlugin, getFontSize } from "../plugins/font-size-plugin";
 import { ImagePlugin } from "../plugins/image-plugin";
 import { LinkPlugin } from "../plugins/link-plugin";
@@ -60,7 +61,7 @@ const defaultPlugins: Plugin<Editor>[] = [
         CoreMarksPlugin(), ColorPlugin(),                   // marks
         ImagePlugin(), LinkPlugin(), CoreInlinesPlugin(),   // inlines
         ListPlugin(), TablePlugin(), CoreBlocksPlugin(),    // blocks
-        FontSizePlugin()
+        EmitterPlugin(), FontSizePlugin()
       ];
 
 const SlateEditor: React.FC<IProps> = (props: IProps) => {

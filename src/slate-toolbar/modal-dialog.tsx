@@ -1,17 +1,20 @@
 import React, { useState, useEffect, useRef } from "react";
 import Select from "react-select";
-import cloneDeep from "lodash/cloneDeep";
+import { CustomInput } from "./custom-input";
 
 import './modal-dialog.scss';
 
 export type FieldType = "checkbox" | "input" | "label" | "select";
+
+export type SelectValue = { value: string, label: string };
+export type SelectOptions = SelectValue[];
 
 export interface IField {
   name: string;       // should be unique within the dialog
   type: FieldType;
   label?: string;
   charSize?: number;  // mainly for inline inputs
-  options?: { value: string, label: string }[]; // required for select
+  options?: SelectOptions; // required for select
 }
 
 export type IRow = IField | IField[];
@@ -26,19 +29,20 @@ export interface IProps {
   fontColor?: string;
   title: string;
   rows: IRow[];
-  values: IFieldValues;
+  fieldValues: IFieldValues;
+  onSetValue: (name: string, value: string, type: FieldType) => void;
+  onChange?: (name: string, value: string, type: FieldType) => void;
   onClose: (values?: IFieldValues) => void;
 }
 
 export const ModalDialog: React.FC<IProps> = (props) => {
-  const { themeColor, fontColor, title, rows, values } = props;
+  const { themeColor, fontColor, title, rows, fieldValues, onSetValue, onChange, onClose } = props;
 
   // CSS styles
   const themeStyle = themeColor ? {backgroundColor: `${themeColor}`} : undefined;
   const titleStyle = fontColor ? {color: `${fontColor}`} : undefined;
 
   // state
-  const [fieldValues, setFieldValues] = useState(values);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   // block clicks outside modal
@@ -66,10 +70,10 @@ export const ModalDialog: React.FC<IProps> = (props) => {
 
   // handlers
   const handleCancelClick = () => {
-    props.onClose();
+    onClose();
   };
   const handleOkClick = () => {
-    props.onClose(fieldValues);
+    onClose(fieldValues);
   };
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (!isMenuOpen) {
@@ -77,12 +81,11 @@ export const ModalDialog: React.FC<IProps> = (props) => {
       if ((e.key === "Escape") || (e.keyCode === 27)) return handleCancelClick();
     }
   };
-  const handleValueChange = (name: string, value: string) => {
-    setFieldValues(_values => {
-      const newValues = cloneDeep(fieldValues);
-      newValues[name] = value;
-      return newValues;
-    });
+  const handleValueChange = (name: string, value: string, type: FieldType) => {
+    onSetValue(name, value, type);
+  };
+  const handleDOMChange = (name: string, value: string, type: FieldType) => {
+    onChange?.(name, value, type);
   };
 
   function renderInput(field: IField, index: number, inline: boolean) {
@@ -97,16 +100,17 @@ export const ModalDialog: React.FC<IProps> = (props) => {
       return field.type === "checkbox" ? String(e.target.checked) : e.target.value;
     };
     return (
-      <input
+      <CustomInput
         id={field.name}
         name={field.name}
         className={inline ? "" : "full-row"}
-        onChange={e => handleValueChange(e.target.name, eventValue(e))}
+        onChange={e => handleValueChange(e.target.name, eventValue(e), field.type)}
+        onDOMChange={e => handleDOMChange(e.target.name, eventValue(e), field.type)}
         type={inputType}
         value={inValue}
         checked={inChecked}
         size={field.charSize}
-        ref={index===0 ? input1Ref : undefined}
+        inputRef={index===0 ? input1Ref : undefined}
       />
     );
   }
@@ -156,14 +160,17 @@ export const ModalDialog: React.FC<IProps> = (props) => {
       }),
     };
     function handleSelectChange(value: any) {
-      handleValueChange(field.name, value.value);
+      handleValueChange(field.name, value.value, field.type);
+    }
+    function getSelectValue(options: SelectOptions | undefined, name: string) {
+      return options?.find(opt => opt.value === fieldValues[name]);
     }
     return (
       <Select
         name={field.name}
         styles={customStyles}
         options={field.options}
-        value={field.options?.[0]}
+        value={getSelectValue(field.options, field.name)}
         onChange={handleSelectChange}
         onMenuOpen={() => setIsMenuOpen(true)}
         onMenuClose={() => setIsMenuOpen(false)}/>
@@ -184,7 +191,7 @@ export const ModalDialog: React.FC<IProps> = (props) => {
   function renderEntry(field: IField, index: number, inline: boolean) {
     const inlineClass = inline ? "inline" : "";
     return (
-      <div className={`input-entry ${inlineClass}`} key={field.name}>
+      <div className={`input-entry ${inlineClass} ${field.type}`} key={field.name}>
         {field.label && (field.type !== "checkbox") &&
           <label htmlFor={field.name} className="label">{field.label}</label>}
         {renderField(field, index, inline)}
@@ -204,8 +211,8 @@ export const ModalDialog: React.FC<IProps> = (props) => {
   }
 
   return (
-      <div className={`modal-dialog ${props.dialogClassName || ""}`}>
-        <div className={`modal-cover ${props.coverClassName || ""}`}/>
+      <div className={`ccse-modal-dialog ${props.dialogClassName || ""}`}>
+        <div className={`ccse-modal-cover ${props.coverClassName || ""}`}/>
         <div className="dialog" onKeyDown={handleKeyDown}>
           <div className="header" style={themeStyle}>
             <div style={titleStyle}>{title}</div>

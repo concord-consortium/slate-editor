@@ -87,6 +87,7 @@
   "dependencies": {
     "@concord-consortium/slate-react": "^0.22.10-cc.3",
     "classnames": "^2.2.6",
+    "eventemitter3": "^4.0.4",
     "immutable": "^3.8.2",
     "is-hotkey": "^0.1.6",
     "lodash": "^4.17.19",

@@ -52,10 +52,12 @@ export function getRenderAttributesFromNode(obj: Block | Inline | Mark, omitProp
   return renderAttrs;
 }
 
+export function classArray(classes?: string) {
+  return classes?.split(" ").filter(c => !!c);
+}
+
 export function mergeClassStrings(classes1?: string, classes2?: string) {
-  const c1 = classes1?.split(" ").filter(c => !!c);
-  const c2 = classes2?.split(" ").filter(c => !!c);
-  return classNames(c1, c2) || undefined;
+  return classNames(classArray(classes1), classArray(classes2)) || undefined;
 }
 
 export function normalizeStyleString(style: string) {

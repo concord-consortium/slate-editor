@@ -4,7 +4,6 @@ import { SlateContainer } from "../slate-container/slate-container";
 import { slateToHtml, htmlToSlate } from "./html-serializer";
 import { kFieldMouseFurColorIntro, kMonteCarloRisk, kNaturalHistoryV5Intro, kNaturalHistoryV5Page3,
           kOilAndWaterIntro } from "./lara-fixtures";
-import "./lara-fixtures.stories.scss";
 import "./serialization.stories.scss";
 
 export default {

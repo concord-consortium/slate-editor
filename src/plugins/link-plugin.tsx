@@ -5,7 +5,7 @@ import { EFormat } from "../common/slate-types";
 import { getRenderAttributesFromNode, getDataFromElement } from "../serialization/html-utils";
 import { hasActiveInline } from "../slate-editor/slate-utils";
 import { IField, IFieldValues } from "../slate-toolbar/modal-dialog";
-import { DisplayDialogFunction } from "../slate-toolbar/slate-toolbar";
+import { IDialogController } from "../slate-toolbar/slate-toolbar";
 import { HtmlSerializablePlugin } from "./html-serializable-plugin";
 
 function renderLink(link: Inline, attributes: RenderAttributes, children: ReactNode, isSerializing = false) {
@@ -66,7 +66,7 @@ export function LinkPlugin(): HtmlSerializablePlugin {
         editor.moveToEnd();
         return editor;
       },
-      configureLink: function (editor: Editor, displayDialog: DisplayDialogFunction) {
+      configureLink: function (editor: Editor, dialogController: IDialogController) {
         const { value } = editor;
         const hasLink = hasActiveInline(editor.value, EFormat.link);
 
@@ -80,11 +80,11 @@ export function LinkPlugin(): HtmlSerializablePlugin {
           const textField: IField[] = value.selection.isExpanded
                                         ? []
                                         : [{ name: "linkText", type: "input",
-                                            label: "Enter the text for the link:" }];
+                                            label: "Link text:" }];
           const urlField: IField[] = [{ name: "linkUrl", type: "input",
-                                      label: "Enter the URL of the link:" }];
+                                      label: "Link URL:" }];
           const linkCmd = value.selection.isExpanded ? "applyLink" : "insertLink";
-          displayDialog({
+          dialogController.display({
             title: "Insert Link",
             rows: [...textField, ...urlField],
             values: {},
