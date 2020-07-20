@@ -354,16 +354,12 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
   // listen for configuration requests from plugins
   useEffect(() => {
     const emitter: EventEmitter | undefined = editor?.query("emitter");
-    const events = ["configureImage", "configureLink"];
-    const handlers: Record<string, (data: any) => void> = {};
-    events.forEach(event => {
-      handlers[event] = (data: any) => editor?.command(event, dialogController, data);
-      emitter?.on(event, handlers[event]);
-    });
+    const handler = (event: string, ...args: any) => {
+      editor?.command(event, dialogController, ...args);
+    };
+    emitter?.on("toolbarDialog", handler);
     return () => {
-      events.forEach(event => {
-        emitter?.off(event, handlers[event]);
-      });
+      emitter?.off("toolbarDialog", handler);
     };
   }, [editor, dialogController]);
 

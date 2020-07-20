@@ -11,8 +11,8 @@ export function EmitterPlugin(): Plugin {
       }
     },
     commands: {
-      emit: function (editor: Editor, event: string, data: any) {
-        emitter.emit(event, data);
+      emit: function (editor: Editor, event: string, ...args: any) {
+        emitter.emit(event, ...args);
         return editor;
       }
     }

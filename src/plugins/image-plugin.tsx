@@ -245,7 +245,7 @@ export function ImagePlugin(): HtmlSerializablePlugin {
               isHighlighted: props.isSelected || props.isFocused,
               onLoad: () => editor.command("onLoad", node),
               onClick: () => editor.moveFocusToStartOfNode(node),
-              onDoubleClick: () => editor.command("emit", "configureImage", node)
+              onDoubleClick: () => editor.command("emit", "toolbarDialog", "configureImage", node)
             };
       return renderImage(node, { ...dataAttrs, ...attributes }, children, options);
     }
