@@ -93,10 +93,6 @@ $dialogHeight: 340px;
           cursor: pointer;
         }
 
-        // .checkbox > input:checked {
-        //     border: 1px solid #41B883;
-        // }
-
         .checkbox > input:checked + span::before {
           content: '\2713';
           display: block;

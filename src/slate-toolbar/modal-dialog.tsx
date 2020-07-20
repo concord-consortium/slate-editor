@@ -140,6 +140,7 @@ export const ModalDialog: React.FC<IProps> = (props) => {
         minHeight: '30px',
         height: '30px',
         boxShadow: state.isFocused ? null : null,
+        cursor: 'pointer'
       }),
       valueContainer: (provided: any) => ({
         ...provided,
@@ -157,6 +158,10 @@ export const ModalDialog: React.FC<IProps> = (props) => {
       indicatorsContainer: (provided: any) => ({
         ...provided,
         height: '30px',
+      }),
+      option: (provided: any) => ({
+        ...provided,
+        cursor: 'pointer'
       }),
     };
     function handleSelectChange(value: any) {
