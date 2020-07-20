@@ -1,5 +1,5 @@
 import React from "react";
-import { EditorToolbar, getPlatformTooltip } from "./editor-toolbar";
+import { EditorToolbar, getPlatformTooltip, IButtonSpec } from "./editor-toolbar";
 import IconBold from "../assets/icon-bold";
 import IconCode from "../assets/icon-code";
 import IconItalic from "../assets/icon-italic";
@@ -7,51 +7,54 @@ import IconBulletedList from "../assets/icon-list-bulleted";
 import IconNumberedList from "../assets/icon-list-numbered";
 import IconUnderline from "../assets/icon-underline";
 import "./editor-toolbar.scss";
+import { EFormat } from "../common/slate-types";
 
 export default {
   title: "EditorToolbar"
 };
 
 /* eslint no-console: 0 */
-const buttons = [
+const buttons: IButtonSpec[] = [
   {
-    format: "bold",
+    format: EFormat.bold,
     SvgIcon: IconBold,
     tooltip: getPlatformTooltip("bold (mod-b)"),
-    onIsActive: () => true,
+    isActive: false,
     onClick: () => console.log("Bold")
   },
   {
-    format: "italic",
+    format: EFormat.italic,
     SvgIcon: IconItalic,
     tooltip: getPlatformTooltip("italic (mod-i)"),
-    onIsActive: () => true,
+    isActive: true,
     onClick: () => console.log("Italic")
   },
   {
-    format: "underlined",
+    format: EFormat.underlined,
     SvgIcon: IconUnderline,
     tooltip: getPlatformTooltip("underline (mod-u)"),
-    onIsActive: () => true,
+    isActive: false,
     onClick: () => console.log("Underline")
   },
   {
-    format: "code",
+    format: EFormat.code,
     SvgIcon: IconCode,
     tooltip: getPlatformTooltip("code"),
-    onIsActive: () => true,
+    isActive: true,
     onClick: () => console.log("Code")
   },
   {
-    format: "ordered-list",
+    format: EFormat.numberedList,
     SvgIcon: IconNumberedList,
     tooltip: getPlatformTooltip("numbered list"),
+    isActive: false,
     onClick: () => console.log("# List")
   },
   {
-    format: "bulleted-list",
+    format: EFormat.bulletedList,
     SvgIcon: IconBulletedList,
     tooltip: getPlatformTooltip("bulleted list"),
+    isActive: true,
     onClick: () => console.log("• List")
   }
 ];
@@ -70,6 +73,17 @@ export const Vertical = () => (
     buttons={buttons}
     />
 );
+
+export const WithGap = () => {
+  const _buttons = buttons.slice();
+  _buttons.splice(3, 0, { format: null });
+  return (
+    <EditorToolbar
+      iconSize={16}
+      buttons={_buttons}
+      />
+  );
+};
 
 export const Colored = () => (
   <EditorToolbar

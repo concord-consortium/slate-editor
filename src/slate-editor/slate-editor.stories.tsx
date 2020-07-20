@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { HotkeyMap } from "../common/slate-hooks";
 import { EFormat, textToSlate } from "../common/slate-types";
 import { SlateEditor } from "./slate-editor";
 
@@ -6,11 +7,10 @@ export default {
   title: "SlateEditor"
 };
 
-const hotkeyMap = {
+const hotkeyMap: HotkeyMap = {
         'mod+b': editor => editor.toggleMark(EFormat.bold),
         'mod+i': editor => editor.toggleMark(EFormat.italic),
-        'mod+u': editor => editor.toggleMark(EFormat.underlined),
-        'mod+\\': editor => editor.toggleMark(EFormat.code),
+        'mod+u': editor => editor.toggleMark(EFormat.underlined)
       };
 
 const baseValue = "This editor-only example has no toolbar but keyboard shortcuts should work, ";

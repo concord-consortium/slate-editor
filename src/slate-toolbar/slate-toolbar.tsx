@@ -256,14 +256,15 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
                 // make a copy of the array
                 .slice()
                 // filter out the unspecified buttons
-                .filter(button => order.find(entry => isToolEntryFormat(entry, button.format)))
+                .filter(button => order.find(entry => button.format && isToolEntryFormat(entry, button.format)))
                 // use client-provided tooltip overrides
                 .map(button => {
-                  const hint = orderMap[button.format].tooltip;
+                  const hint = button.format && orderMap[button.format].tooltip;
                   const tooltip = hint ? { tooltip: getPlatformTooltip(hint) } : {};
                   return { ...button, ...tooltip };
                 });
-    b.sort((button1, button2) => orderMap[button1.format].index - orderMap[button2.format].index);
+    const buttonIndex = (button: typeof b[0]) => button.format ? orderMap[button.format].index : 0;
+    b.sort((button1, button2) => buttonIndex(button1) - buttonIndex(button2));
     return b;
   }, [buttons, order]);
 

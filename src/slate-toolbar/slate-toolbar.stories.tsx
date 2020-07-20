@@ -6,32 +6,32 @@ export default {
 };
 
 export const Horizontal = () => (
-  <SlateToolbar />
+  <SlateToolbar changeCount={0} />
 );
 
 export const Vertical = () => (
-  <SlateToolbar orientation="vertical" />
+  <SlateToolbar changeCount={0} orientation="vertical" />
 );
 
 export const Colored = () => (
-  <SlateToolbar
+  <SlateToolbar changeCount={0}
     orientation="vertical"
-    colors={{ background: "#177991", fill: "#ffffff" }}
+    colors={{ buttonColors: { background: "#177991", fill: "#ffffff" } }}
     />
 );
 
 export const TwoColumns = () => (
-  <SlateToolbar
+  <SlateToolbar changeCount={0}
     orientation="vertical"
-    colors={{ background: "#177991", fill: "#ffffff" }}
+    colors={{ buttonColors: { background: "#177991", fill: "#ffffff" } }}
     buttonsPerRow={9}
     />
 );
 
 export const ThreeColumns = () => (
-  <SlateToolbar
+  <SlateToolbar changeCount={0}
     orientation="vertical"
-    colors={{ background: "#177991", fill: "#ffffff" }}
+    colors={{ buttonColors: { background: "#177991", fill: "#ffffff" } }}
     buttonsPerRow={6}
     />
 );
@@ -42,9 +42,9 @@ const order = [
       ];
 
 export const Ordered = () => (
-  <SlateToolbar
+  <SlateToolbar changeCount={0}
     orientation="vertical"
-    colors={{ background: "#177991", fill: "#ffffff" }}
+    colors={{ buttonColors: { background: "#177991", fill: "#ffffff" } }}
     buttonsPerRow={9}
     order={order}
     />
@@ -57,9 +57,9 @@ const hintedOrder = order
                       // override tooltips
                       .map(f => ({ format: f, tooltip: `hint: ${f}`}) );
 export const OrderedHinted = () => (
-  <SlateToolbar
+  <SlateToolbar changeCount={0}
     orientation="vertical"
-    colors={{ background: "#177991", fill: "#ffffff" }}
+    colors={{ buttonColors: { background: "#177991", fill: "#ffffff" } }}
     buttonsPerRow={7}
     order={hintedOrder}
     />

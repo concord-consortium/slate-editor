@@ -78,11 +78,12 @@ export const EditorToolbar: React.FC<IProps> = (iProps: IProps) => {
     <div className={`editor-toolbar ${props.className || ""}`}>
       <div className={`editor-toolbar-container ${orientationClass}`} style={toolbarStyle} >
         {
-          buttons.map(button => {
+          buttons.map((button, i) => {
             const { format, ...others } = button;
+            const key = format ? `key-${format}` : `key-placeholder-${i}`;
             const _iconSize = button.iconSize || iconSize;
             return (
-              <ToolbarButton key={`key-${format}`} format={format} iconSize={_iconSize} buttonSize={buttonSize}
+              <ToolbarButton key={`key-${key}`} format={format} iconSize={_iconSize} buttonSize={buttonSize}
                 colors={colors?.buttonColors} selectedColors={colors?.selectedColors} onDidInvokeTool={onDidInvokeTool}
                 onSaveSelection={handleSaveSelection} onRestoreSelection={handleRestoreSelection}
                 onUserActionPerformed={handleUserActionPerformed} {...others} />
