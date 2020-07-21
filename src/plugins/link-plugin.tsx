@@ -4,7 +4,8 @@ import { Editor, RenderAttributes, RenderInlineProps } from "slate-react";
 import { EFormat } from "../common/slate-types";
 import { getRenderAttributesFromNode, getDataFromElement } from "../serialization/html-utils";
 import { hasActiveInline } from "../slate-editor/slate-utils";
-import { DisplayDialogFunction } from "../slate-toolbar/slate-toolbar";
+import { IField, IFieldValues } from "../slate-toolbar/modal-dialog";
+import { IDialogController } from "../slate-toolbar/slate-toolbar";
 import { HtmlSerializablePlugin } from "./html-serializable-plugin";
 
 function renderLink(link: Inline, attributes: RenderAttributes, children: ReactNode, isSerializing = false) {
@@ -65,7 +66,7 @@ export function LinkPlugin(): HtmlSerializablePlugin {
         editor.moveToEnd();
         return editor;
       },
-      configureLink: function (editor: Editor, displayDialog: DisplayDialogFunction) {
+      configureLink: function (editor: Editor, dialogController: IDialogController) {
         const { value } = editor;
         const hasLink = hasActiveInline(editor.value, EFormat.link);
 
@@ -76,27 +77,33 @@ export function LinkPlugin(): HtmlSerializablePlugin {
         if (hasLink) {
           editor.command(unwrapLink);
         } else {
-          const textPrompt = value.selection.isExpanded ? [] : ["Enter the text for the link:"];
+          const textField: IField[] = value.selection.isExpanded
+                                        ? []
+                                        : [{ name: "linkText", type: "input",
+                                            label: "Link text:" }];
+          const urlField: IField[] = [{ name: "linkUrl", type: "input",
+                                      label: "Link URL:" }];
           const linkCmd = value.selection.isExpanded ? "applyLink" : "insertLink";
-          displayDialog({
+          dialogController.display({
             title: "Insert Link",
-            prompts: [...textPrompt, "Enter the URL of the link:"],
+            rows: [...textField, ...urlField],
+            values: {},
             onAccept: (_editor, inputs) => _editor.command(linkCmd, inputs)
           });
         }
         return editor;
       },
-      insertLink: function (editor: Editor, dialogValues: string[]) {
-        const text = dialogValues[0];
-        const href = dialogValues[1];
+      insertLink: function (editor: Editor, values: IFieldValues) {
+        const text = values.linkText;
+        const href = values.linkUrl;
         editor
           .insertText(text)
           .moveFocusBackward(text.length)
           .command("wrapLink", href);
         return editor;
       },
-      applyLink: function (editor: Editor, dialogValues: string[]) {
-        const href = dialogValues[0];
+      applyLink: function (editor: Editor, values: IFieldValues) {
+        const href = values.linkUrl;
         editor.command("wrapLink", href);
         return editor;
       }

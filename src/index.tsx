@@ -8,8 +8,7 @@ export { deserializeDocument, deserializeValue, serializeDocument, serializeValu
 export { SlateContainer } from "./slate-container/slate-container";
 export { SlateEditor } from "./slate-editor/slate-editor";
 export { getContentHeight } from "./slate-editor/slate-utils";
-export { DisplayDialogFunction, DisplayDialogSettings, IToolOrder, OrderEntry, SlateToolbar
-        } from "./slate-toolbar/slate-toolbar";
+export { DisplayDialogSettings, IToolOrder, OrderEntry, SlateToolbar } from "./slate-toolbar/slate-toolbar";
 export { EditorToolbar, IButtonSpec, IToolbarColors, getPlatformTooltip } from "./editor-toolbar/editor-toolbar";
 export { OnChangeColorFn, OnChangeFn, OnClickFn, OnDidInvokeToolFn, OnMouseFn, ToolbarButton
         } from "./editor-toolbar/toolbar-button";

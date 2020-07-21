@@ -1,4 +1,4 @@
-import React, { useMemo, useState }  from "react";
+import React, { useEffect, useMemo, useRef, useState }  from "react";
 import { EditorToolbar, getPlatformTooltip } from "../editor-toolbar/editor-toolbar";
 import IconBold from "../assets/icon-bold";
 import IconCode from "../assets/icon-code";
@@ -22,8 +22,10 @@ import { hasActiveMark, selectionContainsBlock, handleToggleSuperSubscript }
 import { Editor } from "slate-react";
 import { SelectionJSON } from "slate";
 import { EFormat, EMetaFormat, ToolFormat } from "../common/slate-types";
-import { ModalDialog } from "./modal-dialog";
+import { ModalDialog, IRow, IFieldValues, FieldType } from "./modal-dialog";
 import { ModalDialogPortal } from "./modal-dialog-portal";
+import { clone } from "lodash";
+import EventEmitter from "eventemitter3";
 
 export interface IToolOrder {
   format: string;
@@ -46,12 +48,15 @@ export interface IProps extends Omit<IToolbarProps, "buttons"> {
 
 export interface DisplayDialogSettings {
   title: string;
-  prompts: string[];
-  onAccept?: (editor: Editor, inputs: string[]) => void;
+  rows: IRow[];
+  values: IFieldValues;
+  onChange?: (editor: Editor, name: string, value: string, values: IFieldValues) => boolean | undefined;
+  onAccept?: (editor: Editor, values: IFieldValues) => void;
 }
 
-export interface DisplayDialogFunction {
-  (settings: DisplayDialogSettings): void;
+export interface IDialogController {
+  display: (settings: DisplayDialogSettings) => void;
+  update: (values: IFieldValues) => void;
 }
 
 function isToolEntryFormat(entry: OrderEntry, format: ToolFormat) {
@@ -63,13 +68,32 @@ function isToolEntryFormat(entry: OrderEntry, format: ToolFormat) {
 export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
   const { className, editor, order, ...others } = props;
   const [showDialog, setShowDialog] = useState(false);
-  const [dialogSettings, setDialogSettings] = useState<DisplayDialogSettings>();
-  const displayDialog = (settings: DisplayDialogSettings) => {
-    setDialogSettings(settings);
-    // prevents focus-bouncing between editor and dialog
-    editor?.blur();
-    setShowDialog(true);
+  const settingsRef = useRef<DisplayDialogSettings>();
+  const validValuesRef = useRef<IFieldValues>();
+  const [ , setChanges] = useState(0);
+  const setFieldValues = (newValues: IFieldValues) => {
+    if (!settingsRef.current) return;
+    settingsRef.current.values = { ...settingsRef.current.values, ...newValues };
+    setChanges(count => count + 1);
   };
+  const validateFieldValues = () => {
+    if (settingsRef.current) {
+      validValuesRef.current = clone(settingsRef.current.values);
+    }
+  };
+  const dialogController: IDialogController = useMemo(() => ({
+    display: (settings: DisplayDialogSettings) => {
+      settingsRef.current = settings;
+      validateFieldValues();
+      // prevents focus-bouncing between editor and dialog
+      editor?.blur();
+      setShowDialog(true);
+    },
+    update: (newValues: IFieldValues) => {
+      setFieldValues(newValues);
+      validateFieldValues();
+    }
+  }), [editor]);
 
   const buttons: IButtonSpec[] = [
     {
@@ -148,7 +172,7 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
       tooltip: getPlatformTooltip("image"),
       isActive: !!editor && editor.query("isImageActive"),
       isEnabled: !!editor && editor.query("isImageEnabled"),
-      onClick: () => editor?.command("configureImage", displayDialog)
+      onClick: () => editor?.command("configureImage", dialogController)
     },
     {
       format: EFormat.link,
@@ -156,7 +180,7 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
       tooltip: getPlatformTooltip("link"),
       isActive: !!editor && editor.query("isLinkActive"),
       isEnabled: !!editor && editor.query("isLinkEnabled"),
-      onClick: () => editor?.command("configureLink", displayDialog)
+      onClick: () => editor?.command("configureLink", dialogController)
     },
     {
       format: EFormat.heading1,
@@ -268,32 +292,76 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
     return b;
   }, [buttons, order]);
 
-  const handleCloseDialog = (inputs: string[] | null) => {
+  const handleSetValue = (name: string, value: string, type: FieldType) => {
+    setFieldValues({ [name]: value });
+    if (type !== "input") {
+        callOnChange(name, value);
+    }
+  };
+
+  const handleChange = (name: string, value: string, type: FieldType) => {
+    if (type === "input") {
+      callOnChange(name, value);
+    }
+  };
+
+  const callOnChange = (name: string, value: string) => {
+    if (editor && settingsRef.current?.onChange) {
+      const { values } = settingsRef.current;
+      const isValid = settingsRef.current.onChange(editor, name, value, values) !== false;
+      if (isValid) {
+        validateFieldValues();
+      }
+      else {
+        setFieldValues({ [name]: validValuesRef.current?.[name] || "" });
+      }
+    }
+  };
+
+  const handleClose = (values?: IFieldValues) => {
     setShowDialog(false);
-    editor && inputs && dialogSettings?.onAccept?.(editor, inputs);
+    editor && values && settingsRef.current?.onAccept?.(editor, values);
   };
 
   const themeColor = props.colors?.themeColor || props.colors?.buttonColors?.background;
-  const dialog = showDialog && dialogSettings
+  const dialog = showDialog && settingsRef.current
                   ? (props.modalPortalRoot
                       ? <ModalDialogPortal
                           modalPortalRoot={props.modalPortalRoot}
                           coverClassName={props.modalCoverClassName}
                           dialogClassName={props.modalDialogClassName}
                           themeColor={themeColor}
-                          title={dialogSettings.title}
-                          prompts={dialogSettings.prompts}
-                          onClose={handleCloseDialog}
+                          title={settingsRef.current.title}
+                          rows={settingsRef.current.rows}
+                          fieldValues={settingsRef.current.values}
+                          onSetValue={handleSetValue}
+                          onChange={handleChange}
+                          onClose={handleClose}
                         />
                       : <ModalDialog
                           coverClassName={props.modalCoverClassName}
                           dialogClassName={props.modalDialogClassName}
                           themeColor={themeColor}
-                          title={dialogSettings.title}
-                          prompts={dialogSettings.prompts}
-                          onClose={handleCloseDialog}
+                          title={settingsRef.current.title}
+                          rows={settingsRef.current.rows}
+                          fieldValues={settingsRef.current.values}
+                          onSetValue={handleSetValue}
+                          onChange={handleChange}
+                          onClose={handleClose}
                         />)
                   : null;
+
+  // listen for configuration requests from plugins
+  useEffect(() => {
+    const emitter: EventEmitter | undefined = editor?.query("emitter");
+    const handler = (event: string, ...args: any) => {
+      editor?.command(event, dialogController, ...args);
+    };
+    emitter?.on("toolbarDialog", handler);
+    return () => {
+      emitter?.off("toolbarDialog", handler);
+    };
+  }, [editor, dialogController]);
 
   return (
     <div>
