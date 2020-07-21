@@ -69,6 +69,7 @@ export const ModalDialog: React.FC<IProps> = (props) => {
   }, []);
 
   // handlers
+  const okRef = useRef<HTMLButtonElement>(null);
   const handleCancelClick = () => {
     onClose();
   };
@@ -77,8 +78,15 @@ export const ModalDialog: React.FC<IProps> = (props) => {
   };
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (!isMenuOpen) {
-      if ((e.key === "Enter") || (e.keyCode === 13)) return handleOkClick();
-      if ((e.key === "Escape") || (e.keyCode === 27)) return handleCancelClick();
+      if ((e.key === "Enter") || (e.keyCode === 13)) {
+        // blur any active edit
+        okRef.current?.focus();
+        // give blur a chance to propagate
+        setTimeout(() => okRef.current?.click());
+      }
+      else if ((e.key === "Escape") || (e.keyCode === 27)) {
+        handleCancelClick();
+      }
     }
   };
   const handleValueChange = (name: string, value: string, type: FieldType) => {
@@ -226,7 +234,7 @@ export const ModalDialog: React.FC<IProps> = (props) => {
             {rows.map((row, i) => renderRow(row, i))}
           </div>
           <div className="footer">
-            <button style={themeStyle} onClick={handleOkClick}>OK</button>
+            <button ref={okRef} style={themeStyle} onClick={handleOkClick}>OK</button>
             <button style={themeStyle} onClick={handleCancelClick}>CANCEL</button>
           </div>
         </div>
