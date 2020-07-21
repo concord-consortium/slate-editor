@@ -13,6 +13,20 @@ import "./image-plugin.scss";
 
 const kImageHighlightClass = "ccse-image-highlight";
 
+const kFloatLeftClasses = ["ccse-float-left", "tinymce-img-float-left"];
+const kFloatRightClasses = ["ccse-float-right", "tinymce-img-float-right"];
+const kFloatValueToClassesMap: Record<string, string[]> = {
+        left: kFloatLeftClasses,
+        right: kFloatRightClasses
+      };
+const getClassesForFloatValue = (float?: string) => {
+  return float && kFloatValueToClassesMap[float] || undefined;
+};
+const getFloatValueFromClasses = (classes: string) => {
+  if (kFloatLeftClasses.some(c => classes.includes(c))) return "left";
+  if (kFloatRightClasses.some(c => classes.includes(c))) return "right";
+};
+
 interface IRenderOptions {
   isSerializing?: boolean;
   isHighlighted?: boolean;
@@ -30,12 +44,7 @@ function renderImage(node: Inline, attributes: RenderAttributes, children: React
   const height: number = data.get("height");
   const constrain: boolean = data.get("constrain") !== false;
   const constrainClass = constrain ? undefined : "ccse-no-constrain";
-  const floatClassMap: Record<string, string[]> = {
-          "left": ["ccse-float-left", "tinymce-img-float-left"],
-          "right": ["ccse-float-right", "tinymce-img-float-right"]
-        };
-  const float = data.get("float");
-  const floatClasses = float ? floatClassMap[float] : undefined;
+  const floatClasses = getClassesForFloatValue(data.get("float"));
   const classes = classNames(classArray(className), highlightClass, constrainClass, floatClasses) || undefined;
   const onLoad = options?.isSerializing ? undefined : options?.onLoad;
   const onClick = options?.isSerializing ? undefined : options?.onClick;
@@ -50,6 +59,7 @@ function getDataFromImageElement(el: Element) {
   const { data } = getDataFromElement(el);
   const _data: Record<string, string | number | boolean> = clone(data) || {};
   const _classes = data?.["class"] || "";
+  let float;
   if (data?.width) {
     _data.width = Math.round(parseFloat(data.width));
   }
@@ -59,11 +69,8 @@ function getDataFromImageElement(el: Element) {
   if (_classes.includes("ccse-no-constrain")) {
     _data.constrain = false;
   }
-  if (_classes.includes("ccse-float-left") || _classes.includes("tinymce-img-float-left")) {
-    _data.float = "left";
-  }
-  if (_classes.includes("ccse-float-right") || _classes.includes("tinymce-img-float-right")) {
-    _data.float = "right";
+  if ((float = getFloatValueFromClasses(_classes))) {
+    _data.float = float;
   }
   return { data: _data };
 }
@@ -89,9 +96,10 @@ function getDialogValuesFromNode(node?: Inline) {
   }
   const _class = data?.get("class") || "";
   values.constrain = _class.includes("ccse-no-constrain") ? "false" : "true";
-  values.placement = _class.includes("ccse-float-right") || _class.includes("tinymce-img-float-right")
+  const floatValue = getFloatValueFromClasses(_class);
+  values.placement = floatValue === "right"
                       ? "float-right"
-                      : _class.includes("ccse-float-left") || _class.includes("tinymce-img-float-left")
+                      : floatValue === "left"
                           ? "float-left"
                           : "inline";
   return values;
@@ -187,7 +195,7 @@ export function ImagePlugin(): HtmlSerializablePlugin {
 
               if ((constrain !== "false") && _ratio) {
                 const widthPx = Math.round(heightPx * _ratio);
-                dialogController.update({ width: `${widthPx}`});
+                dialogController.update({ width: `${widthPx}` });
               }
               else if (heightPx !== parseFloat(value)) {
                 dialogController.update({ height: `${heightPx}` });
