@@ -76,24 +76,24 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
     settingsRef.current.values = { ...settingsRef.current.values, ...newValues };
     setChanges(count => count + 1);
   };
+  const validateFieldValues = () => {
+    if (settingsRef.current) {
+      validValuesRef.current = clone(settingsRef.current.values);
+    }
+  };
   const dialogController: IDialogController = useMemo(() => ({
     display: (settings: DisplayDialogSettings) => {
       settingsRef.current = settings;
-      validateValues();
+      validateFieldValues();
       // prevents focus-bouncing between editor and dialog
       editor?.blur();
       setShowDialog(true);
     },
     update: (newValues: IFieldValues) => {
       setFieldValues(newValues);
-      validateValues();
+      validateFieldValues();
     }
   }), [editor]);
-  const validateValues = () => {
-    if (settingsRef.current) {
-      validValuesRef.current = clone(settingsRef.current.values);
-    }
-  };
 
   const buttons: IButtonSpec[] = [
     {
@@ -293,9 +293,9 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
   }, [buttons, order]);
 
   const handleSetValue = (name: string, value: string, type: FieldType) => {
-  setFieldValues({ [name]: value });
-  if (type !== "input") {
-      callOnChange(name, value);
+    setFieldValues({ [name]: value });
+    if (type !== "input") {
+        callOnChange(name, value);
     }
   };
 
@@ -310,7 +310,7 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
       const { values } = settingsRef.current;
       const isValid = settingsRef.current.onChange(editor, name, value, values) !== false;
       if (isValid) {
-        validateValues();
+        validateFieldValues();
       }
       else {
         setFieldValues({ [name]: validValuesRef.current?.[name] || "" });

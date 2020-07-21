@@ -11,7 +11,7 @@ export interface IProps extends React.InputHTMLAttributes<HTMLInputElement> {
  * matters for text <input>s, where "input" is triggered on every keystroke but "change"
  * is only triggered when user "completes" editing of the field, e.g. on blur after having
  * made changes. There also appear to be (or have been) some cases in which "change" events
- * were are/were sent without corresponding "input" events, e.g. browser auto-fill.
+ * are/were sent without corresponding "input" events, e.g. browser auto-fill.
  */
 export const CustomInput: React.FC<IProps> = (props) => {
   const { inputRef, onDOMChange, ...others } = props;
