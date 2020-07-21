@@ -94,9 +94,8 @@ function getDialogValuesFromNode(node?: Inline) {
   if (width && height) {
     values.ratio = `${parseFloat(width) / parseFloat(height)}`;
   }
-  const _class = data?.get("class") || "";
-  values.constrain = _class.includes("ccse-no-constrain") ? "false" : "true";
-  const floatValue = getFloatValueFromClasses(_class);
+  values.constrain = data?.get("constrain") === false ? "false" : "true";
+  const floatValue = data?.get("float");
   values.placement = floatValue === "right"
                       ? "float-right"
                       : floatValue === "left"
@@ -141,7 +140,7 @@ export function ImagePlugin(): HtmlSerializablePlugin {
         dialogController.display({
           title: "Insert Image",
           rows: [
-            { name: "source", type: "input", label: "Source URL:" },
+            { name: "source", type: "input", label: "Image URL:" },
             { name: "description", type: "input", label: "Description:" },
             { name: "dimensions", type: "label", label: "Dimensions:" },
             [
