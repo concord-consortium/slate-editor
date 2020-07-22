@@ -1,6 +1,6 @@
 # Changelog
 
-## Version 0.5.0 - July 18, 2020
+## Version 0.5.0 - July 22, 2020
 
 - Image dialog supports alt text, sizing, float left|right, etc.
 - Support toolbar placeholders
