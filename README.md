@@ -222,11 +222,16 @@ interface EditorDocument {
 
 #### Editor Value
 
-Putting it all together, the final editor value is represented as:
+The editor value also includes document-wide settings, e.g. `fontSize` (which is really a font scale factor):
 
 ```typescript
+interface DocumentSettings {
+    fontSize: number;           // scale factor, e.g. 1.1 = +10%
+}
+
 interface EditorValue {
   object: "value";
+  data: DocumentSettings;
   document: EditorDocument;
 }
 ```
