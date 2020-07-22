@@ -11,10 +11,10 @@ import { getDataFromElement, getRenderAttributesFromNode, classArray } from "../
 import { HtmlSerializablePlugin } from "./html-serializable-plugin";
 import "./image-plugin.scss";
 
-const kImageHighlightClass = "ccse-image-highlight";
+const kImageHighlightClass = "ccrte-image-highlight";
 
-const kFloatLeftClasses = ["ccse-float-left", "tinymce-img-float-left"];
-const kFloatRightClasses = ["ccse-float-right", "tinymce-img-float-right"];
+const kFloatLeftClasses = ["ccrte-float-left", "tinymce-img-float-left"];
+const kFloatRightClasses = ["ccrte-float-right", "tinymce-img-float-right"];
 const kFloatValueToClassesMap: Record<string, string[]> = {
         left: kFloatLeftClasses,
         right: kFloatRightClasses
@@ -43,7 +43,7 @@ function renderImage(node: Inline, attributes: RenderAttributes, children: React
   const width: number = data.get("width");
   const height: number = data.get("height");
   const constrain: boolean = data.get("constrain") !== false;
-  const constrainClass = constrain ? undefined : "ccse-no-constrain";
+  const constrainClass = constrain ? undefined : "ccrte-no-constrain";
   const floatClasses = getClassesForFloatValue(data.get("float"));
   const classes = classNames(classArray(className), highlightClass, constrainClass, floatClasses) || undefined;
   const onLoad = options?.isSerializing ? undefined : options?.onLoad;
@@ -66,7 +66,7 @@ function getDataFromImageElement(el: Element) {
   if (data?.height) {
     _data.height = Math.round(parseFloat(data.height));
   }
-  if (_classes.includes("ccse-no-constrain")) {
+  if (_classes.includes("ccrte-no-constrain")) {
     _data.constrain = false;
   }
   if ((float = getFloatValueFromClasses(_classes))) {

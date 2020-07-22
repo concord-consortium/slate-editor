@@ -22,7 +22,7 @@ describe("Slate Editor", () => {
                                 onEditorRef: (ref?: Editor) => { editorRef = ref; }
                               });
 
-      const slateEditor = getByTestId("slate-editor");
+      const slateEditor = getByTestId("ccrte-editor");
       expect(slateEditor).toHaveClass("test-class");
       expect(slateToText(editorRef?.value)).toBe("");
     });
@@ -37,7 +37,7 @@ describe("Slate Editor", () => {
                                 onEditorRef: (ref?: Editor) => { editorRef = ref; }
                               });
 
-      const slateEditor = getByTestId("slate-editor");
+      const slateEditor = getByTestId("ccrte-editor");
       expect(slateEditor).toHaveClass("test-class-2");
       expect(slateToText(editorRef?.value)).toBe(text);
     });
