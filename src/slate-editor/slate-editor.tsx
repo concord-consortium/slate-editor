@@ -113,9 +113,9 @@ const SlateEditor: React.FC<IProps> = (props: IProps) => {
 
   return (
     <Editor
-      data-testid="slate-editor"
+      data-testid="ccrte-editor"
       style={style}
-      className={`slate-editor ${props.className || ""}`}
+      className={`ccrte-editor slate-editor ${props.className || ""}`}
       ref={handleEditorRef}
       value={value}
       plugins={allPlugins}

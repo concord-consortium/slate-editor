@@ -224,8 +224,8 @@ export const ModalDialog: React.FC<IProps> = (props) => {
   }
 
   return (
-      <div className={`ccse-modal-dialog ${props.dialogClassName || ""}`}>
-        <div className={`ccse-modal-cover ${props.coverClassName || ""}`}/>
+      <div className={`ccrte-modal-dialog ${props.dialogClassName || ""}`}>
+        <div className={`ccrte-modal-cover ${props.coverClassName || ""}`}/>
         <div className="dialog" onKeyDown={handleKeyDown}>
           <div className="header" style={themeStyle}>
             <div style={titleStyle}>{title}</div>
