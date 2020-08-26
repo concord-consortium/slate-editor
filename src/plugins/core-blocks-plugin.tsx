@@ -47,7 +47,8 @@ kLegacyBlockTags.forEach(tag => kTagToFormatMap[tag] = EFormat.block);
 export function getTagForBlock(node: Node) {
   if (!Block.isBlock(node)) return undefined;
   const { type: format, data } = node;
-  return data.get("tag") || kFormatToTagMap[format];
+  // only use the imported tag for generic <div> elements
+  return (node.type === EFormat.block ? data.get("tag") : "") || kFormatToTagMap[format];
 }
 
 function getDataFromBlockElement(el: Element) {
@@ -101,7 +102,7 @@ export function CoreBlocksPlugin(): HtmlSerializablePlugin {
         return renderBlockAsTag(tag, node, attributes, children, true);
       }
     },
-  
+
     onCommand(command, editor, next) {
       const { type, args } = command;
       if (type === "toggleBlock") {
