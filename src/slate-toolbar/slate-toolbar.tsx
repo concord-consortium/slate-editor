@@ -67,6 +67,7 @@ function isToolEntryFormat(entry: OrderEntry, format: ToolFormat) {
 
 export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
   const { className, editor, order, ...others } = props;
+  const { changeCount, colors } = props;
   const [showDialog, setShowDialog] = useState(false);
   const settingsRef = useRef<DisplayDialogSettings>();
   const validValuesRef = useRef<IFieldValues>();
@@ -95,7 +96,7 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
     }
   }), [editor]);
 
-  const buttons: IButtonSpec[] = [
+  const buttons: IButtonSpec[] = useMemo(() => [
     {
       format: EFormat.bold,
       SvgIcon: IconBold,
@@ -147,21 +148,21 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
     },
     (() => {
       let selection: SelectionJSON | undefined;
-      const fill = editor && editor.query("getActiveColor") || "#000000";
+      const fill = editor?.query("getActiveColor") || "#000000";
       return {
         format: EFormat.color,
         SvgIcon: InputColor,
-        colors: { ...props.colors?.buttonColors, fill },
-        selectedColors: { ...props.colors?.selectedColors, fill },
+        colors: { ...colors?.buttonColors, fill },
+        selectedColors: { ...colors?.selectedColors, fill },
         tooltip: getPlatformTooltip("color"),
         isActive: !!editor && editor.query("hasActiveColorMark"),
         onMouseDown: () => {
           // cache selection - interaction with platform color picker can blur
-          selection = editor && editor.value.selection.toJSON();
+          selection = editor?.value.selection.toJSON();
         },
         onChange: (value: string) => {
-          // restore the selection
-          editor && selection && editor.select(selection);
+          // restore the selection (with gratuitous use of changeCount to quiet hooks warning)
+          editor && selection && (changeCount >= 0) && editor.select(selection);
           return editor?.command("setColorMark", value);
         }
       };
@@ -264,7 +265,7 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
       isActive: false,
       onClick: () => editor?.command("increaseFontSize")
     }
-  ];
+  ], [changeCount, dialogController, editor, colors?.buttonColors, colors?.selectedColors]);
 
   const _buttons = useMemo(() => {
     if (!order) return buttons;
