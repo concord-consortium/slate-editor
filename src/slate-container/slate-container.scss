@@ -1,13 +1,13 @@
-.slate-container {
+.ccrte-container {
   height: 100%;
   display: flex;
   flex-direction: column;
 
-  .slate-toolbar {
+  .ccrte-toolbar {
     flex: 0 0 auto;
   }
 
-  .slate-editor {
+  .ccrte-editor {
     flex: 1 1 auto;
   }
 }
