@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-import classNames from "classnames";
+import classNames from "classnames/dedupe";
 import clone from "lodash/clone";
 import { Inline } from "slate";
 import { Editor, RenderAttributes, RenderInlineProps } from "slate-react";
