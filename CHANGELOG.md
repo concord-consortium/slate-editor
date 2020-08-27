@@ -1,5 +1,13 @@
 # Changelog
 
+## Version 0.6.0 - August 26, 2020
+
+- Fix bug which prevented editing of some blocks imported from HTML
+- Prevent duplicate class names being applied to `<img>` tags
+- Update dependencies
+- [BREAKING] Normalized more CSS class names for consistency/uniqueness
+  - `.slate-container` => `.ccrte-container`
+
 ## Version 0.5.0 - July 22, 2020
 
 - Image dialog supports alt text, sizing, float left|right, etc.
