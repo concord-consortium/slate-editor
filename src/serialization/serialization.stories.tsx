@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import pretty from "pretty";
 import { SlateContainer } from "../slate-container/slate-container";
 import { textToSlate } from "../common/slate-types";
-import { slateToHtml } from "./html-serializer";
+import { slateToHtml, htmlToSlate } from "./html-serializer";
 import { serializeSelection, serializeValue } from "./serialization";
 import "./serialization.stories.scss";
 
@@ -59,6 +59,31 @@ const htmlSerializationText = "This example shows the editor content serialized 
 
 export const HtmlSerialization = () => {
   const slateValue = textToSlate(htmlSerializationText);
+  const [value, setValue] = useState(slateValue);
+  const [content, setContent] = useState(slateToHtml(value));
+  return (
+    <div className="serialization-container">
+      <div className="panel">
+        <SlateContainer
+          value={value}
+          onValueChange={_value => {
+            setValue(_value);
+            setContent(slateToHtml(_value));
+          }}
+        />
+      </div>
+      <div className="panel output">
+        <h3>Serialized HTML</h3>
+        <pre>{pretty(content)}</pre>
+      </div>
+    </div>
+  );
+};
+
+const importedHtmlText = "<h1>A header paragraph</h1><p>A simple paragraph.</p><blockquote>A quoted paragraph.</blockquote>";
+
+export const ImportedHTML = () => {
+  const slateValue = htmlToSlate(importedHtmlText);
   const [value, setValue] = useState(slateValue);
   const [content, setContent] = useState(slateToHtml(value));
   return (
