@@ -52,7 +52,7 @@ export const SlateContainer: React.FC<IProps> = (props: IProps) => {
                         {...toolbarOthers}
                       />;
   return (
-    <div className={`slate-container ${className || ""}`}>
+    <div className={`ccrte-container slate-container ${className || ""}`}>
       {toolbar}
       <SlateEditor
         className={editorClassName}
