@@ -11,10 +11,11 @@ import { HtmlSerializablePlugin } from "./html-serializable-plugin";
 function renderLink(link: Inline, attributes: RenderAttributes, children: ReactNode, isSerializing = false) {
   const { data } = link;
   const href: string = data.get('href');
+  const target = isSerializing ? undefined : "_blank";
   const rel = isSerializing ? undefined : "noopener noreferrer";
   const onDoubleClick = isSerializing ? undefined : () => window.open(href);
   return (
-    <a {...attributes} href={href} rel={rel} onDoubleClick={onDoubleClick}>
+    <a {...attributes} href={href} target={target} rel={rel} onDoubleClick={onDoubleClick}>
       {children}
     </a>
   );

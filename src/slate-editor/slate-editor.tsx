@@ -29,6 +29,8 @@ export interface EditorSelectionJson {
 export interface IProps {
   className?: string;
   value?: EditorValue | string;
+  placeholder?: string;
+  readOnly?: boolean;
   hotkeyMap?: HotkeyMap;
   plugins?: Plugins<Editor>;
   history?: boolean | IEditorHistoryOptions;
@@ -65,7 +67,9 @@ const defaultPlugins: Plugin<Editor>[] = [
       ];
 
 const SlateEditor: React.FC<IProps> = (props: IProps) => {
-  const { history, onEditorRef, onLoad, onValueChange, onContentChange, onFocus, onBlur, plugins } = props;
+  const {
+    history, onEditorRef, onLoad, onValueChange, onContentChange, onFocus, onBlur, placeholder, plugins, readOnly
+  } = props;
   const onLoadPlugin = useMemo(() => OnLoadPlugin(onLoad), [onLoad]);
   const historyPlugin = useMemo(() => history || (history == null)  // enabled by default
                                         ? EditorHistory(typeof history === "object" ? history : undefined)
@@ -118,6 +122,8 @@ const SlateEditor: React.FC<IProps> = (props: IProps) => {
       className={`ccrte-editor slate-editor ${props.className || ""}`}
       ref={handleEditorRef}
       value={value}
+      placeholder={placeholder}
+      readOnly={readOnly}
       plugins={allPlugins}
       onKeyDown={handleKeyDown}
       onChange={handleChange}
