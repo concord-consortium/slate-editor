@@ -1,4 +1,4 @@
-import { Value } from "slate";
+import { Range, Value } from "slate";
 import SlatePlainSerializer from "slate-plain-serializer";
 
 // eslint-disable-next-line no-shadow
@@ -50,6 +50,7 @@ export type ToolFormat = EFormat | EMetaFormat;
 
 export type EditorValue = Value;
 export type EditorContent = Document;
+export const EditorRange = Range;
 
 export function isMarkFormat(format: EFormat) {
   return [
