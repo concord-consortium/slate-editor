@@ -1,5 +1,13 @@
 # Changelog
 
+## Version 0.7.0 - February 11, 2021
+
+- Support `placeholder` editor prop
+- Support `readOnly` editor prop
+- `<a>` tags specify `target="_blank"` by default
+- Export additional TypeScript types (`EditorRange`, `EFormat`, etc.)
+- Update dependencies
+
 ## Version 0.6.0 - August 26, 2020
 
 - Fix bug which prevented editing of some blocks imported from HTML
