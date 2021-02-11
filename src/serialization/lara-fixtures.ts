@@ -99,7 +99,7 @@ export const kFieldMouseFurColorIntro =
 
 // cf. "Why don’t oil and water mix?" activity introduction
 export const kOilAndWaterIntro =
-`<div style="float: right; border-radius: 10 px; -webkit-border-radius: 10px; -moz-border-radius: 10px; background: #e2e2e2; padding: 30px; margin-left: 20px; width: 300px;"><strong>Lab instructions:</strong> <br />Dissolving different substances in polar and non-polar solvents&nbsp;(<a href="https://docs.google.com/document/d/1ReCDwQBc_1DSFUPxc6I-Z_WlmuR90rOfXM1xlyO5Kp8/copy" target="_blank" rel="noopener">GDoc</a> or <a href="https://docs.google.com/document/d/1ReCDwQBc_1DSFUPxc6I-Z_WlmuR90rOfXM1xlyO5Kp8/export?format=doc">Word</a>).</div>
+`<div style="float: right; border-radius: 10 px; -webkit-border-radius: 10px; -moz-border-radius: 10px; background: #e2e2e2; padding: 30px; margin-left: 20px; width: 300px;"><strong>Lab instructions:</strong> <br />Dissolving different substances in polar and non-polar solvents&nbsp;(<a href="https://docs.google.com/document/d/1ReCDwQBc_1DSFUPxc6I-Z_WlmuR90rOfXM1xlyO5Kp8/copy" rel="noopener">GDoc</a> or <a href="https://docs.google.com/document/d/1ReCDwQBc_1DSFUPxc6I-Z_WlmuR90rOfXM1xlyO5Kp8/export?format=doc">Word</a>).</div>
 <div>You will now test these substances and see if they dissolve in polar water and non-polar hexane.</div>
 <div>&nbsp;</div>
 <div>Once you have completed the activity, discuss your observations as a class and record the consensus observations in the table below.</div>
