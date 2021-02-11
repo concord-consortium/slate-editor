@@ -1,6 +1,7 @@
 import { Value } from "slate";
 import SlatePlainSerializer from "slate-plain-serializer";
 
+// eslint-disable-next-line no-shadow
 export enum EFormat {
   // marks
   bold = "bold",
@@ -39,6 +40,7 @@ export enum EFormat {
   link = "link" // <a>
 }
 
+// eslint-disable-next-line no-shadow
 export enum EMetaFormat {
   fontIncrease = "fontIncrease",
   fontDecrease = "fontDecrease"
