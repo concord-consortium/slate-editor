@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.7.1 - February 11, 2021
+
+- Support legacy `line` block type (synonym for `paragraph`)
+
 ## Version 0.7.0 - February 11, 2021
 
 - Support `placeholder` editor prop
