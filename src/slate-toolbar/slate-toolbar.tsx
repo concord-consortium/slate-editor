@@ -51,6 +51,7 @@ export interface DisplayDialogSettings {
   rows: IRow[];
   values: IFieldValues;
   onChange?: (editor: Editor, name: string, value: string, values: IFieldValues) => boolean | undefined;
+  onValidate?: (values: IFieldValues) => IFieldValues | string;
   onAccept?: (editor: Editor, values: IFieldValues) => void;
 }
 
@@ -337,6 +338,7 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
                           fieldValues={settingsRef.current.values}
                           onSetValue={handleSetValue}
                           onChange={handleChange}
+                          onValidate={settingsRef.current.onValidate}
                           onClose={handleClose}
                         />
                       : <ModalDialog
@@ -348,6 +350,7 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
                           fieldValues={settingsRef.current.values}
                           onSetValue={handleSetValue}
                           onChange={handleChange}
+                          onValidate={settingsRef.current.onValidate}
                           onClose={handleClose}
                         />)
                   : null;

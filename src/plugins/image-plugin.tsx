@@ -1,6 +1,7 @@
 import React, { ReactNode } from "react";
 import classNames from "classnames/dedupe";
 import clone from "lodash/clone";
+import { isWebUri } from "valid-url";
 import { Inline } from "slate";
 import { Editor, RenderAttributes, RenderInlineProps } from "slate-react";
 import { EFormat } from "../common/slate-types";
@@ -201,6 +202,7 @@ export function ImagePlugin(): HtmlSerializablePlugin {
               }
             }
           },
+          onValidate: (values) => isWebUri(values.source) ? values : "Error: please enter a properly formatted url",
           onAccept: (_editor, values) => _editor.command("addImage", values, node)
         });
         return editor;
@@ -213,7 +215,7 @@ export function ImagePlugin(): HtmlSerializablePlugin {
                       : undefined;
         const w = Math.round(parseFloat(width));
         const h = Math.round(parseFloat(height));
-        const size = w & h
+        const size = w && h
                       ? { width: w, height: h }
                       : undefined;
         const _constrain = constrain === "false"
