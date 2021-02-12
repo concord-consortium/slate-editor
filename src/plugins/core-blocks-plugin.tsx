@@ -33,6 +33,7 @@ for (const tag in kTagToFormatMap) {
   const format = kTagToFormatMap[tag];
   kFormatToTagMap[format] = tag;
 }
+kFormatToTagMap[EFormat.lineDEPRECATED] = "p";
 
 // other block tags handled as generic blocks
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Block-level_elements

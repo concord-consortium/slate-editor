@@ -34,6 +34,9 @@ export enum EFormat {
   numberedList = "ordered-list",
   bulletedList = "bulleted-list",
 
+  // legacy predecessors used "line" instead of "paragraph"
+  lineDEPRECATED = "line",
+
   // inlines
   inline = "inline",  // generic inline (<span>)
   image = "image",
@@ -63,7 +66,7 @@ export function isBlockFormat(format: EFormat) {
   return [
     EFormat.paragraph, EFormat.block, EFormat.blockQuote, EFormat.heading1, EFormat.heading2,
     EFormat.heading3, EFormat.heading4, EFormat.heading5, EFormat.heading6, EFormat.horizontalRule,
-    EFormat.preformatted, EFormat.listItem, EFormat.numberedList, EFormat.bulletedList
+    EFormat.preformatted, EFormat.listItem, EFormat.numberedList, EFormat.bulletedList, EFormat.lineDEPRECATED
   ].includes(format);
 }
 
