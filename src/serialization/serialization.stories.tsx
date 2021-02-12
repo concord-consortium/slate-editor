@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import pretty from "pretty";
 import { SlateContainer } from "../slate-container/slate-container";
-import { textToSlate } from "../common/slate-types";
+import { EditorValue, textToSlate } from "../common/slate-types";
 import { slateToHtml, htmlToSlate } from "./html-serializer";
 import { serializeSelection, serializeValue } from "./serialization";
 import "./serialization.stories.scss";
@@ -75,6 +75,46 @@ export const HtmlSerialization = () => {
       <div className="panel output">
         <h3>Serialized HTML</h3>
         <pre>{pretty(content)}</pre>
+      </div>
+    </div>
+  );
+};
+
+const clueSerializationText = "This example shows the editor content serialized in CLUE text tile importable JSON.";
+
+function slateToClueTile(value: EditorValue) {
+  const outHtml = slateToHtml(value)
+                    .split("\n")
+                    .map((line, i, arr) => `    "${line.replace(/"/g, "\\\"")}"${i < arr.length - 1 ? "," : ""}`);
+  return [
+    `{`,
+    `  "type": "Text",`,
+    `  "format": "html",`,
+    `  "text": [`,
+    ...outHtml,
+    `  ]`,
+    `}`
+  ].join("\n");
+}
+
+export const ClueSerialization = () => {
+  const slateValue = textToSlate(clueSerializationText);
+  const [value, setValue] = useState(slateValue);
+  const [content, setContent] = useState(slateToClueTile(value));
+  return (
+    <div className="serialization-container">
+      <div className="panel">
+        <SlateContainer
+          value={value}
+          onValueChange={_value => {
+            setValue(_value);
+            setContent(slateToClueTile(_value));
+          }}
+        />
+      </div>
+      <div className="panel output">
+        <h3>CLUE Text Tile JSON</h3>
+        <pre>{content}</pre>
       </div>
     </div>
   );
