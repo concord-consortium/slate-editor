@@ -63,6 +63,7 @@
     "@types/slate-html-serializer": "^0.6.4",
     "@types/slate-plain-serializer": "^0.7.0",
     "@types/slate-react": "^0.22.9",
+    "@types/valid-url": "^1.0.3",
     "@typescript-eslint/eslint-plugin": "^4.15.0",
     "@typescript-eslint/parser": "^4.15.0",
     "babel-loader": "^8.2.2",
@@ -99,6 +100,7 @@
     "slate": "^0.47.9",
     "slate-html-serializer": "^0.8.13",
     "slate-plain-serializer": "^0.7.13",
-    "style-to-object": "^0.3.0"
+    "style-to-object": "^0.3.0",
+    "valid-url": "^1.0.9"
   }
 }

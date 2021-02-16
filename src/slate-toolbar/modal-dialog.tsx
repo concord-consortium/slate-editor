@@ -32,11 +32,13 @@ export interface IProps {
   fieldValues: IFieldValues;
   onSetValue: (name: string, value: string, type: FieldType) => void;
   onChange?: (name: string, value: string, type: FieldType) => void;
+  // string indicates error message
+  onValidate?: (values: IFieldValues) => IFieldValues | string;
   onClose: (values?: IFieldValues) => void;
 }
 
 export const ModalDialog: React.FC<IProps> = (props) => {
-  const { themeColor, fontColor, title, rows, fieldValues, onSetValue, onChange, onClose } = props;
+  const { themeColor, fontColor, title, rows, fieldValues, onSetValue, onChange, onValidate, onClose } = props;
 
   // CSS styles
   const themeStyle = themeColor ? {backgroundColor: `${themeColor}`} : undefined;
@@ -74,7 +76,13 @@ export const ModalDialog: React.FC<IProps> = (props) => {
     onClose();
   };
   const handleOkClick = () => {
-    onClose(fieldValues);
+    const validated = onValidate ? onValidate(fieldValues) : fieldValues;
+    if (typeof validated === "string") {
+      alert(validated);
+    }
+    else {
+      onClose(validated);
+    }
   };
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (!isMenuOpen) {

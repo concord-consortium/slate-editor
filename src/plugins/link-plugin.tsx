@@ -1,6 +1,7 @@
 import React, { ReactNode } from "react";
 import { Inline } from "slate";
 import { Editor, RenderAttributes, RenderInlineProps } from "slate-react";
+import { isWebUri } from "valid-url";
 import { EFormat } from "../common/slate-types";
 import { getRenderAttributesFromNode, getDataFromElement } from "../serialization/html-utils";
 import { hasActiveInline } from "../slate-editor/slate-utils";
@@ -89,6 +90,7 @@ export function LinkPlugin(): HtmlSerializablePlugin {
             title: "Insert Link",
             rows: [...textField, ...urlField],
             values: {},
+            onValidate: (values) => isWebUri(values.linkUrl) ? values : "Error: please enter a properly formatted url",
             onAccept: (_editor, inputs) => _editor.command(linkCmd, inputs)
           });
         }
