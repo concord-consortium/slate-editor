@@ -32,7 +32,8 @@ export function getDataFromElement(el: Element, _data?: Record<string, string>) 
   if (!el.hasAttributes()) return { data: _data };
   const data: Record<string, string> = _data || {};
   for (let i = 0; i < el.attributes.length; ++i) {
-    const key = el.attributes[i].name.toLowerCase();
+    let key = el.attributes[i].name.toLowerCase();
+    if (key === "classname") key = "class";
     data[key] = el.attributes[i].value;
   }
   return { data };
@@ -43,7 +44,7 @@ export function getRenderAttributesFromNode(obj: Block | Inline | Mark, omitProp
   const renderAttrs: Record<string, string | React.CSSProperties> = {};
   data.forEach((value, key: string) => {
     const _key = toReactAttributeKey(key);
-    if (!omitProps || !omitProps?.find(prop => prop === _key)) {
+    if (!omitProps?.find(prop => prop === _key)) {
       renderAttrs[_key] = _key === "style"
                             ? toReactStyle(value)
                             : value;

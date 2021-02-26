@@ -4,6 +4,9 @@ export { EditorContent, EditorRange, EditorValue, EFormat, slateToText, textToSl
 export { HtmlSerializablePlugin } from "./plugins/html-serializable-plugin";
 export { htmlToSlate, slateToHtml } from "./serialization/html-serializer";
 export {
+  deserializeValueFromLegacy, serializeValueToLegacy, validateNodeData
+} from "./serialization/legacy-serialization";
+export {
   deserializeDocument, deserializeValue, serializeDocument, serializeValue, SlateDocument, SlateExchangeValue
 } from "./serialization/serialization";
 export { SlateContainer } from "./slate-container/slate-container";
