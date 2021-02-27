@@ -6,6 +6,7 @@
     "module": "esnext",
     "moduleResolution": "node",
     "esModuleInterop": true,
+    "importHelpers": true,
     "strict": true,
     "sourceMap": true,
     "allowJs": false,
