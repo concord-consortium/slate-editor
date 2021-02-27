@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.7.2 - February 26, 2021
+
+- Convert/strip `className` property on import/export
+- Update dependencies
+
 ## Version 0.7.1 - February 11, 2021
 
 - Support legacy `line` block type (synonym for `paragraph`)
