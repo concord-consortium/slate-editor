@@ -147,6 +147,11 @@ export function deserializeElement(node: SlateElement, objTypes: ObjectTypeMap):
   const object = (objTypes[type] || "block") as any;
   const nodes = deserializeChildren(children, objTypes);
   const data = size(others) ? { data: others } : {};
+  // "className" should be converted to "class" on import but it wasn't always so
+  if ("className" in others) {
+    others.className && (others.class = others.className);
+    delete others.className;
+  }
   return { object, type, ...keyProp(key), nodes, ...data };
 }
 

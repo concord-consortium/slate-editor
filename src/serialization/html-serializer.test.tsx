@@ -53,6 +53,12 @@ describe("htmlToSlate(), slateToHtml()", () => {
     ].forEach(html => expect(slateToHtml(htmlToSlate(html))).toBe(html));
   });
 
+  it("converts className attribute to class", () => {
+    [
+      `<ul className="foo"><li className="bar"></li></ul>`
+    ].forEach(html => expect(slateToHtml(htmlToSlate(html))).toBe(html.replace(/className/g, "class")));
+  });
+
   it("preserves invalid inline styles", () => {
     [
       `<p style="invalid:style">paragraph with invalid inline style</p>`

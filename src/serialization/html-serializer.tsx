@@ -25,7 +25,7 @@ const TEXT_RULE: HtmlSerializationRule = {
     }
 
     if (el.nodeName === '#text') {
-      if (el.nodeValue && el.nodeValue.match(/<!--.*?-->/)) return;
+      if (el.nodeValue?.match(/<!--.*?-->/)) return;
 
       return {
         object: 'text',
