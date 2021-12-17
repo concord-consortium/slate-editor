@@ -1,9 +1,9 @@
 import { Editor, Plugin } from "slate-react";
 import EventEmitter from "eventemitter3";
 
-const emitter = new EventEmitter();
-
 export function EmitterPlugin(): Plugin {
+  const emitter = new EventEmitter();
+
   return {
     queries: {
       emitter: function(editor: Editor) {

@@ -14,8 +14,8 @@ $dialogHeight: 340px;
   }
   .dialog {
     position: fixed;
-    left: calc(50% - #{$dialogWidth / 2});
-    top: calc(50% - #{$dialogHeight / 2});
+    left: calc(50% - #{$dialogWidth} / 2);
+    top: calc(50% - #{$dialogHeight} / 2);
     display: flex;
     flex-direction: column;
     width: $dialogWidth;

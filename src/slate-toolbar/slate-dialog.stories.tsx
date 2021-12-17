@@ -38,3 +38,23 @@ export const ColoredModalDialog = () => {
                             }}} />
   );
 };
+
+const multipleInstance1Text = "Instance 1: This example demonstrates multiple editor instances showing separate dialogs.";
+const multipleInstance2Text = "Instance 2: This example demonstrates multiple editor instances showing separate dialogs.";
+
+export const MultipleEditorInstances = () => {
+  const [value1, setValue1] = useState(textToSlate(multipleInstance1Text));
+  const [value2, setValue2] = useState(textToSlate(multipleInstance2Text));
+  return (
+    <>
+      <SlateContainer value={value1} onValueChange={_value => setValue1(_value)}
+                      toolbar={{ colors: {
+                                  buttonColors: { fill: "#ffffff", background: "#000080" }
+                              }}} />
+      <SlateContainer value={value2} onValueChange={_value => setValue2(_value)}
+                      toolbar={{ colors: {
+                                  buttonColors: { fill: "#ffffff", background: "#008000" }
+                              }}} />
+    </>
+  );
+};

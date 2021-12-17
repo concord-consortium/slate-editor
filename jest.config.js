@@ -6,6 +6,7 @@ module.exports = {
   transform: {
     "^.+\\.tsx?$": "ts-jest"
   },
+  testEnvironment: "jsdom",
   testMatch: ["**/*.test.(ts|tsx)"],
   moduleNameMapper: {
     // map slate-react to our published fork

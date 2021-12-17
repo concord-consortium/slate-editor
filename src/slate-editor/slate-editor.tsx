@@ -63,19 +63,20 @@ const defaultPlugins: Plugin<Editor>[] = [
         CoreMarksPlugin(), ColorPlugin(),                   // marks
         ImagePlugin(), LinkPlugin(), CoreInlinesPlugin(),   // inlines
         ListPlugin(), TablePlugin(), CoreBlocksPlugin(),    // blocks
-        EmitterPlugin(), FontSizePlugin()
+        FontSizePlugin()
       ];
 
 const SlateEditor: React.FC<IProps> = (props: IProps) => {
   const {
     history, onEditorRef, onLoad, onValueChange, onContentChange, onFocus, onBlur, placeholder, plugins, readOnly
   } = props;
+  const emitterPlugin = useMemo(() => EmitterPlugin(), []);
   const onLoadPlugin = useMemo(() => OnLoadPlugin(onLoad), [onLoad]);
   const historyPlugin = useMemo(() => history || (history == null)  // enabled by default
                                         ? EditorHistory(typeof history === "object" ? history : undefined)
                                         : NoEditorHistory(), [history]);
-  const allPlugins = useMemo(() => [...(plugins || []), ...defaultPlugins, onLoadPlugin, historyPlugin],
-                            [onLoadPlugin, historyPlugin, plugins]);
+  const allPlugins = useMemo(() => [...(plugins || []), ...defaultPlugins, emitterPlugin, onLoadPlugin, historyPlugin],
+                            [plugins, emitterPlugin, onLoadPlugin, historyPlugin]);
   const editorRef = useRef<Editor>();
   const value = typeof props.value === "string"
                   ? textToSlate(props.value)
