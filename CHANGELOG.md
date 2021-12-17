@@ -1,5 +1,13 @@
 # Changelog
 
+## Version 0.7.3 - December 17, 2021
+
+### Features/Improvements
+- Update dependencies
+
+### Bugs Fixed
+- Fix bugs with multiple editor instances on a page [#180648279]
+
 ## Version 0.7.2 - February 26, 2021
 
 - Convert/strip `className` property on import/export
