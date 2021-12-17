@@ -1,6 +1,6 @@
 import EventEmitter from "eventemitter3";
 import React from "react";
-import { act, render } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import { Editor } from "slate-react";
 import { slateToText, textToSlate } from "../common/slate-types";
 import { IProps, SlateEditor } from "./slate-editor";
@@ -51,30 +51,29 @@ describe("Slate Editor", () => {
           <SlateEditor className="editor-1" onEditorRef={(ref?: Editor) => { editor1Ref = ref; }} />
           <SlateEditor className="editor-2" onEditorRef={(ref?: Editor) => { editor2Ref = ref; }} />
         </>);
-      act(() => {
-        expect(editor1Ref).toBeDefined();
-        expect(editor2Ref).toBeDefined();
-        expect(editor1Ref === editor2Ref).toBe(false);
 
-        const emitter1: EventEmitter | undefined = editor1Ref?.query("emitter");
-        const emitter2: EventEmitter | undefined = editor2Ref?.query("emitter");
-        expect(emitter1).toBeDefined();
-        expect(emitter2).toBeDefined();
-        expect(emitter1 === emitter2).toBe(false);
+      expect(editor1Ref).toBeDefined();
+      expect(editor2Ref).toBeDefined();
+      expect(editor1Ref === editor2Ref).toBe(false);
 
-        const listener1 = jest.fn();
-        const listener2 = jest.fn();
-        emitter1?.on("foo", listener1);
-        emitter2?.on("foo", listener2);
-        // editor 1 emitting "foo" should only trigger editor 1 listener
-        editor1Ref?.command("emit", "foo");
-        expect(listener1).toBeCalledTimes(1);
-        expect(listener2).toBeCalledTimes(0);
-        // editor 2 emitting "foo" should only trigger editor 2 listener
-        editor2Ref?.command("emit", "foo");
-        expect(listener1).toBeCalledTimes(1);
-        expect(listener2).toBeCalledTimes(1);
-      });
+      const emitter1: EventEmitter | undefined = editor1Ref?.query("emitter");
+      const emitter2: EventEmitter | undefined = editor2Ref?.query("emitter");
+      expect(emitter1).toBeDefined();
+      expect(emitter2).toBeDefined();
+      expect(emitter1 === emitter2).toBe(false);
+
+      const listener1 = jest.fn();
+      const listener2 = jest.fn();
+      emitter1?.on("foo", listener1);
+      emitter2?.on("foo", listener2);
+      // editor 1 emitting "foo" should only trigger editor 1 listener
+      editor1Ref?.command("emit", "foo");
+      expect(listener1).toBeCalledTimes(1);
+      expect(listener2).toBeCalledTimes(0);
+      // editor 2 emitting "foo" should only trigger editor 2 listener
+      editor2Ref?.command("emit", "foo");
+      expect(listener1).toBeCalledTimes(1);
+      expect(listener2).toBeCalledTimes(1);
     });
 
   });

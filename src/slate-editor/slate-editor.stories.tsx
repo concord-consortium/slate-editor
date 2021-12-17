@@ -17,7 +17,7 @@ const baseValue = "This editor-only example has no toolbar but keyboard shortcut
 const initialValueWithHistory = textToSlate(baseValue + "including mod+[shift]+z for undo/redo.");
 
 export const ReadOnly = () => {
-  const [value, setValue] = useState(textToSlate(baseValue + " This read-only text should be selectable but not editable."));
+  const [value, setValue] = useState(textToSlate("This read-only text should be selectable but not editable."));
   return (
     <SlateEditor
       className="slate-editor"
