@@ -16,6 +16,19 @@ const hotkeyMap: HotkeyMap = {
 const baseValue = "This editor-only example has no toolbar but keyboard shortcuts should work, ";
 const initialValueWithHistory = textToSlate(baseValue + "including mod+[shift]+z for undo/redo.");
 
+export const ReadOnly = () => {
+  const [value, setValue] = useState(textToSlate(baseValue + " This read-only text should be selectable but not editable."));
+  return (
+    <SlateEditor
+      className="slate-editor"
+      readOnly={true}
+      value={value}
+      onValueChange={_value => setValue(_value)}
+      hotkeyMap={hotkeyMap}
+      />
+  );
+};
+
 export const WithHistory = () => {
   const [value, setValue] = useState(initialValueWithHistory);
   return (
