@@ -24,7 +24,7 @@ import { SelectionJSON } from "slate";
 import { EFormat, EMetaFormat, ToolFormat } from "../common/slate-types";
 import { ModalDialog, IRow, IFieldValues, FieldType } from "./modal-dialog";
 import { ModalDialogPortal } from "./modal-dialog-portal";
-import { clone } from "lodash";
+import clone from "lodash/clone";
 import EventEmitter from "eventemitter3";
 
 export interface IToolOrder {
