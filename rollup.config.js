@@ -1,6 +1,8 @@
 import path from "path";
 import alias from "@rollup/plugin-alias";
+import dts from "rollup-plugin-dts";
 import external from "rollup-plugin-peer-deps-external";
+import replace from 'rollup-plugin-re';
 import resolve from "@rollup/plugin-node-resolve";
 import typescript from "rollup-plugin-typescript2";
 import commonjs from "@rollup/plugin-commonjs";
@@ -8,7 +10,7 @@ import postcss from "rollup-plugin-postcss";
 
 import packageJson from "./package.json";
 
-export default {
+export default [{
   input: "src/index.tsx",
   output: [
     {
@@ -38,7 +40,25 @@ export default {
       exclude: ["**/*.stories.js"]
     }),
     postcss({
-      extract: path.resolve("build/index.css")
+      extract: path.resolve("dist/index.css")
     })
   ]
-};
+}, {  // bundle declaration files
+  // declaration files root
+  input: 'dist/index.d.ts',
+  output: [{ file: 'dist/index.d.ts', format: 'es' }],
+  plugins: [
+    replace({
+      patterns: [{
+        // match types files
+        match: /\.d\.ts/,
+        // ignore .scss imports when bundling types
+        test: /import ["'](.*)\.scss['"];/g,
+        // string to replace with
+        replace: ''
+      }]
+    }),
+    // bundle types into a single index.d.ts file
+    dts()
+  ]
+}];
