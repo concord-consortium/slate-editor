@@ -1,5 +1,7 @@
 import EventEmitter from "eventemitter3";
 import React from "react";
+// not being picked up from `jest.setup.ts` for some reason
+import "@testing-library/jest-dom";
 import { render } from "@testing-library/react";
 import { Editor } from "slate-react";
 import { slateToText, textToSlate } from "../common/slate-types";

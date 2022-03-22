@@ -29,7 +29,9 @@
     "test": "jest",
     "test:coverage": "jest --coverage",
     "test:watch": "jest --watch",
-    "unlink:react": "npm unlink -g react"
+    "unlink:react": "npm unlink -g react",
+    "yalc:publish": "npx yalc publish --push",
+    "yalc:unpublish": "npx yalc installations clean @concord-consortium/slate-editor"
   },
   "author": "Concord Consortium",
   "license": "MIT",

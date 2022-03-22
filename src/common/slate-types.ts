@@ -72,7 +72,7 @@ export function isBlockFormat(format: EFormat) {
 }
 
 export function isInlineFormat(format: EFormat) {
-  return [EFormat.inline, EFormat.image, EFormat.link].includes(format);
+  return [EFormat.inline, EFormat.image, EFormat.link, EFormat.variable].includes(format);
 }
 
 export function textToSlate(text: string): EditorValue {
