@@ -16,6 +16,7 @@ import IconUnderline from "../assets/icon-underline";
 import InputColor from "../assets/input-color";
 import IconFontIncrease from "../assets/icon-font-increase";
 import IconFontDecrease from "../assets/icon-font-decrease";
+import IconVariables from "../assets/icon-variables";
 import { IButtonSpec, IProps as IToolbarProps } from "../editor-toolbar/editor-toolbar";
 import { hasActiveMark, selectionContainsBlock, handleToggleSuperSubscript }
         from "../slate-editor/slate-utils";
@@ -168,6 +169,14 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
         }
       };
     })(),
+    {
+      format: EFormat.variable,
+      SvgIcon: IconVariables,
+      tooltip: getPlatformTooltip("variable"),
+      isActive: !!editor && editor.query("isVariableActive"),
+      isEnabled: !!editor && editor.query("isVariableEnabled"),
+      onClick: () => editor?.command("configureVariable", dialogController)
+    },
     {
       format: EFormat.image,
       SvgIcon: IconImage,

@@ -38,7 +38,8 @@ module.exports = {
       "eslint-comments/no-unused-disable": "warn",
       "no-debugger": "off",
       "no-shadow": ["error", { "builtinGlobals": false, "hoist": "all", "allow": [] }],
-      "no-unused-vars": "off",  // superceded by @typescript-eslint/no-unused-vars
+      "no-unused-vars": "off",  // superseded by @typescript-eslint/no-unused-vars
+      "prefer-const": ["error", { destructuring: "all" }],
       "react/prop-types": "off",
       semi: ["error", "always"]
     }

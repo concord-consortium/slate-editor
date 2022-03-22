@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from
 import { Editor } from "slate-react";
 import { SlateContainer } from "./slate-container";
 import { textToSlate } from "../common/slate-types";
+import { VariablesPlugin } from "../plugins/variables-plugin";
 
 export default {
   title: "SlateContainer"
@@ -13,6 +14,17 @@ export const Combined = () => {
   const [value, setValue] = useState(textToSlate(combinedText));
   return (
     <SlateContainer value={value} onValueChange={_value => setValue(_value)} />
+  );
+};
+
+const variablesText = "This example demonstrates a combined toolbar/editor with embedded variables in text.";
+
+export const Variables = () => {
+  const [value, setValue] = useState(textToSlate(variablesText));
+  const variablesPlugin = VariablesPlugin({ a: 1, b: 2, c: 3 });
+  const plugins = [variablesPlugin];
+  return (
+    <SlateContainer plugins={plugins} value={value} onValueChange={_value => setValue(_value)} />
   );
 };
 
@@ -75,7 +87,7 @@ const portalText = "This example demonstrates rendering the toolbar in a React p
                   " hierarchy) as well as hiding/showing the toolbar on blur/focus.";
 export const Portal = () => {
   const editorRef = useRef<Editor>();
-  const blurTimer = useRef<NodeJS.Timeout>();
+  const blurTimer = useRef<number>();
   const [isFocused, setIsFocused] = useState(false);
   const [value, setValue] = useState(textToSlate(portalText));
   const [portalRoot, setPortalRoot] = useState<HTMLDivElement>();

@@ -38,9 +38,10 @@ export enum EFormat {
   lineDEPRECATED = "line",
 
   // inlines
-  inline = "inline",  // generic inline (<span>)
-  image = "image",
-  link = "link" // <a>
+  inline = "inline",    // generic inline (<span>)
+  image = "image",      // <img>
+  link = "link",        // <a>
+  variable = "variable" // <div class="ccrte-variable">
 }
 
 // eslint-disable-next-line no-shadow

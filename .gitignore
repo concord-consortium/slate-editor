@@ -1,5 +1,6 @@
 .DS_Store
 build
+dist
 coverage
 node_modules
 storybook-static
