@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import React, { ReactNode, useState } from "react";
 import classNames from "classnames/dedupe";
 import clone from "lodash/clone";
 import { Inline } from "slate";
@@ -54,12 +54,15 @@ function getDataFromVariableElement(el: Element) {
   return { data: _data };
 }
 
-function getDialogValuesFromNode( editor: Editor, node?: Inline) {
+function getDialogValuesFromNode( editor: Editor, node?: Inline, presetVars?: Record<string, number>) {
   const values: Record<string, string> = {};
   const { data } = node || {};
   const highlightedText = editor.value.fragment.text;
   let name, value;
   if (highlightedText !== "") {
+    if (presetVars?.[highlightedText]) {
+      values.value = (presetVars[highlightedText])?.toString();
+    }
     values.name = highlightedText;
   } else if ((name = data?.get("name"))) {
     values.name = name;
@@ -73,6 +76,7 @@ function getDialogValuesFromNode( editor: Editor, node?: Inline) {
 const kSpanTag = "span";
 
 export function VariablesPlugin(variables: Record<string, number>): HtmlSerializablePlugin {
+  const [presetVariables] = useState(variables);
   return {
     deserialize: function(el, next) {
       if ((el.tagName.toLowerCase() === kSpanTag) && el.classList.contains(kVariableClass)) {
@@ -110,7 +114,7 @@ export function VariablesPlugin(variables: Record<string, number>): HtmlSerializ
           rows: [
             {
               name: "reference", type: "select", label: "Reference existing variable:",
-              options: Object.keys(variables).map(v => ({ value: v, label: v }))
+              options: Object.keys(presetVariables).map(v => ({ value: v, label: v }))
             },
             { name: "or", type: "label", label: "or" },
             { name: "create", type: "label", label: "Create new variable:" },
@@ -119,7 +123,7 @@ export function VariablesPlugin(variables: Record<string, number>): HtmlSerializ
               { name: "value", type: "input", label: "Value:" }
             ]
           ],
-          values: getDialogValuesFromNode(editor, node),
+          values: getDialogValuesFromNode(editor, node, presetVariables),
           onChange: (_editor, name, value, values) => {
             if (name === "name") {
               dialogController.update({ name: value });
@@ -131,7 +135,7 @@ export function VariablesPlugin(variables: Record<string, number>): HtmlSerializ
           },
           onValidate: (values) => {
             const name = values.reference || values.name;
-            const value = values.reference ? variables[name] : parseFloat(values.value);
+            const value = values.reference ? presetVariables[name] : parseFloat(values.value);
             return !!name && isFinite(value) ? values : "Error: invalid name or value";
           },
           onAccept: (_editor, values) => {
@@ -150,7 +154,7 @@ export function VariablesPlugin(variables: Record<string, number>): HtmlSerializ
         }
         if (reference) {
           name = reference;
-          value = formatVariable(variables[name]);
+          value = formatVariable(presetVariables[name]);
         }
         if (editor.value.selection) {
           editor.moveToEnd()
@@ -160,6 +164,7 @@ export function VariablesPlugin(variables: Record<string, number>): HtmlSerializ
           type: EFormat.variable,
           data: { name, value }
         });
+        presetVariables[name] = parseFloat(value);
         return editor;
       },
     },
