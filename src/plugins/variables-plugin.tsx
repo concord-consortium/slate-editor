@@ -54,11 +54,14 @@ function getDataFromVariableElement(el: Element) {
   return { data: _data };
 }
 
-function getDialogValuesFromNode(node?: Inline) {
+function getDialogValuesFromNode( editor: Editor, node?: Inline) {
   const values: Record<string, string> = {};
   const { data } = node || {};
+  const highlightedText = editor.value.fragment.text;
   let name, value;
-  if ((name = data?.get("name"))) {
+  if (highlightedText !== "") {
+    values.name = highlightedText;
+  } else if ((name = data?.get("name"))) {
     values.name = name;
   }
   if ((value = data?.get("value"))) {
@@ -116,7 +119,7 @@ export function VariablesPlugin(variables: Record<string, number>): HtmlSerializ
               { name: "value", type: "input", label: "Value:" }
             ]
           ],
-          values: getDialogValuesFromNode(node),
+          values: getDialogValuesFromNode(editor, node),
           onChange: (_editor, name, value, values) => {
             if (name === "name") {
               dialogController.update({ name: value });
