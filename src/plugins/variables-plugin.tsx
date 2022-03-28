@@ -152,6 +152,10 @@ export function VariablesPlugin(variables: Record<string, number>): HtmlSerializ
           name = reference;
           value = formatVariable(variables[name]);
         }
+        if (editor.value.selection) {
+          editor.moveToEnd()
+                .insertText(" ");
+        }
         editor.insertInline({
           type: EFormat.variable,
           data: { name, value }
