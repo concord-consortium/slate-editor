@@ -1,5 +1,13 @@
 # Changelog
 
+## Version 0.7.4 - April 6, 2022
+
+### Features/Improvements
+- Update dependencies
+
+### Bugs Fixed
+- Enable cut/copy/paste for image-only selections [#181315816]
+
 ## Version 0.7.3 - December 17, 2021
 
 ### Features/Improvements
