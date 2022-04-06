@@ -44,6 +44,8 @@ export enum EFormat {
   variable = "variable" // <div class="ccrte-variable">
 }
 
+export const kSlateVoidClass = "slate-void";
+
 // eslint-disable-next-line no-shadow
 export enum EMetaFormat {
   fontIncrease = "fontIncrease",

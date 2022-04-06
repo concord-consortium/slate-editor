@@ -3,7 +3,7 @@ import classNames from "classnames/dedupe";
 import clone from "lodash/clone";
 import { Inline } from "slate";
 import { Editor, RenderAttributes, RenderInlineProps } from "slate-react";
-import { EFormat } from "../common/slate-types";
+import { EFormat, kSlateVoidClass } from "../common/slate-types";
 import { hasActiveInline } from "../slate-editor/slate-utils";
 import { IFieldValues } from "../slate-toolbar/modal-dialog";
 import { IDialogController } from "../slate-toolbar/slate-toolbar";
@@ -30,7 +30,7 @@ function renderVariable(node: Inline, attributes: RenderAttributes, children: Re
   const highlightClass = options?.isHighlighted && !options?.isSerializing ? kVariableHighlightClass : undefined;
   const name: string = data.get("name");
   const value: string = data.get("value");
-  const classes = classNames(classArray(className), kVariableClass, highlightClass) || undefined;
+  const classes = classNames(classArray(className), kVariableClass, highlightClass, kSlateVoidClass) || undefined;
   const onClick = options?.isSerializing ? undefined : options?.onClick;
   const onDoubleClick = options?.isSerializing ? undefined : options?.onDoubleClick;
   return (
