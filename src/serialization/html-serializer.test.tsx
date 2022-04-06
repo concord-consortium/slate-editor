@@ -144,8 +144,8 @@ describe("htmlToSlate(), slateToHtml()", () => {
 
   it("can [de]serialize images", () => {
     [
-      `<p><img src="https://concord.org/wp-content/themes/concord2017/images/concord-logo.svg"/></p>`,
-      `<p><img class="my-image-class" src="https://concord.org/wp-content/themes/concord2017/images/concord-logo.svg"/></p>`
+      `<p><img class="cc-slate-void" src="https://concord.org/wp-content/themes/concord2017/images/concord-logo.svg"/></p>`,
+      `<p><img class="my-image-class cc-slate-void" src="https://concord.org/wp-content/themes/concord2017/images/concord-logo.svg"/></p>`
     ].forEach(html => expect(slateToHtml(htmlToSlate(html))).toBe(html));
   });
 
