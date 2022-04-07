@@ -43,6 +43,8 @@ export enum EFormat {
   link = "link" // <a>
 }
 
+export const kSlateVoidClass = "cc-slate-void";
+
 // eslint-disable-next-line no-shadow
 export enum EMetaFormat {
   fontIncrease = "fontIncrease",

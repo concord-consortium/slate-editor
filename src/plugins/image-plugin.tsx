@@ -4,7 +4,7 @@ import clone from "lodash/clone";
 import { isWebUri } from "valid-url";
 import { Inline } from "slate";
 import { Editor, RenderAttributes, RenderInlineProps } from "slate-react";
-import { EFormat } from "../common/slate-types";
+import { EFormat, kSlateVoidClass } from "../common/slate-types";
 import { hasActiveInline } from "../slate-editor/slate-utils";
 import { IFieldValues } from "../slate-toolbar/modal-dialog";
 import { IDialogController } from "../slate-toolbar/slate-toolbar";
@@ -46,7 +46,8 @@ function renderImage(node: Inline, attributes: RenderAttributes, children: React
   const constrain: boolean = data.get("constrain") !== false;
   const constrainClass = constrain ? undefined : "ccrte-no-constrain";
   const floatClasses = getClassesForFloatValue(data.get("float"));
-  const classes = classNames(classArray(className), highlightClass, constrainClass, floatClasses) || undefined;
+  const classes = classNames(classArray(className), highlightClass,
+                              kSlateVoidClass, constrainClass, floatClasses) || undefined;
   const onLoad = options?.isSerializing ? undefined : options?.onLoad;
   const onClick = options?.isSerializing ? undefined : options?.onClick;
   const onDoubleClick = options?.isSerializing ? undefined : options?.onDoubleClick;
