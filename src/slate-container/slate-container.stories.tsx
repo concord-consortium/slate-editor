@@ -75,7 +75,7 @@ const portalText = "This example demonstrates rendering the toolbar in a React p
                   " hierarchy) as well as hiding/showing the toolbar on blur/focus.";
 export const Portal = () => {
   const editorRef = useRef<Editor>();
-  const blurTimer = useRef<NodeJS.Timeout>();
+  const blurTimer = useRef<number>();
   const [isFocused, setIsFocused] = useState(false);
   const [value, setValue] = useState(textToSlate(portalText));
   const [portalRoot, setPortalRoot] = useState<HTMLDivElement>();

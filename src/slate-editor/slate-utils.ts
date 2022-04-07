@@ -63,7 +63,7 @@ export function selectionContainsBlock(value: Value, format: EFormat) {
   return nodes.some(node => !Text.isText(node) && (node?.type === format));
 }
 
-export function hasActiveInline(value: Value, format: EFormat) {
+export function hasActiveInline(value: Value, format: EFormat | string) {
   return value.inlines.some(inline => inline?.type === format);
 }
 

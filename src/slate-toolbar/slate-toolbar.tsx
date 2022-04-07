@@ -21,25 +21,16 @@ import { hasActiveMark, selectionContainsBlock, handleToggleSuperSubscript }
         from "../slate-editor/slate-utils";
 import { Editor } from "slate-react";
 import { SelectionJSON } from "slate";
-import { EFormat, EMetaFormat, ToolFormat } from "../common/slate-types";
+import { EFormat, EMetaFormat } from "../common/slate-types";
 import { ModalDialog, IRow, IFieldValues, FieldType } from "./modal-dialog";
 import { ModalDialogPortal } from "./modal-dialog-portal";
 import clone from "lodash/clone";
 import EventEmitter from "eventemitter3";
 
-export interface IToolOrder {
-  format: string;
-  tooltip?: string;
-}
-
-interface IndexedToolOrder extends IToolOrder {
-  index: number;
-}
-
-export type OrderEntry = string | IToolOrder;
-
+export type ToolbarTransform =
+  (buttons: IButtonSpec[], editor?: Editor, dialogController?: IDialogController) => IButtonSpec[];
 export interface IProps extends Omit<IToolbarProps, "buttons"> {
-  order?: OrderEntry[];
+  transform?: ToolbarTransform;
   modalPortalRoot?: HTMLDivElement;
   modalCoverClassName?: string;
   modalDialogClassName?: string;
@@ -60,14 +51,8 @@ export interface IDialogController {
   update: (values: IFieldValues) => void;
 }
 
-function isToolEntryFormat(entry: OrderEntry, format: ToolFormat) {
-  return typeof entry === "string"
-          ? entry === format
-          : entry?.format === format;
-}
-
 export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
-  const { className, editor, order, ...others } = props;
+  const { className, editor, transform, ...others } = props;
   const { changeCount, colors } = props;
   const [showDialog, setShowDialog] = useState(false);
   const settingsRef = useRef<DisplayDialogSettings>();
@@ -97,7 +82,7 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
     }
   }), [editor]);
 
-  const buttons: IButtonSpec[] = useMemo(() => [
+  const defaultButtons: IButtonSpec[] = useMemo(() => [
     {
       format: EFormat.bold,
       SvgIcon: IconBold,
@@ -268,31 +253,9 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
     }
   ], [changeCount, dialogController, editor, colors?.buttonColors, colors?.selectedColors]);
 
-  const _buttons = useMemo(() => {
-    if (!order) return buttons;
-    const orderMap: Record<string, IndexedToolOrder> = {};
-    order.forEach((entry, index) => {
-            // normalize entries and add index
-            const mapEntry = typeof entry === "string"
-                              ? { format: entry, index: index + 1 }
-                              : { ...entry, index: index + 1 };
-            orderMap[mapEntry.format] = mapEntry;
-          });
-    const b = buttons
-                // make a copy of the array
-                .slice()
-                // filter out the unspecified buttons
-                .filter(button => order.find(entry => button.format && isToolEntryFormat(entry, button.format)))
-                // use client-provided tooltip overrides
-                .map(button => {
-                  const hint = button.format && orderMap[button.format].tooltip;
-                  const tooltip = hint ? { tooltip: getPlatformTooltip(hint) } : {};
-                  return { ...button, ...tooltip };
-                });
-    const buttonIndex = (button: typeof b[0]) => button.format ? orderMap[button.format].index : 0;
-    b.sort((button1, button2) => buttonIndex(button1) - buttonIndex(button2));
-    return b;
-  }, [buttons, order]);
+  const buttons = useMemo(() => {
+    return transform ? transform(defaultButtons, editor, dialogController) : defaultButtons;
+  }, [defaultButtons, dialogController, editor, transform]);
 
   const handleSetValue = (name: string, value: string, type: FieldType) => {
     setFieldValues({ [name]: value });
@@ -372,7 +335,7 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
       <EditorToolbar
         className={`ccrte-toolbar slate-toolbar ${props.className || ""}`}
         iconSize={16}
-        buttons={_buttons}
+        buttons={buttons}
         editor={editor}
         {...others}
         />

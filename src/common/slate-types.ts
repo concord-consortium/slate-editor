@@ -57,23 +57,41 @@ export type EditorValue = Value;
 export type EditorContent = Document;
 export const EditorRange = Range;
 
-export function isMarkFormat(format: EFormat) {
-  return [
-    EFormat.bold, EFormat.italic, EFormat.underlined, EFormat.inserted, EFormat.deleted,
-    EFormat.code, EFormat.marked, EFormat.superscript, EFormat.subscript, EFormat.color
-  ].includes(format);
+const markFormats: Array<EFormat | string> = [
+  EFormat.bold, EFormat.italic, EFormat.underlined, EFormat.inserted, EFormat.deleted,
+  EFormat.code, EFormat.marked, EFormat.superscript, EFormat.subscript, EFormat.color
+];
+
+export function registerMarkFormat(format: string) {
+  markFormats.push(format);
+}
+
+export function isMarkFormat(format: EFormat | string) {
+  return markFormats.includes(format);
+}
+
+const blockFormats: Array<EFormat | string> = [
+  EFormat.paragraph, EFormat.block, EFormat.blockQuote, EFormat.heading1, EFormat.heading2,
+  EFormat.heading3, EFormat.heading4, EFormat.heading5, EFormat.heading6, EFormat.horizontalRule,
+  EFormat.preformatted, EFormat.listItem, EFormat.numberedList, EFormat.bulletedList, EFormat.lineDEPRECATED
+];
+
+export function registerBlockFormat(format: string) {
+  blockFormats.push(format);
 }
 
 export function isBlockFormat(format: EFormat) {
-  return [
-    EFormat.paragraph, EFormat.block, EFormat.blockQuote, EFormat.heading1, EFormat.heading2,
-    EFormat.heading3, EFormat.heading4, EFormat.heading5, EFormat.heading6, EFormat.horizontalRule,
-    EFormat.preformatted, EFormat.listItem, EFormat.numberedList, EFormat.bulletedList, EFormat.lineDEPRECATED
-  ].includes(format);
+  return blockFormats.includes(format);
+}
+
+const inlineFormats: Array<EFormat | string> = [EFormat.inline, EFormat.image, EFormat.link];
+
+export function registerInlineFormat(format: string) {
+  inlineFormats.push(format);
 }
 
 export function isInlineFormat(format: EFormat) {
-  return [EFormat.inline, EFormat.image, EFormat.link].includes(format);
+  return inlineFormats.includes(format);
 }
 
 export function textToSlate(text: string): EditorValue {

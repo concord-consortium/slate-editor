@@ -12,7 +12,7 @@ export {
 export { SlateContainer } from "./slate-container/slate-container";
 export { SlateEditor } from "./slate-editor/slate-editor";
 export { getContentHeight, handleToggleSuperSubscript } from "./slate-editor/slate-utils";
-export { DisplayDialogSettings, IToolOrder, OrderEntry, SlateToolbar } from "./slate-toolbar/slate-toolbar";
+export { DisplayDialogSettings, SlateToolbar, ToolbarTransform } from "./slate-toolbar/slate-toolbar";
 export { EditorToolbar, IButtonSpec, IToolbarColors, getPlatformTooltip } from "./editor-toolbar/editor-toolbar";
 export {
   OnChangeColorFn, OnChangeFn, OnClickFn, OnDidInvokeToolFn, OnMouseFn, ToolbarButton
