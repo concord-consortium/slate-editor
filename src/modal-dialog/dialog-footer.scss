@@ -1,0 +1,22 @@
+.ccrte-dialog-footer {
+  margin: 5px;
+  display: flex;
+  justify-content: flex-end;
+
+  button {
+    height: 30px;
+    min-width: 80px;
+    margin-left: 5px;
+    border: 2px solid #dfdfdf;
+    background-color: #A0A0A0;
+    color: white;
+    cursor: pointer;
+    border-radius: 6px;
+    &:hover {
+      opacity: .9;
+    }
+    &:active {
+      opacity: .8;
+    }
+  }
+}

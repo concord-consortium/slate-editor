@@ -1,0 +1,23 @@
+@import "./dialog-vars.scss";
+
+.ccrte-form-field {
+  &.ccrte-inline {
+    display: inline-block;
+    &.checkbox {
+      margin-top: 3.5px;
+    }
+  }
+  .ccrte-label {
+    margin: 5px;
+    color: black;
+  }
+  input {
+    margin: 5px;
+    height: 24px;
+    padding: 0 3px;
+
+    &.ccrte-full-row {
+      width: $dialogWidth - 40px;
+    }
+  }
+}
