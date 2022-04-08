@@ -1,0 +1,15 @@
+.ccrte-variable {
+  border: 1px solid black;
+  border-radius: 5px;
+  padding: 1px 3px;
+  margin: 0 1px;
+  user-select: none;
+
+  .ccrte-equals {
+    padding: 0 3px;
+  }
+}
+
+.ccrte-variable-highlight {
+  box-shadow: 0 0 0 2px lightskyblue;
+}

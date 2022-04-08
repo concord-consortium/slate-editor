@@ -1,5 +1,6 @@
-import React from "react";
-import { SlateToolbar } from "./slate-toolbar";
+import React, { useCallback } from "react";
+import { IButtonSpec } from "../editor-toolbar/editor-toolbar";
+import { SlateToolbar, ToolbarTransform } from "./slate-toolbar";
 
 export default {
   title: "SlateToolbar"
@@ -41,26 +42,42 @@ const order = [
         "fontIncrease", "heading1", "heading2", "heading3", "block-quote", "bulleted-list", "ordered-list", "image", "link"
       ];
 
-export const Ordered = () => (
-  <SlateToolbar changeCount={0}
-    orientation="vertical"
-    colors={{ buttonColors: { background: "#177991", fill: "#ffffff" } }}
-    buttonsPerRow={9}
-    order={order}
-    />
-);
+export const Ordered = () => {
+  const transform = useCallback<ToolbarTransform>(buttons => {
+    return order
+            .map(format => buttons.find(b => b.format === format))
+            .filter(b => !!b) as IButtonSpec[];
+  }, []);
+  return (
+    <SlateToolbar changeCount={0}
+      orientation="vertical"
+      colors={{ buttonColors: { background: "#177991", fill: "#ffffff" } }}
+      buttonsPerRow={9}
+      transform={transform}
+      />
+  );
+};
 
-const hintedOrder = order
-                      // show subset of tools
-                      .filter((f, i) => (i + 1) % 4 !== 0)
-                      .reverse()
-                      // override tooltips
-                      .map(f => ({ format: f, tooltip: `hint: ${f}`}) );
-export const OrderedHinted = () => (
-  <SlateToolbar changeCount={0}
-    orientation="vertical"
-    colors={{ buttonColors: { background: "#177991", fill: "#ffffff" } }}
-    buttonsPerRow={7}
-    order={hintedOrder}
-    />
-);
+export const OrderedHinted = () => {
+  const transform = useCallback<ToolbarTransform>(buttons => {
+    return order
+            // show subset of tools
+            .filter((f, i) => (i + 1) % 4 !== 0)
+            .reverse()
+            .map(format => buttons.find(b => b.format === format))
+            // override tooltips
+            .map(b => {
+              const { tooltip, ...others } = b || {};
+              return { ...others, tooltip: tooltip ? `hint: ${tooltip}` : tooltip };
+            })
+            .filter(b => !!b) as IButtonSpec[];
+  }, []);
+  return (
+    <SlateToolbar changeCount={0}
+      orientation="vertical"
+      colors={{ buttonColors: { background: "#177991", fill: "#ffffff" } }}
+      buttonsPerRow={7}
+      transform={transform}
+      />
+  );
+};
