@@ -3,10 +3,9 @@ import { Inline } from "slate";
 import { Editor, RenderAttributes, RenderInlineProps } from "slate-react";
 import { isWebUri } from "valid-url";
 import { EFormat } from "../common/slate-types";
+import { IDialogController, IField, IFieldValues } from "../modal-dialog/dialog-types";
 import { getRenderAttributesFromNode, getDataFromElement } from "../serialization/html-utils";
 import { hasActiveInline } from "../slate-editor/slate-utils";
-import { IField, IFieldValues } from "../slate-toolbar/modal-dialog";
-import { IDialogController } from "../slate-toolbar/slate-toolbar";
 import { HtmlSerializablePlugin } from "./html-serializable-plugin";
 
 function renderLink(link: Inline, attributes: RenderAttributes, children: ReactNode, isSerializing = false) {

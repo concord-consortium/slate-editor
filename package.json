@@ -15,7 +15,7 @@
     "build:storybook": "build-storybook",
     "build:tsc": "tsc",
     "clean": "rimraf dist",
-    "clean:build": "rimraf dist/assets dist/common dist/editor-toolbar dist/plugins dist/serialization dist/slate*",
+    "clean:build": "rimraf dist/assets dist/common dist/editor-toolbar dist/modal-dialog dist/plugin* dist/serialization dist/slate*",
     "link:react:comment": "For development: cf. https://reactjs.org/warnings/invalid-hook-call-warning.html#duplicate-react",
     "link:react": "npm link ../codap/node_modules/react",
     "lint": "eslint \"./src/**/*.{js,jsx,ts,tsx}\"",

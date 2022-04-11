@@ -1,0 +1,13 @@
+.ccrte-dialog-content {
+  margin: 5px;
+
+  .ccrte-inline-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  > .ccrte-form-field {
+    margin-top: 8px;
+  }
+}

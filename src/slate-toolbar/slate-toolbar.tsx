@@ -22,8 +22,9 @@ import { hasActiveMark, selectionContainsBlock, handleToggleSuperSubscript }
 import { Editor } from "slate-react";
 import { SelectionJSON } from "slate";
 import { EFormat, EMetaFormat } from "../common/slate-types";
-import { ModalDialog, IRow, IFieldValues, FieldType } from "./modal-dialog";
-import { ModalDialogPortal } from "./modal-dialog-portal";
+import { DisplayDialogSettings, FieldType, IDialogController, IFieldValues } from "../modal-dialog/dialog-types";
+import { ModalDialog } from "../modal-dialog/modal-dialog";
+import { ModalDialogPortal } from "../modal-dialog/modal-dialog-portal";
 import clone from "lodash/clone";
 import EventEmitter from "eventemitter3";
 
@@ -35,20 +36,6 @@ export interface IProps extends Omit<IToolbarProps, "buttons"> {
   modalCoverClassName?: string;
   modalDialogClassName?: string;
   changeCount: number;
-}
-
-export interface DisplayDialogSettings {
-  title: string;
-  rows: IRow[];
-  values: IFieldValues;
-  onChange?: (editor: Editor, name: string, value: string, values: IFieldValues) => boolean | undefined;
-  onValidate?: (values: IFieldValues) => IFieldValues | string;
-  onAccept?: (editor: Editor, values: IFieldValues) => void;
-}
-
-export interface IDialogController {
-  display: (settings: DisplayDialogSettings) => void;
-  update: (values: IFieldValues) => void;
 }
 
 export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
