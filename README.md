@@ -52,11 +52,11 @@ Note that these links can be inadvertently undone when performing other npm task
 
 #### Using yalc (instead of npm link)
 
-[yalc](https://www.npmjs.com/package/yalc) provides an alternative to `npm link`. It acts as a very simple local repository for locally developed packages that can be shared across a local environment. It provides a better workflow than `npm | yarn link` for package authors. Note that in these examples we use `npx` to run `yalc` without installing it locally.
+[yalc](https://www.npmjs.com/package/yalc) provides an alternative to `npm link`. It acts as a very simple local repository for locally developed packages that can be shared across a local environment. It provides a better workflow than `npm | yarn link` for package authors. There are scripts in package.json to make this easier. 
 
 To publish an in-development version of the slate-editor library, in the root directory of the slate-editor project:
 ```
-$ npx yalc publish
+$ npm run yalc:publish
 ```
 
 To consume an in-development version of the slate-editor library, in the root directory of the client project:
@@ -64,12 +64,12 @@ To consume an in-development version of the slate-editor library, in the root di
 $ npx yalc add @concord-consortium/slate-editor
 ```
 
-To update to the most recently published version of an in-development slate-editor library, in the client project:
+To update all clients that are using the in-development version of slate-editor, in the slate-editor project:
 ```
-$ npx yalc update
+$ npm run yalc:publish
 ```
 
-`yalc` modifies the `package.json` of the project with a link to the local `yalc` repository. _This is a good thing!_ as it makes it obvious when you're using an in-development version of a library and serves as a reminder to install a fully published version before pushing to GitHub, etc.
+`yalc` modifies the `package.json` of the client project with a link to the local `yalc` repository. _This is a good thing!_ as it makes it obvious when you're using an in-development version of a library and serves as a reminder to install a fully published version before pushing to GitHub, etc. It also means that running `npm install` in the client project will not break the setup.
 
 ### @concord-consortium/slate
 

@@ -1,9 +1,16 @@
 # Changelog
 
-## Version 0.7.4 - April 6, 2022 (not released)
+## Version 0.8.0 - May 7, 2022
 
 ### Features/Improvements
 - Update dependencies
+- Bundle types into one file
+- Support registering custom Mark, Block, and Inline formats
+- Export more types, util functions, and objects to support external plugins and
+  external dialog implementations
+- Refactor the dialog so it is easier to use just parts of it
+- Add a unique prefix to all css classes so they can imported without conflicts
+- Add custom plugin example `plugin-examples/variable-plugin`
 
 ### Bugs Fixed
 - Enable cut/copy/paste for image-only selections [#181315816]
