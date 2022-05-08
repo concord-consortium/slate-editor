@@ -1,6 +1,7 @@
 export { DocumentJSON } from "slate";
 export { Editor, RenderAttributes, RenderInlineProps } from "slate-react";
-export { EditorContent, EditorRange, EditorValue, EFormat, slateToText, textToSlate } from "./common/slate-types";
+export { EditorContent, EditorRange, EditorValue, EFormat, slateToText, textToSlate,
+  kSlateVoidClass } from "./common/slate-types";
 export { DialogContent } from "./modal-dialog/dialog-content";
 export { DialogFooter } from "./modal-dialog/dialog-footer";
 export { DialogHeader } from "./modal-dialog/dialog-header";
