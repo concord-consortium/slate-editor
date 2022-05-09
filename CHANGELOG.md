@@ -9,7 +9,7 @@
 - Export more types, util functions, and objects to support external plugins and
   external dialog implementations
 - Refactor the dialog so it is easier to use just parts of it
-- Add a unique prefix to all css classes so they can imported without conflicts
+- Add a unique prefix to all css classes so they can be imported without conflicts
 - Add custom plugin example `plugin-examples/variable-plugin`
 
 ### Bugs Fixed
