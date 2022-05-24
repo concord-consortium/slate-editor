@@ -6,6 +6,8 @@ import { Element } from './element';
 import { Leaf } from './leaf';
 import { HotkeyMap } from '../common/slate-types';
 
+import './slate-editor.scss';
+
 const defaultHistoryKeys: HotkeyMap = {
   "mod+z": editor => editor.undo(),
   "mod+shift+z": editor => editor.redo()

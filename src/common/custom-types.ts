@@ -1,5 +1,5 @@
 import { Descendant, BaseEditor } from 'slate';
-import { ReactEditor } from 'slate-react';
+import { ReactEditor, RenderElementProps } from 'slate-react';
 import { HistoryEditor } from 'slate-history';
 
 export type BlockQuoteElement = {
@@ -77,7 +77,7 @@ export type ParagraphElement = {
 
 // export type VideoElement = { type: 'video'; url: string; children: EmptyText[] };
 
-type CustomElement =
+export type CustomElement =
   | BlockQuoteElement
   | BulletedListElement
   // | CheckListItemElement
@@ -114,6 +114,13 @@ export type MarkType = keyof CustomMarks;
 export type EmptyText = {
   text: string;
 };
+
+export interface CustomRenderLeafProps {
+  children: any;
+  leaf: CustomText;
+}
+
+export type RenderElementAttrs = RenderElementProps["attributes"];
 
 export type CustomEditor = BaseEditor & ReactEditor & HistoryEditor;
 
