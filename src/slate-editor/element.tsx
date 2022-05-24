@@ -1,6 +1,6 @@
 import React from "react";
 import { RenderElementProps } from "slate-react";
-import { CustomElement, RenderElementAttrs } from "../common/custom-types";
+import { CustomElement } from "../common/custom-types";
 import { EFormat } from "../common/slate-types";
 
 function eltRenderAttrs(element: CustomElement) {
@@ -13,43 +13,44 @@ function eltRenderAttrs(element: CustomElement) {
   return attrs;
 }
 
-export type ElementRenderFn = (attrs: RenderElementAttrs, children: any, element: CustomElement) => JSX.Element;
+export type ElementRenderFn = (props: RenderElementProps) => JSX.Element;
+
 const elementRenderMap: Partial<Record<string, ElementRenderFn>> = {
-  [EFormat.blockQuote]: (attrs, children, element) => {
-    return <blockquote {...attrs} {...eltRenderAttrs(element)}>{children}</blockquote>;
+  [EFormat.blockQuote]: ({ attributes, children, element }) => {
+    return <blockquote {...attributes} {...eltRenderAttrs(element)}>{children}</blockquote>;
   },
-  [EFormat.bulletedList]: (attrs, children, element) => {
-    return <ul {...attrs} {...eltRenderAttrs(element)}>{children}</ul>;
+  [EFormat.bulletedList]: ({ attributes, children, element }) => {
+    return <ul {...attributes} {...eltRenderAttrs(element)}>{children}</ul>;
   },
-  [EFormat.heading1]: (attrs, children, element) => {
-    return <h1 {...attrs} {...eltRenderAttrs(element)}>{children}</h1>;
+  [EFormat.heading1]: ({ attributes, children, element }) => {
+    return <h1 {...attributes} {...eltRenderAttrs(element)}>{children}</h1>;
   },
-  [EFormat.heading2]: (attrs, children, element) => {
-    return <h2 {...attrs} {...eltRenderAttrs(element)}>{children}</h2>;
+  [EFormat.heading2]: ({ attributes, children, element }) => {
+    return <h2 {...attributes} {...eltRenderAttrs(element)}>{children}</h2>;
   },
-  [EFormat.heading3]: (attrs, children, element) => {
-    return <h3 {...attrs} {...eltRenderAttrs(element)}>{children}</h3>;
+  [EFormat.heading3]: ({ attributes, children, element }) => {
+    return <h3 {...attributes} {...eltRenderAttrs(element)}>{children}</h3>;
   },
-  [EFormat.heading4]: (attrs, children, element) => {
-    return <h4 {...attrs} {...eltRenderAttrs(element)}>{children}</h4>;
+  [EFormat.heading4]: ({ attributes, children, element }) => {
+    return <h4 {...attributes} {...eltRenderAttrs(element)}>{children}</h4>;
   },
-  [EFormat.heading5]: (attrs, children, element) => {
-    return <h5 {...attrs} {...eltRenderAttrs(element)}>{children}</h5>;
+  [EFormat.heading5]: ({ attributes, children, element }) => {
+    return <h5 {...attributes} {...eltRenderAttrs(element)}>{children}</h5>;
   },
-  [EFormat.heading6]: (attrs, children, element) => {
-    return <h6 {...attrs} {...eltRenderAttrs(element)}>{children}</h6>;
+  [EFormat.heading6]: ({ attributes, children, element }) => {
+    return <h6 {...attributes} {...eltRenderAttrs(element)}>{children}</h6>;
   },
-  [EFormat.horizontalRule]: (attrs, children, element) => {
-    return <hr {...attrs} {...eltRenderAttrs(element)}>{children}</hr>;
+  [EFormat.horizontalRule]: ({ attributes, children, element }) => {
+    return <hr {...attributes} {...eltRenderAttrs(element)}>{children}</hr>;
   },
-  [EFormat.listItem]: (attrs, children, element) => {
-    return <li {...attrs} {...eltRenderAttrs(element)}>{children}</li>;
+  [EFormat.listItem]: ({ attributes, children, element }) => {
+    return <li {...attributes} {...eltRenderAttrs(element)}>{children}</li>;
   },
-  [EFormat.numberedList]: (attrs, children, element) => {
-    return <ol {...attrs} {...eltRenderAttrs(element)}>{children}</ol>;
+  [EFormat.numberedList]: ({ attributes, children, element }) => {
+    return <ol {...attributes} {...eltRenderAttrs(element)}>{children}</ol>;
   },
-  [EFormat.preformatted]: (attrs, children, element) => {
-    return <pre {...attrs} {...eltRenderAttrs(element)}>{children}</pre>;
+  [EFormat.preformatted]: ({ attributes, children, element }) => {
+    return <pre {...attributes} {...eltRenderAttrs(element)}>{children}</pre>;
   }
 };
 
@@ -57,10 +58,12 @@ export function registerElementRenderFn(format: string, elementRenderFn: Element
   elementRenderMap[format] = elementRenderFn;
 }
 
-export const Element = ({ attributes, children, element }: RenderElementProps) => {
-  const renderFn = elementRenderMap[element.type];
-  if (renderFn) return renderFn(attributes, children, element);
+export const Element = (props: RenderElementProps) => {
+  const { element: { type } } = props;
+  const renderFn = elementRenderMap[type];
+  if (renderFn) return renderFn(props);
 
   // default to simple paragraph
+  const { attributes, children, element } = props;
   return <p {...attributes} {...eltRenderAttrs(element)}>{children}</p>;
 };

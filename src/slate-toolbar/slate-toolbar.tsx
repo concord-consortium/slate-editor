@@ -7,7 +7,7 @@ import IconBold from "../assets/icon-bold";
 import IconCode from "../assets/icon-code";
 import IconItalic from "../assets/icon-italic";
 // import IconImage from "../assets/icon-image";
-// import IconLink from "../assets/icon-link";
+import IconLink from "../assets/icon-link";
 import IconHeading from "../assets/icon-heading";
 import IconQuote from "../assets/icon-quote";
 import IconBulletedList from "../assets/icon-list-bulleted";
@@ -140,14 +140,14 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
     //   isEnabled: !!editor && editor.query("isImageEnabled"),
     //   onClick: () => editor?.command("configureImage", dialogController)
     // },
-    // {
-    //   format: EFormat.link,
-    //   SvgIcon: IconLink,
-    //   tooltip: getPlatformTooltip("link"),
-    //   isActive: !!editor && editor.query("isLinkActive"),
-    //   isEnabled: !!editor && editor.query("isLinkEnabled"),
-    //   onClick: () => editor?.command("configureLink", dialogController)
-    // },
+    {
+      format: EFormat.link,
+      SvgIcon: IconLink,
+      tooltip: getPlatformTooltip("link"),
+      isActive: !!editor.isElementActive(EFormat.link),
+      isEnabled: !!editor.isElementEnabled(EFormat.link),
+      onClick: () => editor?.configureElement(EFormat.link, dialogController)
+    },
     {
       format: EFormat.heading1,
       SvgIcon: IconHeading,

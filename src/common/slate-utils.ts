@@ -1,5 +1,5 @@
-import { Editor, Element as SlateElement, Transforms } from "slate";
-import { CustomMarks, CustomText, EmptyText, MarkType } from "./custom-types";
+import { Editor, Element as SlateElement, Range, Transforms } from "slate";
+import { CustomElement, CustomMarks, CustomText, EmptyText, MarkType } from "./custom-types";
 import { EFormat } from "./slate-types";
 
 export function isCustomText(node: CustomText | EmptyText): node is CustomText {
@@ -85,4 +85,42 @@ export function toggleSuperSubscript(editor: Editor, format: EFormat.subscript |
     Editor.removeMark(editor, EFormat.superscript);
     toggleMark(editor, format);
   }
+}
+
+export function unwrapElement(editor: Editor, format: string) {
+  Transforms.unwrapNodes(editor, {
+    match: n => !Editor.isEditor(n) && SlateElement.isElement(n) && n.type === format
+  });
+}
+
+export function wrapElement(editor: Editor, format: string, addProps?: Record<string, any>, defaultText = "") {
+  if (isBlockActive(editor, format)) {
+    unwrapElement(editor, format);
+  }
+
+  const { selection } = editor;
+  const isCollapsed = selection && Range.isCollapsed(selection);
+  const element: CustomElement = {
+    type: format,
+    ...addProps,
+    children: isCollapsed && defaultText ? [{ text: defaultText }] : [],
+  } as CustomElement;
+
+  if (isCollapsed) {
+    Transforms.insertNodes(editor, element);
+  }
+  else {
+    Transforms.wrapNodes(editor, element, { split: true });
+    Transforms.collapse(editor, { edge: 'end' });
+  }
+}
+
+export function selectedElements(editor: Editor) {
+  const { selection } = editor;
+  return selection
+          ? Array.from(Editor.nodes(editor, {
+              at: Editor.unhangRange(editor, selection),
+              match: n => !Editor.isEditor(n) && SlateElement.isElement(n)
+            })) as unknown as CustomElement[]
+          : [];
 }

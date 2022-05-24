@@ -1,6 +1,7 @@
 import { Descendant, BaseEditor } from 'slate';
 import { ReactEditor, RenderElementProps } from 'slate-react';
 import { HistoryEditor } from 'slate-history';
+import { IDialogController } from '../modal-dialog/dialog-types';
 
 export type BlockQuoteElement = {
   type: 'block-quote';
@@ -43,7 +44,7 @@ export type ImageElement = {
   children: EmptyText[];
 };
 
-export type LinkElement = { type: 'link'; url: string; children: Descendant[] };
+export type LinkElement = { type: 'link'; href: string; children: Descendant[] };
 
 export type ButtonElement = { type: 'button'; children: Descendant[] };
 
@@ -122,7 +123,19 @@ export interface CustomRenderLeafProps {
 
 export type RenderElementAttrs = RenderElementProps["attributes"];
 
-export type CustomEditor = BaseEditor & ReactEditor & HistoryEditor;
+interface CCBaseEditor extends BaseEditor {
+  isMarkActive: (format: string) => boolean;
+  toggleMark: (format: string, value: any) => void;
+  isElementActive: (format: string) => boolean;
+  toggleElement: (format: string) => void;
+
+  selectedElements: () => CustomElement[];
+
+  isElementEnabled: (format: string) => boolean;
+  configureElement: (format: string, controller: IDialogController) => void;
+}
+
+export type CustomEditor = CCBaseEditor & ReactEditor & HistoryEditor;
 
 declare module 'slate' {
   interface CustomTypes {
