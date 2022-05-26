@@ -1,3 +1,4 @@
+/*
 import { Plugin } from "slate-react";
 import isHotkey from "is-hotkey";
 
@@ -28,3 +29,4 @@ export function NoEditorHistory(): Plugin {
     }
   };
 }
+*/

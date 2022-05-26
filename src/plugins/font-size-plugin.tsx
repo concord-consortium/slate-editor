@@ -1,3 +1,4 @@
+/*
 import { Editor, Plugin } from "slate-react";
 import { Value } from "slate";
 
@@ -38,3 +39,4 @@ export function FontSizePlugin(): Plugin {
     }
   };
 }
+*/

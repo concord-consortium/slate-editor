@@ -57,7 +57,7 @@ export function textToSlate(text: string): EditorValue {
   return lines.map(line => ({ type: "paragraph", children: [{ text: line }] }));
 }
 
-export function slateToText(value: EditorValue) {
+export function slateToText(value: EditorValue = []) {
   // https://docs.slatejs.org/concepts/10-serializing#plaintext
   return value.map(n => Node.string(n)).join("\n");
 }

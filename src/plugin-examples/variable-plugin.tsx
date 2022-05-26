@@ -1,3 +1,4 @@
+/*
 import React, { ReactNode } from "react";
 import classNames from "classnames/dedupe";
 import clone from "lodash/clone";
@@ -193,3 +194,4 @@ export function VariablesPlugin(variables: Record<string, number>): HtmlSerializ
     }
   };
 }
+*/

@@ -1,3 +1,4 @@
+/*
 import React, { useCallback, useRef, useState } from "react";
 import { Value } from "slate";
 import IconVariable from "./icon-variable";
@@ -16,7 +17,7 @@ export default {
  * Variables
  *
  * Supports creation/editing of variable "chips" with optional values embedded in text.
- */
+ *\/
 const variablesText = "This example demonstrates a customized toolbar/editor with embedded variables in text.";
 
 const VariablesToolbar = (props: ISlateToolbarProps) => {
@@ -72,3 +73,4 @@ export const Variables = (props: IVariablesProps) => {
     </div>
   );
 };
+*/

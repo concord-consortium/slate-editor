@@ -1,3 +1,4 @@
+/*
 import React, { ReactNode } from "react";
 import _size from "lodash/size";
 import { Inline, Node } from "slate";
@@ -28,7 +29,7 @@ const kLegacyVoidNonEmptyInlineTags = [
   "audio", "iframe", "picture", "video"
 ];
 export const kLegacyContentInlineTags = [
-  "abbr", "acronym", "big", "cite", "dfn", "label", "q", "samp", "small", /* "textarea" */
+  "abbr", "acronym", "big", "cite", "dfn", "label", "q", "samp", "small", /* "textarea" *\/
 ];
 export const kLegacyConvertedInlineTags = ["font"];
 export const kLegacyNonEmptyInlineTags = [...kLegacyContentInlineTags, ...kLegacyVoidNonEmptyInlineTags];
@@ -157,3 +158,4 @@ export function CoreInlinesPlugin(): HtmlSerializablePlugin {
 
   };
 }
+*/

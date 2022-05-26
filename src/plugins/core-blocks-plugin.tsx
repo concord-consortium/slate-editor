@@ -1,3 +1,4 @@
+/*
 import React, { ReactNode } from "react";
 import { Block, Node } from "slate";
 import { Editor, RenderAttributes, RenderBlockProps, EventHook } from "slate-react";
@@ -74,7 +75,7 @@ function getRenderAttributesFromBlock(block: Block): RenderAttributes {
  *
  * @param {Event} event
  * @param {Editor} editor
- */
+ *\/
 
 const handleEnter: EventHook<React.KeyboardEvent> = (event, editor, next) => {
   // placeholder for any further special-case treatment
@@ -135,3 +136,4 @@ export function CoreBlocksPlugin(): HtmlSerializablePlugin {
 
   };
 }
+*/

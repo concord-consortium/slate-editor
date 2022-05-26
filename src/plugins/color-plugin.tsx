@@ -7,7 +7,6 @@ import { useSerializing } from "../hooks/use-serializing";
 import { EFormat } from "../common/slate-types";
 // import { getDataFromElement, getRenderAttributesFromNode, mergeClassStrings } from "../serialization/html-utils";
 import { registerMark } from "../slate-editor/leaf";
-// import { getRenderIndexOfMark } from "../slate-editor/slate-utils";
 // import { HtmlSerializablePlugin } from "./html-serializable-plugin";
 
 const kTextColorClass = "ccrte-text-color";

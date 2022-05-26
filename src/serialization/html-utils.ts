@@ -1,3 +1,4 @@
+/*
 import { RenderAttributes } from "slate-react";
 import { Block, Inline, Mark } from "slate";
 import classNames from "classnames/dedupe";
@@ -21,7 +22,7 @@ export function toReactStyle(styleStr?: string): React.CSSProperties | undefined
   let count = 0;
   styleStr && parseStyle(styleStr, (name, value) => {
                 // convert to react key format (ignoring custom css properties)
-                const key = /^--.*/.test(name) ? name : toReactStyleKey(name);
+                const key = \^--.*\.test(name) ? name : toReactStyleKey(name);
                 style[key] = value;
                 ++count;
               });
@@ -91,3 +92,4 @@ export function normalizeHtml(html: string) {
           // we don't serialize rel attributes of anchor tags
           .replace(/ rel=".*?"/g, "");
 }
+*/

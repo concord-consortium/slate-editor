@@ -1,3 +1,4 @@
+/*
 import React, { ReactNode } from "react";
 import { Block } from "slate";
 import { Editor, RenderAttributes, RenderBlockProps, EventHook } from "slate-react";
@@ -30,7 +31,7 @@ for (const tag in kTagToFormatMap) {
  *
  * @param {Event} event
  * @param {Editor} editor
- */
+ *\/
 
 const handleEnter: EventHook<React.KeyboardEvent> = (event, editor, next) => {
   // For now, treat enter like tab. A more sophisticated implementation would
@@ -71,7 +72,7 @@ export function ListPlugin(): HtmlSerializablePlugin {
         return renderNodeAsTag(tag, node, attributes, children, true);
       }
     },
-  
+
     onCommand(command, editor, next) {
       const { type, args } = command;
       if (type === "toggleBlock") {
@@ -133,3 +134,4 @@ export function ListPlugin(): HtmlSerializablePlugin {
 
   };
 }
+*/

@@ -1,3 +1,4 @@
+/*
 import React, { ReactNode } from "react";
 import { Block, Node } from "slate";
 import { Editor, RenderAttributes, RenderBlockProps, EventHook } from "slate-react";
@@ -100,7 +101,7 @@ function nextTableCell(editor: Editor) {
  *
  * @param {Event} event
  * @param {Editor} editor
- */
+ *\/
 
 const handleTab: EventHook<React.KeyboardEvent> = (event, editor, next) => {
   const { selectedCells } = getSelectionInfo(editor);
@@ -119,7 +120,7 @@ const handleTab: EventHook<React.KeyboardEvent> = (event, editor, next) => {
  *
  * @param {Event} event
  * @param {Editor} editor
- */
+ *\/
 
 const handleEnter: EventHook<React.KeyboardEvent> = (event, editor, next) => {
   // For now, treat enter like tab. A more sophisticated implementation would
@@ -133,7 +134,7 @@ const handleEnter: EventHook<React.KeyboardEvent> = (event, editor, next) => {
  *
  * @param {Event} event
  * @param {Editor} editor
- */
+ *\/
 const handleBackspace: EventHook<React.KeyboardEvent> = (event, editor, next) => {
   const { value } = editor;
   const { selection } = value;
@@ -157,7 +158,7 @@ const handleBackspace: EventHook<React.KeyboardEvent> = (event, editor, next) =>
  *
  * @param {Event} event
  * @param {Editor} editor
- */
+ *\/
 const handleDelete: EventHook<React.KeyboardEvent> = (event, editor, next) => {
   const { value } = editor;
   const { selection } = value;
@@ -206,7 +207,7 @@ export function TablePlugin(): HtmlSerializablePlugin {
       // generates incorrect case for "colspan" (but not for "rowspan" ¯\_(ツ)_/¯).
       return html.replace("colSpan", "colspan");
     },
-  
+
     renderBlock: (props: RenderBlockProps, editor: Editor, next: () => any) => {
       const { attributes, children, node } = props;
       const tag = kFormatToTagMap[node.type];
@@ -240,3 +241,4 @@ export function TablePlugin(): HtmlSerializablePlugin {
     }
   };
 }
+*/

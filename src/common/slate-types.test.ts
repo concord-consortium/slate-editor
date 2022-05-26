@@ -1,23 +1,23 @@
-import { EFormat, isBlockFormat, isInlineFormat, isMarkFormat, textToSlate, slateToText } from "./slate-types";
+import { textToSlate, slateToText } from "./slate-types";
 
 describe("Slate Editor types", () => {
 
-  it("can each be classified as a mark, inline, or block", () => {
-    const typesArray = Object.values(EFormat);
-    typesArray.forEach(format => {
-      const isMark = isMarkFormat(format) ? 1 : 0;
-      const isInline = isInlineFormat(format) ? 1 : 0;
-      const isBlock = isBlockFormat(format) ? 1 : 0;
-      expect(`${format}: ${isMark + isInline + isBlock}`).toBe(`${format}: 1`);
-    });
-});
-  it("doesn't classify invalid formats", () => {
-    const format = "foo" as EFormat;
-    const isMark = isMarkFormat(format) ? 1 : 0;
-    const isInline = isInlineFormat(format) ? 1 : 0;
-    const isBlock = isBlockFormat(format) ? 1 : 0;
-    expect(isMark + isInline + isBlock).toBe(0);
-  });
+  // it("can each be classified as a mark, inline, or block", () => {
+  //   const typesArray = Object.values(EFormat);
+  //   typesArray.forEach(format => {
+  //     const isMark = isMarkFormat(format) ? 1 : 0;
+  //     const isInline = isInlineFormat(format) ? 1 : 0;
+  //     const isBlock = isBlockFormat(format) ? 1 : 0;
+  //     expect(`${format}: ${isMark + isInline + isBlock}`).toBe(`${format}: 1`);
+  //   });
+  // });
+  // it("doesn't classify invalid formats", () => {
+  //   const format = "foo" as EFormat;
+  //   const isMark = isMarkFormat(format) ? 1 : 0;
+  //   const isInline = isInlineFormat(format) ? 1 : 0;
+  //   const isBlock = isBlockFormat(format) ? 1 : 0;
+  //   expect(isMark + isInline + isBlock).toBe(0);
+  // });
 
 });
 

@@ -1,3 +1,4 @@
+/*
 import React, { ReactNode } from "react";
 import { Mark } from "slate";
 import { RenderAttributes, RenderMarkProps } from "slate-react";
@@ -126,3 +127,4 @@ export function CoreMarksPlugin(): HtmlSerializablePlugin {
 
   };
 }
+*/

@@ -1,3 +1,4 @@
+/*
 import React, { ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import HtmlSerializer from "slate-html-serializer";
@@ -76,3 +77,4 @@ export function slateToHtml(value: Value) {
   }
   return html;
 }
+*/

@@ -43,6 +43,6 @@ module.exports = {
       "no-unused-vars": "off",  // superseded by @typescript-eslint/no-unused-vars
       "prefer-const": ["error", { destructuring: "all" }],
       "react/prop-types": "off",
-      semi: "off"
+      semi: "off" // superseded by @typescript-eslint/semi
     }
 };

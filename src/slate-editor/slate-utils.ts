@@ -1,3 +1,4 @@
+/*
 import { Block, MarkProperties, Inline, Node, Text, Value } from "slate";
 import { Editor, RenderMarkProps } from "slate-react";
 import { EFormat } from "../common/slate-types";
@@ -79,3 +80,4 @@ export function handleToggleSuperSubscript(format: EFormat, editor: Editor) {
     editor.toggleMark(format);
   }
 }
+*/
