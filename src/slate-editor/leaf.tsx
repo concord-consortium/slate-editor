@@ -3,7 +3,7 @@ import { RenderLeafProps } from "slate-react";
 import { CustomText, MarkType } from "../common/custom-types";
 import { isCustomText } from "../common/slate-utils";
 
-const markRenderMap: Record<string, (children: any, leaf: CustomText) => JSX.Element> = {
+const markComponents: Partial<Record<MarkType, (children: any, leaf: CustomText) => JSX.Element>> = {
   "bold": children => <strong>{children}</strong>,
   "code": children => <code>{children}</code>,
   "deleted": children => <del>{children}</del>,
@@ -12,18 +12,18 @@ const markRenderMap: Record<string, (children: any, leaf: CustomText) => JSX.Ele
   "superscript": children => <sup>{children}</sup>,
   "underlined": children => <u>{children}</u>
 };
-const markTypes = Object.keys(markRenderMap);
+const markTypes = Object.keys(markComponents) as MarkType[];
 
-export function registerMark(mark: MarkType, render: (children: any, leaf: CustomText) => JSX.Element) {
+export function registerMark(mark: MarkType, Component: (children: any, leaf: CustomText) => JSX.Element) {
   markTypes.push(mark);
-  markRenderMap[mark] = render;
+  markComponents[mark] = Component;
 }
 
 export const Leaf = ({ attributes, children, leaf }: RenderLeafProps) => {
   // render the individual marks
   if (isCustomText(leaf)) {
     markTypes.forEach(mark => {
-      (leaf as CustomText)[mark as MarkType] && (children = markRenderMap[mark](children, leaf));
+      leaf[mark] && (children = markComponents[mark]?.(children, leaf));
     });
   }
 

@@ -1,12 +1,12 @@
 import clone from "lodash/clone";
-import React, { useMemo, useRef, useState }  from "react";
+import React, { useEffect, useMemo, useRef, useState }  from "react";
 import { Editor } from "slate";
 import { ReactEditor, useSlate } from "slate-react";
 import { EditorToolbar, getPlatformTooltip } from "../editor-toolbar/editor-toolbar";
 import IconBold from "../assets/icon-bold";
 import IconCode from "../assets/icon-code";
 import IconItalic from "../assets/icon-italic";
-// import IconImage from "../assets/icon-image";
+import IconImage from "../assets/icon-image";
 import IconLink from "../assets/icon-link";
 import IconHeading from "../assets/icon-heading";
 import IconQuote from "../assets/icon-quote";
@@ -25,7 +25,7 @@ import { EFormat } from "../common/slate-types";
 import { DisplayDialogSettings, FieldType, IDialogController, IFieldValues } from "../modal-dialog/dialog-types";
 import { ModalDialog } from "../modal-dialog/modal-dialog";
 import { ModalDialogPortal } from "../modal-dialog/modal-dialog-portal";
-import { CustomMarks } from "../common/custom-types";
+import { CustomElement, CustomMarks } from "../common/custom-types";
 
 export type ToolbarTransform =
   (buttons: IButtonSpec[], editor?: Editor, dialogController?: IDialogController) => IButtonSpec[];
@@ -54,6 +54,17 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
       validValuesRef.current = clone(settingsRef.current.values);
     }
   };
+  // TODO: Figure out a better way of handling dialogs. Having the toolbar be responsible
+  // for the dialogController and the dialog state makes it more difficult to use a custom
+  // toolbar (because the dialog component must also be implemented) and leads to convoluted
+  // things like the double-click handling in the image plugin which must have the editor
+  // emit a message that the toolbar receives so that it can tell the image plugin to display
+  // the configuration dialog. One possibility would be to encapsulate the dialog functionality
+  // in a custom hook that that can be used by a parent component (e.g. SlateContainer) and
+  // then make relevant pieces available via context. One wrinkle is that plugin code can't
+  // use hooks (other than in the render function), so perhaps a non-React solution would be
+  // better, but the goal should be to isolate the dialog code so that it can be used by all
+  // interested parties without having to be replicated in custom toolbar implementations.
   const dialogController: IDialogController = useMemo(() => ({
     display: (settings: DisplayDialogSettings) => {
       settingsRef.current = settings;
@@ -132,14 +143,14 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
         }
       };
     })(),
-    // {
-    //   format: EFormat.image,
-    //   SvgIcon: IconImage,
-    //   tooltip: getPlatformTooltip("image"),
-    //   isActive: !!editor && editor.query("isImageActive"),
-    //   isEnabled: !!editor && editor.query("isImageEnabled"),
-    //   onClick: () => editor?.command("configureImage", dialogController)
-    // },
+    {
+      format: EFormat.image,
+      SvgIcon: IconImage,
+      tooltip: getPlatformTooltip("image"),
+      isActive: !!editor.isElementActive(EFormat.image),
+      isEnabled: !!editor.isElementEnabled(EFormat.image),
+      onClick: () => editor?.configureElement(EFormat.image, dialogController)
+    },
     {
       format: EFormat.link,
       SvgIcon: IconLink,
@@ -263,6 +274,7 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
   const handleClose = (values?: IFieldValues) => {
     setShowDialog(false);
     editor && values && settingsRef.current?.onAccept?.(editor, values);
+    settingsRef.current?.onClose?.(editor);
   };
 
   const themeColor = props.colors?.themeColor || props.colors?.buttonColors?.background;
@@ -296,18 +308,15 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
                   : null;
 
   // listen for configuration requests from plugins
-  // useEffect(() => {
-  //   const emitter: EventEmitter | undefined = editor?.query("emitter");
-  //   const handler = (event: string, ...args: any) => {
-  //     editor?.command(event, dialogController, ...args);
-  //   };
-  //   emitter?.on("toolbarDialog", handler);
-  //   return () => {
-  //     emitter?.off("toolbarDialog", handler);
-  //   };
-  // }, [editor, dialogController]);
+  useEffect(() => {
+    const handler = (elt: CustomElement) => {
+      editor.configureElement(elt.type, dialogController, elt);
+    };
 
-  console.log("SlateToolbar.FC");
+    editor.onEvent("toolbarDialog", handler);
+
+    return () => editor.offEvent("toolbarDialog", handler);
+  }, [editor, dialogController]);
 
   return (
     <div>

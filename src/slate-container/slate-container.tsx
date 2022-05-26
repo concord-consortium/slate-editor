@@ -1,10 +1,10 @@
 import React, { useMemo } from "react";
 import { Editor } from "slate";
 import { Slate } from "slate-react";
-import { IsSerializingContext } from "../common/is-serializing-context";
 import { EditorValue, EFormat } from "../common/slate-types";
 import { toggleMark } from "../common/slate-utils";
 import { createEditor } from "../create-editor";
+import { SerializingContext } from "../hooks/use-serializing";
 import { IProps as IEditorProps, SlateEditor } from "../slate-editor/slate-editor";
 import { SlateToolbar } from "../slate-toolbar/slate-toolbar";
 import { IProps as IPortalToolbarProps, SlateToolbarPortal } from "../slate-toolbar/slate-toolbar-portal";
@@ -43,7 +43,7 @@ export const SlateContainer: React.FC<IProps> = (props: IProps) => {
 
   const editor = useMemo(() => createEditor({ history: true }), []);
   return (
-    <IsSerializingContext.Provider value={false}>
+    <SerializingContext.Provider value={false}>
       <Slate editor={editor} value={value}>
         <div className={`ccrte-container slate-container ${className || ""}`}>
           {renderToolbar(toolbar)}
@@ -64,7 +64,7 @@ export const SlateContainer: React.FC<IProps> = (props: IProps) => {
           />
         </div>
       </Slate>
-    </IsSerializingContext.Provider>
+    </SerializingContext.Provider>
   );
 };
 

@@ -13,9 +13,9 @@ function eltRenderAttrs(element: CustomElement) {
   return attrs;
 }
 
-export type ElementRenderFn = (props: RenderElementProps) => JSX.Element;
+export type ElementComponent = (props: RenderElementProps) => JSX.Element;
 
-const elementRenderMap: Partial<Record<string, ElementRenderFn>> = {
+const elementComponents: Partial<Record<string, ElementComponent>> = {
   [EFormat.blockQuote]: ({ attributes, children, element }) => {
     return <blockquote {...attributes} {...eltRenderAttrs(element)}>{children}</blockquote>;
   },
@@ -54,14 +54,14 @@ const elementRenderMap: Partial<Record<string, ElementRenderFn>> = {
   }
 };
 
-export function registerElementRenderFn(format: string, elementRenderFn: ElementRenderFn) {
-  elementRenderMap[format] = elementRenderFn;
+export function registerElement(format: string, Component: ElementComponent) {
+  elementComponents[format] = Component;
 }
 
 export const Element = (props: RenderElementProps) => {
   const { element: { type } } = props;
-  const renderFn = elementRenderMap[type];
-  if (renderFn) return renderFn(props);
+  const Component = elementComponents[type];
+  if (Component) return <Component {...props}/>;
 
   // default to simple paragraph
   const { attributes, children, element } = props;

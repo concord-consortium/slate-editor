@@ -1,4 +1,4 @@
-import { Descendant, Editor } from "slate";
+import { Descendant, Editor, Node } from "slate";
 
 // eslint-disable-next-line no-shadow
 export enum EFormat {
@@ -55,4 +55,9 @@ export type HotkeyMap = Record<string, (editor: Editor) => void>;
 export function textToSlate(text: string): EditorValue {
   const lines = text.split(/\r|\r?\n/);
   return lines.map(line => ({ type: "paragraph", children: [{ text: line }] }));
+}
+
+export function slateToText(value: EditorValue) {
+  // https://docs.slatejs.org/concepts/10-serializing#plaintext
+  return value.map(n => Node.string(n)).join("\n");
 }

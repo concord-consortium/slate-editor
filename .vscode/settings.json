@@ -4,6 +4,7 @@
     "ccrte",
     "inlines",
     "strikethrough",
+    "tinymce",
     "unhang"
   ]
 }

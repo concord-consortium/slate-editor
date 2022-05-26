@@ -1,5 +1,5 @@
 import { Descendant, BaseEditor } from 'slate';
-import { ReactEditor, RenderElementProps } from 'slate-react';
+import { ReactEditor } from 'slate-react';
 import { HistoryEditor } from 'slate-history';
 import { IDialogController } from '../modal-dialog/dialog-types';
 
@@ -40,7 +40,12 @@ export type HeadingTwoElement = {
 
 export type ImageElement = {
   type: 'image';
-  url: string;
+  src: string;
+  alt?: string;
+  width?: number;
+  height?: number;
+  constrain?: boolean;
+  float?: 'left' | 'right';
   children: EmptyText[];
 };
 
@@ -113,15 +118,13 @@ export type CustomMarks = Omit<CustomText, "text">;
 export type MarkType = keyof CustomMarks;
 
 export type EmptyText = {
-  text: string;
+  text: "";
 };
 
 export interface CustomRenderLeafProps {
   children: any;
   leaf: CustomText;
 }
-
-export type RenderElementAttrs = RenderElementProps["attributes"];
 
 interface CCBaseEditor extends BaseEditor {
   isMarkActive: (format: string) => boolean;
@@ -132,7 +135,11 @@ interface CCBaseEditor extends BaseEditor {
   selectedElements: () => CustomElement[];
 
   isElementEnabled: (format: string) => boolean;
-  configureElement: (format: string, controller: IDialogController) => void;
+  configureElement: (format: string, controller: IDialogController, elt?: CustomElement) => void;
+
+  emitEvent: (event: string, ...args: any[]) => void;
+  onEvent: (event: string, handler: (...args: any[]) => void) => void;
+  offEvent: (event: string, handler: (...args: any[]) => void) => void;
 }
 
 export type CustomEditor = CCBaseEditor & ReactEditor & HistoryEditor;

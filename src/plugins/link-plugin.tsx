@@ -1,13 +1,13 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Editor, Range } from "slate";
 import { RenderElementProps } from "slate-react";
 import { isWebUri } from "valid-url";
 import { CustomElement, LinkElement } from "../common/custom-types";
-import { IsSerializingContext } from "../common/is-serializing-context";
+import { useSerializing } from "../hooks/use-serializing";
 import { EFormat } from "../common/slate-types";
 import { unwrapElement, wrapElement } from "../common/slate-utils";
 import { IDialogController, IField } from "../modal-dialog/dialog-types";
-import { registerElementRenderFn } from "../slate-editor/element";
+import { registerElement } from "../slate-editor/element";
 
 export const isLinkElement = (element: CustomElement): element is LinkElement => {
   return element.type === EFormat.link;
@@ -17,8 +17,8 @@ export const isLinkElement = (element: CustomElement): element is LinkElement =>
 // https://bugs.chromium.org/p/chromium/issues/detail?id=1249405
 const InlineChromiumBugfix = () => <span contentEditable={false} style={{ fontSize: 0 }}>{"\u00a0"}</span>;
 
-export const LinkInline = ({ attributes, children, element }: RenderElementProps) => {
-  const isSerializing = useContext(IsSerializingContext);
+export const LinkComponent = ({ attributes, children, element }: RenderElementProps) => {
+  const isSerializing = useSerializing();
 
   if (!isLinkElement(element)) return null;
 
@@ -57,8 +57,8 @@ export function withLinkInlines(editor: Editor) {
     return (blocks <= 1) && ((inlines === 0) || (inlines === 1 && links === 1));
   };
 
-  editor.configureElement = (format: string, controller: IDialogController) => {
-    if (format !== EFormat.link) return configureElement(format, controller);
+  editor.configureElement = (format: string, controller: IDialogController, node?: CustomElement) => {
+    if (format !== EFormat.link) return configureElement(format, controller, node);
 
     const { selection } = editor;
     const isCollapsed = selection && Range.isCollapsed(selection);
@@ -82,7 +82,7 @@ export function withLinkInlines(editor: Editor) {
     }
   };
 
-  registerElementRenderFn(EFormat.link, props => <LinkInline {...props}/>);
+  registerElement(EFormat.link, props => <LinkComponent {...props}/>);
 
   return editor;
 

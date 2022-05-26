@@ -1,16 +1,16 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Editor } from "slate";
 // import { Mark } from "slate";
 // import { Editor, RenderAttributes, RenderMarkProps } from "slate-react";
 import { CustomRenderLeafProps, CustomText } from "../common/custom-types";
-import { IsSerializingContext } from "../common/is-serializing-context";
+import { useSerializing } from "../hooks/use-serializing";
 import { EFormat } from "../common/slate-types";
 // import { getDataFromElement, getRenderAttributesFromNode, mergeClassStrings } from "../serialization/html-utils";
 import { registerMark } from "../slate-editor/leaf";
 // import { getRenderIndexOfMark } from "../slate-editor/slate-utils";
 // import { HtmlSerializablePlugin } from "./html-serializable-plugin";
 
-const kTextColorClass = "cc-text-color";
+const kTextColorClass = "ccrte-text-color";
 
 // function getActiveColorMark(editor: Editor) {
 //   return (editor.marks as CustomText | null)?.[EFormat.color];
@@ -49,8 +49,8 @@ const kTextColorClass = "cc-text-color";
 //           : undefined;
 // }
 
-export const ColorLeaf = ({ children, leaf }: CustomRenderLeafProps) => {
-  const isSerializing = useContext(IsSerializingContext);
+export const ColorComponent = ({ children, leaf }: CustomRenderLeafProps) => {
+  const isSerializing = useSerializing();
   const { color } = leaf as CustomText;
   const baseStyle = { color };
   // color shouldn't change when text is selected
@@ -60,11 +60,10 @@ export const ColorLeaf = ({ children, leaf }: CustomRenderLeafProps) => {
 
 export function withColorMark(editor: Editor) {
 
-  registerMark(EFormat.color, (children: any, leaf: CustomText) => <ColorLeaf leaf={leaf}>{children}</ColorLeaf>);
+  registerMark(EFormat.color, (children: any, leaf: CustomText) => <ColorComponent leaf={leaf}>{children}</ColorComponent>);
 
   return editor;
 
-  // return {
   //   deserialize: function(el, next) {
   //     if ((el.tagName.toLowerCase() === kSpanTag) && el.classList.contains(kTextColorClass)) {
   //       const data = getDataFromElement(el);
@@ -83,31 +82,4 @@ export function withColorMark(editor: Editor) {
   //       return renderColorMark(mark, getRenderAttributesFromNode(mark, ["color"]), children, true);
   //     }
   //   },
-
-  //   queries: {
-  //     getActiveColor: function(editor: Editor) {
-  //       const mark = getActiveColorMark(editor);
-  //       return mark && mark.data.get("color");
-  //     },
-  //     hasActiveColorMark: function(editor: Editor) {
-  //       return !!getActiveColorMark(editor);
-  //     }
-  //   },
-  //   commands: {
-  //     setColorMark: function(editor: Editor, color: string) {
-  //       const kBlackColor = "#000000";
-  //       removeColorMarksFromSelection(editor);
-  //       (color !== kBlackColor) && editor.addMark({ type: EFormat.color, data: { color } });
-  //       return editor;
-  //     }
-  //   },
-
-  //   renderMark: (props, editor, next) => {
-  //     const { attributes, children } = props;
-  //     const mark = getMarkToRender(props);
-  //     return mark
-  //             ? renderColorMark(mark, { ...getRenderAttributesFromNode(mark), ...attributes }, children)
-  //             : next();
-  //   }
-  // };
 }

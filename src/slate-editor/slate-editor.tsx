@@ -1,6 +1,6 @@
 import isHotkey from 'is-hotkey';
-import React, { useCallback, useEffect, useMemo } from 'react';
-import { Editable, RenderLeafProps, useFocused, useSlate } from 'slate-react';
+import React, { useCallback, useMemo } from 'react';
+import { Editable, RenderLeafProps, useSlate } from 'slate-react';
 
 import { Element } from './element';
 import { Leaf } from './leaf';
@@ -15,7 +15,6 @@ const defaultHistoryKeys: HotkeyMap = {
 
 export interface IProps {
   className?: string;
-  // value?: EditorValue;
   placeholder?: string;
   readOnly?: boolean;
   hotkeyMap?: HotkeyMap;
@@ -33,14 +32,15 @@ export const SlateEditor = ({
   const renderElement = useCallback(props => <Element {...props} />, []);
   const renderLeaf = useCallback((props: RenderLeafProps) => <Leaf {...props} />, []);
 
-  const isFocused = useFocused();
-  useEffect(() => {
-    console.log("SlateEditor focusChanged:", isFocused);
-  }, [isFocused]);
+  // const isFocused = useFocused();
+  // useEffect(() => {
+  //   console.log("SlateEditor focusChanged:", isFocused);
+  // }, [isFocused]);
 
   return (
     <Editable
       className={`ccrte-editor slate-editor ${className || ""}`}
+      data-testid="ccrte-editor"
       readOnly={readOnly}
       renderElement={renderElement}
       renderLeaf={renderLeaf}
