@@ -24,6 +24,7 @@ export interface IProps {
   buttons: IButtonSpec[];
   editor?: Editor;
   show?: boolean;
+  order?: string[]; //used by question-interactives
   onDidInvokeTool?: OnDidInvokeToolFn;
 }
 
