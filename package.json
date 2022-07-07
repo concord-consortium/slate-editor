@@ -39,6 +39,10 @@
     "type": "git",
     "url": "git+https://github.com/concord-consortium/slate-editor.git"
   },
+  "overrides": {
+    "slate-react": "@concord-consortium/slate-react",
+    "slate-react-placeholder": "@concord-consortium/slate-react-placeholder"
+  },
   "peerDependencies": {
     "react": "^16.14 || ^17",
     "react-dom": "^16.14 || ^17"
@@ -95,7 +99,7 @@
     "typescript": "^4.6.3"
   },
   "dependencies": {
-    "@concord-consortium/slate-react": "^0.22.10-cc.4",
+    "@concord-consortium/slate-react": "^0.22.10-cc.5",
     "classnames": "^2.3.1",
     "eventemitter3": "^4.0.7",
     "immutable": "^3.8.2",
