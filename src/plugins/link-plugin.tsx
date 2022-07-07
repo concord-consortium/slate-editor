@@ -54,8 +54,8 @@ export function LinkPlugin(): HtmlSerializablePlugin {
                 // must have no selected inlines (click will insert link)
                 ((editor.value.inlines.size === 0) ||
                 // or have exactly one inline link selected (click will de-link)
-                 ((editor.value.inlines.size === 1) &&
-                   editor.value.inlines.every(inline => inline?.type === EFormat.link)));
+                ((editor.value.inlines.size === 1) &&
+                  editor.value.inlines.every(inline => inline?.type === EFormat.link)));
       }
     },
     commands: {

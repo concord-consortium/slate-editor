@@ -78,7 +78,7 @@ export const ToolbarButton: React.FC<IProps> = (props: IProps) => {
   const onChangeProps = onChange ? { onChange } : {};
   const iconProps = { width: iconSize, height: iconSize, fill, ...onChangeProps };
   return (
-    <div className={`toolbar-button ${!isEnabled && format === "link" ? "disabled" : ""}`} style={buttonStyle} title={tooltip}
+    <div className={`toolbar-button ${isEnabled === false ? "disabled" : ""}`} style={buttonStyle} title={tooltip}
           onMouseDown={handleMouseDown} onClick={handleClick}>
       {!!format && SvgIcon &&
         <div className="toolbar-icon-wrapper" style={wrapperStyle}>
