@@ -1,5 +1,15 @@
 # Changelog
 
+## Version 0.8.1 - July 7, 2022
+
+### Features/Improvements
+- Show toolbar buttons as disabled when appropriate [#173421926] #70
+- Update dependencies
+
+### Bugs Fixed
+- Fix `peerDependencies` for `slate-react` (=> `@concord-consortium/slate-react`)
+- Fix `peerDependencies` for `slate-react-placeholder` (=> `@concord-consortium/slate-react-placeholder`)
+
 ## Version 0.8.0 - May 7, 2022
 
 ### Features/Improvements
