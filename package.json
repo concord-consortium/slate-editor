@@ -1,6 +1,6 @@
 {
   "name": "@concord-consortium/slate-editor",
-  "version": "0.8.1",
+  "version": "0.8.2",
   "description": "Slate-based rich text editor component for use in CC projects",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
@@ -100,7 +100,7 @@
     "typescript": "^4.7.4"
   },
   "dependencies": {
-    "@concord-consortium/slate-react": "^0.22.10-cc.5",
+    "@concord-consortium/slate-react": "^0.22.10-cc.6",
     "classnames": "^2.3.1",
     "eventemitter3": "^4.0.7",
     "immutable": "^3.8.2",
