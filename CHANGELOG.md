@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.8.2 - September 26, 2022
+
+### Bugs Fixed
+- Fix chrome 105 issues
+
 ## Version 0.8.1 - July 7, 2022
 
 ### Features/Improvements
