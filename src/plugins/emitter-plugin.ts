@@ -1,20 +1,20 @@
-import { Editor, Plugin } from "slate-react";
 import EventEmitter from "eventemitter3";
+import { CustomEditor } from "../common/slate-types";
 
-export function EmitterPlugin(): Plugin {
+export function withEmitter(editor: CustomEditor) {
   const emitter = new EventEmitter();
 
-  return {
-    queries: {
-      emitter: function(editor: Editor) {
-        return emitter;
-      }
-    },
-    commands: {
-      emit: function (editor: Editor, event: string, ...args: any) {
-        emitter.emit(event, ...args);
-        return editor;
-      }
-    }
+  editor.emitEvent = (event: string, ...args: any[]) => {
+    emitter.emit(event, ...args);
   };
+
+  editor.onEvent = (event: string, handler: (...args: any[]) => void) => {
+    emitter.on(event, handler);
+  };
+
+  editor.offEvent = (event: string, handler: (...args: any[]) => void) => {
+    emitter.off(event, handler);
+  };
+
+  return editor;
 }

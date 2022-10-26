@@ -1,7 +1,5 @@
-import React, { useCallback, useRef } from "react";
+import React from "react";
 import { IBaseProps, IButtonColors, OnDidInvokeToolFn, ToolbarButton } from "./toolbar-button";
-import { Editor } from "slate-react";
-import { SelectionJSON } from "slate";
 
 export interface IButtonSpec extends IBaseProps {
   iconSize?: number;
@@ -22,7 +20,6 @@ export interface IProps {
   iconSize?: number;
   buttonSize?: number;
   buttons: IButtonSpec[];
-  editor?: Editor;
   show?: boolean;
   onDidInvokeTool?: OnDidInvokeToolFn;
 }
@@ -43,7 +40,7 @@ export function getPlatformTooltip(str: string) {
 export const EditorToolbar: React.FC<IProps> = (iProps: IProps) => {
   const props = { ...kDefaultProps, ...iProps } as Required<IProps>;
   const { orientation, colors, buttonsPerRow, iconSize, buttonSize, buttons,
-          onDidInvokeTool, padding, editor } = props;
+          onDidInvokeTool, padding} = props;
   const longAxisButtonCount = buttonsPerRow || buttons.length;
   const crossAxisButtonCount = buttonsPerRow ? Math.ceil(buttons.length / buttonsPerRow) : 1;
   const kPadding = padding || 0;
@@ -61,18 +58,18 @@ export const EditorToolbar: React.FC<IProps> = (iProps: IProps) => {
   // active editor. Buttons that want to preserve the current selection, which is the
   // expected behavior for most buttons, should save the selection state before the
   // focus change occurs (e.g. in onMouseDown) and then restore it before making changes.
-  const savedSelection = useRef<SelectionJSON>(editor && editor.value.selection.toJSON());
-  const handleSaveSelection = useCallback(() => {
-    editor && (savedSelection.current = editor.value.selection.toJSON());
-  }, [editor]);
-  const handleRestoreSelection = useCallback(() => {
-    editor && editor.select(savedSelection.current);
-  }, [editor]);
-  const handleUserActionPerformed = useCallback(() => {
-    editor && editor.command("setUserActionPerformed");
-  }, [editor]);
+  // const savedSelection = useRef<SelectionJSON>(editor && editor.value.selection.toJSON());
+  // const handleSaveSelection = useCallback(() => {
+  //   editor && (savedSelection.current = editor.value.selection.toJSON());
+  // }, [editor]);
+  // const handleRestoreSelection = useCallback(() => {
+  //   editor && editor.select(savedSelection.current);
+  // }, [editor]);
+  // const handleUserActionPerformed = useCallback(() => {
+  //   editor && editor.command("setUserActionPerformed");
+  // }, [editor]);
 
-  if (iProps.show === false) return null;
+//  if (iProps.show === false) return null;
 
   return (
     <div className={`editor-toolbar ${props.className || ""}`}>
@@ -85,8 +82,7 @@ export const EditorToolbar: React.FC<IProps> = (iProps: IProps) => {
             return (
               <ToolbarButton key={`key-${key}`} format={format} iconSize={_iconSize} buttonSize={buttonSize}
                 colors={colors?.buttonColors} selectedColors={colors?.selectedColors} onDidInvokeTool={onDidInvokeTool}
-                onSaveSelection={handleSaveSelection} onRestoreSelection={handleRestoreSelection}
-                onUserActionPerformed={handleUserActionPerformed} {...others} />
+                {...others} />
             );
           })
         }

@@ -25,6 +25,7 @@ export interface DisplayDialogSettings {
   onChange?: (editor: Editor, name: string, value: string, values: IFieldValues) => boolean | undefined;
   onValidate?: (values: IFieldValues) => IFieldValues | string;
   onAccept?: (editor: Editor, values: IFieldValues) => void;
+  onClose?: (editor: Editor) => void;
 }
 
 export interface IDialogController {

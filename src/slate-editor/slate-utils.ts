@@ -1,6 +1,5 @@
-import { Block, MarkProperties, Inline, Node, Text, Value } from "slate";
-import { Editor, RenderMarkProps } from "slate-react";
-import { EFormat } from "../common/slate-types";
+import { Editor, Element as SlateElement, Range, Transforms } from "slate";
+import { CustomElement, CustomMarks, CustomText, EmptyText, MarkType, EFormat } from "../common/slate-types";
 
 export function getBoundingRectForBlock(editor: Editor, block?: Node) {
   const { document } = editor.value;
@@ -67,15 +66,77 @@ export function hasActiveInline(value: Value, format: EFormat | string) {
   return value.inlines.some(inline => inline?.type === format);
 }
 
-export function handleToggleMark(format: EFormat | MarkProperties, editor: Editor) {
-  editor.toggleMark(format);
-}
+export const toggleBlock = (editor: Editor, format: string) => {
+  const isActive = isBlockActive(
+    editor,
+    format,
+    TEXT_ALIGN_TYPES.includes(format) ? 'align' : 'type'
+  );
+  const isList = LIST_TYPES.includes(format);
 
-export function handleToggleSuperSubscript(format: EFormat, editor: Editor) {
-  const value = editor.value;
-  if (hasActiveMark(value, EFormat.superscript) || hasActiveMark(value, EFormat.subscript)) {
-    editor.removeMark(EFormat.superscript).removeMark(EFormat.subscript);
+  Transforms.unwrapNodes(editor, {
+    match: n =>
+      !Editor.isEditor(n) &&
+      SlateElement.isElement(n) &&
+      LIST_TYPES.includes(n.type) &&
+      !TEXT_ALIGN_TYPES.includes(format),
+    split: true,
+  });
+  let newProperties: Partial<SlateElement>;
+  if (TEXT_ALIGN_TYPES.includes(format)) {
+    newProperties = {
+      align: isActive ? undefined : format,
+    };
   } else {
-    editor.toggleMark(format);
+    newProperties = {
+      type: isActive ? 'paragraph' : isList ? 'list-item' : format,
+    } as any;
+  }
+  Transforms.setNodes<SlateElement>(editor, newProperties);
+
+  if (!isActive && isList) {
+    const block = { type: format, children: [] } as any;
+    Transforms.wrapNodes(editor, block);
+  }
+};
+
+export const isBlockActive = (editor: Editor, format: string, blockType = 'type') => {
+  const { selection } = editor;
+  if (!selection) return false;
+
+  const [match] = Array.from(
+    Editor.nodes(editor, {
+      at: Editor.unhangRange(editor, selection),
+      match: n =>
+        !Editor.isEditor(n) &&
+        SlateElement.isElement(n) &&
+        (n as any)[blockType] === format,
+    })
+  );
+
+  return !!match;
+};
+
+export const isMarkActive = (editor: Editor, format: string) => {
+  const marks = Editor.marks(editor) as CustomMarks;
+  return !!marks?.[format as MarkType];
+};
+
+export const toggleMark = (editor: Editor, format: string, value: any = true) => {
+  if (isMarkActive(editor, format)) {
+    Editor.removeMark(editor, format);
+  } else {
+    Editor.addMark(editor, format, value);
+  }
+};
+
+export function toggleSuperSubscript(editor: Editor, format: EFormat.subscript | EFormat.superscript) {
+  if (isMarkActive(editor, format)) {
+    Editor.removeMark(editor, format);
+  } else {
+    // super/subscripts are essentially a tristate mark, since both can't be true simultaneously
+    Editor.removeMark(editor, EFormat.subscript);
+    Editor.removeMark(editor, EFormat.superscript);
+    toggleMark(editor, format);
   }
 }

@@ -26,11 +26,6 @@ export default [{
     }
   ],
   plugins: [
-    alias({
-      entries: [
-        { find: 'slate-react', replacement: '@concord-consortium/slate-react' }
-      ]
-    }),
     external(),
     resolve({
       browser: true

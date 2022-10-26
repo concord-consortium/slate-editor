@@ -1,6 +1,6 @@
 import React, { CSSProperties } from "react";
 import { IconProps } from "../assets/icon-props";
-import { EFormat, EMetaFormat } from "../common/slate-types";
+//import { EFormat, EMetaFormat } from "../common/slate-types";
 
 export type OnMouseFn = (e: React.MouseEvent<HTMLDivElement>) => void;
 export type OnClickFn = (format: string, e: React.MouseEvent<HTMLDivElement>) => void;
@@ -17,7 +17,7 @@ export interface IButtonColors {
 }
 
 export interface IBaseProps {
-  format: EFormat | EMetaFormat | null;
+  format: any | any | null; //FIXME
   SvgIcon?: (props: IconProps) => JSX.Element;
   colors?: IButtonColors;
   selectedColors?: IButtonColors;
