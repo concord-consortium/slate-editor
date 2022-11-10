@@ -5,6 +5,7 @@ import { EditorValue, textToSlate } from "../common/slate-types";
 import { slateToHtml, htmlToSlate } from "./html-serializer";
 import { serializeSelection, serializeValue } from "./serialization";
 import "./serialization.stories.scss";
+import { Descendant } from "slate";
 
 export default {
   title: "Serialization"
@@ -16,13 +17,16 @@ export const Serialization = () => {
   const slateValue = textToSlate(serializationText);
   const [value, setValue] = useState(slateValue);
   const [content, setContent] = useState(serializeValue(value));
+  const handleChange = (_value: Descendant[]) => {
+    setValue(_value);
+    setContent(serializeValue(_value));
+  };
   return (
     <div className="serialization-container">
       <div className="panel">
         <SlateContainer
           value={value}
-          onValueChange={_value => setValue(_value)}
-          onContentChange={_value => setContent(serializeValue(_value))}
+          onChange={handleChange}
         />
       </div>
       <div className="panel output">
@@ -44,7 +48,7 @@ export const SelectionSerialization = () => {
       <div className="panel">
         <SlateContainer
           value={value}
-          onValueChange={_value => setValue(_value)}
+          onChange={_value => setValue(_value)}
         />
       </div>
       <div className="panel output">
@@ -66,7 +70,7 @@ export const HtmlSerialization = () => {
       <div className="panel">
         <SlateContainer
           value={value}
-          onValueChange={_value => {
+          onChange={_value => {
             setValue(_value);
             setContent(slateToHtml(_value));
           }}
@@ -106,7 +110,7 @@ export const ClueSerialization = () => {
       <div className="panel">
         <SlateContainer
           value={value}
-          onValueChange={_value => {
+          onChange={_value => {
             setValue(_value);
             setContent(slateToClueTile(_value));
           }}
@@ -131,7 +135,7 @@ export const ImportedHTML = () => {
       <div className="panel">
         <SlateContainer
           value={value}
-          onValueChange={_value => {
+          onChange={_value => {
             setValue(_value);
             setContent(slateToHtml(_value));
           }}

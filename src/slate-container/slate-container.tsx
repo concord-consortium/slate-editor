@@ -17,13 +17,14 @@ const hotkeyMap = {
 interface IProps extends IEditorProps {
   className?: string;
   editorClassName?: string;
-  value: EditorValue; // Should this just be Decendant[]?
+  value: EditorValue; // FIXME: Should this just be Decendant[] -- I'm not sure we want to expose Descendant outside of this lib.
   toolbar?: IPortalToolbarProps;
+  onChange?: (value: EditorValue) => void;
 }
 
 export const SlateContainer: React.FC<IProps> = (props: IProps) => {
   const { className: toolbarClasses, portalRoot, ...toolbarOthers } = props.toolbar || {};
-  const { className, editorClassName }  = props ; //, onEditorRef, onValueChange, onContentChange,
+  const { className, editorClassName, onChange }  = props ; //, onEditorRef, onValueChange, onContentChange,
           //onBlur, onFocus, ...others } = props;
     const editorRef = useRef<Editor>();
   const [changeCount, setChangeCount] = useState(0);
@@ -59,9 +60,10 @@ export const SlateContainer: React.FC<IProps> = (props: IProps) => {
     <div className={`ccrte-container slate-container ${className || ""}`}>
       <SlateEditor
         className={editorClassName}
-        //value={props.value}
+        value={props.value}
         //hotkeyMap={props.hotkeyMap || hotkeyMap}
         //onEditorRef={handleEditorRef}
+        onChange={onChange}
         // onValueChange={value => {
         //   onValueChange?.(value);
         //   // trigger toolbar rerender on selection change as well

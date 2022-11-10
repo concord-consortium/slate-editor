@@ -1,5 +1,7 @@
-// import { Range, Value } from "slate";
-// import SlatePlainSerializer from "slate-plain-serializer";
+import { Descendant, BaseEditor } from 'slate';
+import { ReactEditor } from 'slate-react';
+import { HistoryEditor } from 'slate-history';
+import { IDialogController } from '../modal-dialog/dialog-types';
 
 export enum EFormat {
   // marks
@@ -39,82 +41,21 @@ export enum EFormat {
   // inlines
   inline = "inline",  // generic inline (<span>)
   image = "image",
-  link = "link" // <a>
+  link = "link", // <a>
+  variable = "variable" // FIXME: just her temporarily
 }
 
-export type EditorValue = Descendant[];
-// export const kSlateVoidClass = "cc-slate-void";
+export type EditorValue = Descendant[]
 
-// // eslint-disable-next-line no-shadow
-// export enum EMetaFormat {
-//   fontIncrease = "fontIncrease",
-//   fontDecrease = "fontDecrease"
-// }
-
-//export type ToolFormat = EFormat | EMetaFormat;
-
-// export type EditorValue = Value;
-// export type EditorContent = Document;
-// export const EditorRange = Range;
-
-// const markFormats: Array<EFormat | string> = [
-//   EFormat.bold, EFormat.italic, EFormat.underlined, EFormat.inserted, EFormat.deleted,
-//   EFormat.code, EFormat.marked, EFormat.superscript, EFormat.subscript, EFormat.color
-// ];
-
-// export function registerMarkFormat(format: string) {
-//   markFormats.push(format);
-// }
-
-// export function isMarkFormat(format: EFormat | string) {
-//   return markFormats.includes(format);
-// }
-
-// const blockFormats: Array<EFormat | string> = [
-//   EFormat.paragraph, EFormat.block, EFormat.blockQuote, EFormat.heading1, EFormat.heading2,
-//   EFormat.heading3, EFormat.heading4, EFormat.heading5, EFormat.heading6, EFormat.horizontalRule,
-//   EFormat.preformatted, EFormat.listItem, EFormat.numberedList, EFormat.bulletedList, EFormat.lineDEPRECATED
-// ];
-
-// export function registerBlockFormat(format: string) {
-//   blockFormats.push(format);
-// }
-
-// export function isBlockFormat(format: EFormat) {
-//   return blockFormats.includes(format);
-// }
-
-// const inlineFormats: Array<EFormat | string> = [EFormat.inline, EFormat.image, EFormat.link];
-
-// export function registerInlineFormat(format: string) {
-//   inlineFormats.push(format);
-// }
-
-// export function isInlineFormat(format: EFormat) {
-//   return inlineFormats.includes(format);
-// }
-
-export function textToSlate(contents: string): Descendant[] {
-  console.log('text to slate is broken');
-  const value: Descendant[] = [
-    {
-      type: 'paragraph',
-      children: [
-        { text: contents},
-        { text: 'plus some extra filler'},
-      ],
-    },
-  ];
-  return value;
+export function textToSlate(contents: string): EditorValue {
+  const lines = contents.split(/\r|\r?\n/);
+  // FIXME: not done yet.
+  return lines.map(line => ({ type: "paragraph", children: [{ text: line }] }));
 }
 
-// export function slateToText(value?: EditorValue): string {
-//   return value ? SlatePlainSerializer.serialize(value) : "";
-// }
-import { Descendant, BaseEditor } from 'slate';
-import { ReactEditor } from 'slate-react';
-import { HistoryEditor } from 'slate-history';
-import { IDialogController } from '../modal-dialog/dialog-types';
+export function slateToText(value?: EditorValue): string {
+  return value? value.map(n => Node.string(n)).join("\n"): '';
+}
 
 export type BlockQuoteElement = {
   type: 'block-quote';
@@ -196,6 +137,9 @@ export type ParagraphElement = {
 
 // export type VideoElement = { type: 'video'; url: string; children: EmptyText[] };
 
+// FIXME: MOVE THIS
+export type VariableElement = { type: 'variable'; name: string; value: string; children: Descendant[] };
+
 export type CustomElement =
   | BlockQuoteElement
   | BulletedListElement
@@ -209,6 +153,7 @@ export type CustomElement =
   | ListItemElement
   // | MentionElement
   | NumberedListElement
+  | VariableElement // FIXME: MOve this
   | ParagraphElement;
   // | TableElement
   // | TableRowElement

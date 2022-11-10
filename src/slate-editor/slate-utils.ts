@@ -1,6 +1,10 @@
 import { Editor, Element as SlateElement, Range, Transforms } from "slate";
 import { CustomElement, CustomMarks, CustomText, EmptyText, MarkType, EFormat } from "../common/slate-types";
 
+
+const LIST_TYPES: string[] = ['bulleted-list', 'ordered-list'];
+const TEXT_ALIGN_TYPES:string[] = ['left', 'center', 'right', 'justify'];
+
 export function getBoundingRectForBlock(editor: Editor, block?: Node) {
   const { document } = editor.value;
   const path = block && document.getPath(block.key) || undefined;
@@ -27,14 +31,6 @@ export function getRenderIndexOfMark(props: RenderMarkProps) {
     ++i;
   });
   return markIndex;
-}
-
-export function findActiveMark(value: Value, format: EFormat) {
-  return value.activeMarks.find(function(mark) { return mark?.type === format; });
-}
-
-export function hasActiveMark(value: Value, format: EFormat) {
-  return !!findActiveMark(value, format);
 }
 
 export function isBlockOfType(node: Node | undefined, format: EFormat) {
@@ -139,4 +135,47 @@ export function toggleSuperSubscript(editor: Editor, format: EFormat.subscript |
     Editor.removeMark(editor, EFormat.superscript);
     toggleMark(editor, format);
   }
+}
+
+export function unwrapElement(editor: Editor, format: string) {
+  Transforms.unwrapNodes(editor, {
+    match: n => !Editor.isEditor(n) && SlateElement.isElement(n) && n.type === format
+  });
+}
+
+export function wrapElement(editor: Editor, format: string, addProps?: Record<string, any>, defaultText = "") {
+  if (isBlockActive(editor, format)) {
+    unwrapElement(editor, format);
+  }
+
+  const { selection } = editor;
+  const isCollapsed = selection && Range.isCollapsed(selection);
+  const element: CustomElement = {
+    type: format,
+    ...addProps,
+    children: isCollapsed && defaultText ? [{ text: defaultText }] : [],
+  } as CustomElement;
+
+  if (isCollapsed) {
+    Transforms.insertNodes(editor, element);
+  }
+  else {
+    Transforms.wrapNodes(editor, element, { split: true });
+    Transforms.collapse(editor, { edge: 'end' });
+  }
+}
+export function selectedElements(editor: Editor) {
+  const { selection } = editor;
+  return selection
+          ? Array.from(Editor.nodes(editor, {
+              at: Editor.unhangRange(editor, selection),
+              match: n => !Editor.isEditor(n) && SlateElement.isElement(n)
+            })) as unknown as CustomElement[]
+          : [];
+}
+export function isCustomText(node: CustomText | EmptyText): node is CustomText {
+  return !!node.text ||
+          !!(node as CustomText).bold || !!(node as CustomText).code || !!(node as CustomText).color ||
+          !!(node as CustomText).deleted || !!(node as CustomText).italic || !!(node as CustomText).subscript ||
+          !!(node as CustomText).superscript || !!(node as CustomText).underlined;
 }

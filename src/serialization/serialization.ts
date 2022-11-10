@@ -1,4 +1,4 @@
-import { BlockJSON, DocumentJSON, InlineJSON, MarkJSON, NodeJSON, TextJSON, Value, ValueJSON } from "slate";
+import { Node, BlockJSON, DocumentJSON, InlineJSON, MarkJSON, NodeJSON, TextJSON, Value, ValueJSON, Descendant, BaseElement } from "slate";
 import castArray from "lodash/castArray";
 import keys from "lodash/keys";
 import map from "lodash/map";
@@ -22,6 +22,8 @@ interface SlateElement {
   [key: string]: any;
 }
 
+type DocumentMetadata = Record<string, any>;
+
 type SlateNode = SlateElement | SlateText;
 
 // map from type (e.g. paragraph or link) to object type (e.g. block or inline)
@@ -36,8 +38,8 @@ export interface SlateDocument {
 
 export interface SlateExchangeValue {
   object: "value";
-  data?: { [key: string]: any };
-  document?: SlateDocument;
+  data?: DocumentMetadata;
+  document?: BaseElement;
 }
 
 function typeProp(type?: string) {
@@ -96,13 +98,7 @@ export function serializeNode(node: NodeJSON, objTypes: ObjectTypeMap): SlateNod
   }
 }
 
-export function serializeDocument(document: DocumentJSON): SlateDocument {
-  const { nodes, key, data } = document;
-  const objTypes: ObjectTypeMap = {};
-  const children = serializeChildren(castArray(nodes), objTypes);
-  // return objTypes map as part of document for use in deserialization
-  return { ...keyProp(key), children, objTypes, ...data };
-}
+
 
 export function serializeSelection(value: Value) {
   const { document, selection } = value;
@@ -117,10 +113,13 @@ export function serializeValueJSON(value: ValueJSON): SlateExchangeValue {
   const data = size(others) ? { data: { ...others } } : {};
   return { object: "value", ...data, document: document && serializeDocument(document) };
 }
+export function serializeDocument(document: Descendant[]) {
+  return { children: document };
+}
 
-export function serializeValue(value: Value | ValueJSON): SlateExchangeValue {
-  const options = value?.data?.size ? { preserveData: true } : undefined;
-  return serializeValueJSON(Value.isValue(value) ? value.toJSON(options) : value);
+export function serializeValue(document: Descendant[], metadata?: DocumentMetadata): SlateExchangeValue {
+  const data = metadata ? { data: metadata } : undefined;
+  return { object: "value", ...data, document: serializeDocument(document, metadata) };
 }
 
 export function deserializeMark(type: string, value: any): MarkJSON {

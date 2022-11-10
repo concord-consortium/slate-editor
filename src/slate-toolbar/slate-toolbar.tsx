@@ -28,6 +28,7 @@ import { ModalDialogPortal } from "../modal-dialog/modal-dialog-portal";
 import clone from "lodash/clone";
 import EventEmitter from "eventemitter3";
 import { isElement } from "lodash";
+import IconVariable from "../plugin-examples/icon-variable";
 
 export type ToolbarTransform =
   (buttons: IButtonSpec[], editor?: Editor, dialogController?: IDialogController) => IButtonSpec[];
@@ -121,7 +122,6 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
       onClick: () => editor && toggleSuperSubscript(editor, EFormat.subscript)
     },
     (() => {
-      //let selection: SelectionJSON | undefined;
       const fill = (editor?.marks as CustomMarks)?.color || "#000000";
       return {
         format: EFormat.color,
@@ -150,6 +150,19 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
       isActive: !!editor.isElementActive(EFormat.link),
       isEnabled: !!editor.isElementEnabled(EFormat.link),
       onClick: () => editor?.configureElement(EFormat.link, dialogController)
+    },
+    {
+      format: EFormat.variable, //FIXME: move this
+      SvgIcon: IconVariable,
+      tooltip: getPlatformTooltip("variable"),
+      isActive: !!editor.isElementActive(EFormat.variable),
+      isEnabled: !!editor.isElementEnabled(EFormat.variable),
+      onClick: () => {
+        console.log('click variable thing');
+        if (dialogController) {
+          editor?.configureElement(EFormat.variable, dialogController);
+        }
+      }
     },
     {
       format: EFormat.heading1,

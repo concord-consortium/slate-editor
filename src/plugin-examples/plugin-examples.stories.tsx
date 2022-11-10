@@ -1,12 +1,13 @@
-import React, { useCallback, useRef, useState } from "react";
-import { Value } from "slate";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import IconVariable from "./icon-variable";
-import { textToSlate } from "../common/slate-types";
+import { EFormat, textToSlate } from "../common/slate-types";
 import { kVariableFormatCode, VariablesPlugin } from "./variable-plugin";
 import { IProps as ISlateToolbarProps, SlateToolbar, ToolbarTransform } from "../slate-toolbar/slate-toolbar";
 import { getPlatformTooltip, IButtonSpec } from "../editor-toolbar/editor-toolbar";
 import { IProps as ISlateEditorProps, SlateEditor } from "../slate-editor/slate-editor";
-import { Editor } from "slate-react";
+import { Editable, Slate, withReact } from "slate-react";
+import { withHistory } from "slate-history";
+import { createEditor } from "../common/create-editor";
 
 export default {
   title: "Plugin Examples"
@@ -31,10 +32,13 @@ const VariablesToolbar = (props: ISlateToolbarProps) => {
         format: kVariableFormatCode,
         SvgIcon: IconVariable,
         tooltip: getPlatformTooltip("variable"),
-        isActive: !!editor && editor.query("isVariableActive"),
-        isEnabled: !!editor && editor.query("isVariableEnabled"),
+        isActive: !!editor && editor.isElementActive(EFormat.variable),
+        isEnabled: !!editor && editor.isElementEnabled(EFormat.variable),
         onClick: () => {
-          editor?.command("configureVariable", dialogController);
+          console.log('click variable thing');
+          if (dialogController) {
+            editor?.configureElement(EFormat.variable, dialogController);
+          }
         }
       }
      ] as IButtonSpec[];
@@ -48,27 +52,18 @@ interface IVariablesProps extends Omit<ISlateEditorProps, "value" | "onValueChan
 export const Variables = (props: IVariablesProps) => {
   const [value, setValue] = useState(textToSlate(variablesText));
   const [changeCount, setChangeCount] = useState(0);
-  const editorRef = useRef<Editor>();
-  const handleEditorRef = useCallback((editor?: Editor) => {
-    editorRef.current = editor;
-    setChangeCount(count => ++count);
-  }, []);
-  const variablesPlugin = VariablesPlugin({ a: 1, b: 2, c: 3 });
-  const plugins = [variablesPlugin];
+  //const variablesPlugin = VariablesPlugin({ a: 1, b: 2, c: 3 });
+  const editor = useMemo(() => withHistory(withReact(createEditor())), []);
+
   return (
     <div className={`variables-example`}>
-      <VariablesToolbar editor={editorRef.current} changeCount={changeCount} />
-      <SlateEditor
-        plugins={plugins}
-        onEditorRef={handleEditorRef}
-        value={value}
-        onValueChange={(_value: Value) => {
-          setValue(_value);
-          // trigger toolbar rerender on selection change as well
-          setChangeCount(count => ++count);
-        }}
-        {...props}
-      />
+      <Slate editor={editor} value={textToSlate("hi variable test there")}>
+        <Editable>
+          <VariablesToolbar/>
+          {variablesPlugin}
+        </Editable>
+      </Slate>
+    
     </div>
   );
 };
