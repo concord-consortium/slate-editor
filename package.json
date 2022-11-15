@@ -55,6 +55,7 @@
     "@storybook/react": "^6.5.9",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^12.1.4",
+    "@types/escape-html": "^1.0.2",
     "@types/is-hotkey": "^0.1.7",
     "@types/jest": "^28.1.4",
     "@types/lodash": "^4.14.182",
@@ -100,8 +101,8 @@
     "react-select": "^5.4.0",
     "slate": "^0.84.0",
     "slate-history": "^0.66.0",
-    "slate-react": "^0.83.2",
     "slate-hyperscript": "^0.77.0",
+    "slate-react": "^0.83.2",
     "style-to-object": "^0.3.0",
     "tslib": "^2.4.0",
     "valid-url": "^1.0.9"

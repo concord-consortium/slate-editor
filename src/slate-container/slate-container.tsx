@@ -26,7 +26,7 @@ export const SlateContainer: React.FC<IProps> = (props: IProps) => {
   const { className: toolbarClasses, portalRoot, ...toolbarOthers } = props.toolbar || {};
   const { className, editorClassName, onChange }  = props ; //, onEditorRef, onValueChange, onContentChange,
           //onBlur, onFocus, ...others } = props;
-    const editorRef = useRef<Editor>();
+  const editorRef = useRef<Editor>();
   const [changeCount, setChangeCount] = useState(0);
 
   // const handleEditorRef = useCallback((editor?: Editor) => {
