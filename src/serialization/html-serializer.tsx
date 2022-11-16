@@ -62,10 +62,13 @@
 import { jsx } from 'slate-hyperscript';
 import escapeHtml from 'escape-html'
 import { Descendant, Text as SlateText} from 'slate';
-import { markComponents } from '../slate-editor/leaf';
+import { Leaf } from '../slate-editor/leaf';
 import { CustomElement, EditorValue, EFormat } from '../common/slate-types';
 import { renderToStaticMarkup } from "react-dom/server";
-import { getHtmlSerialization } from '../slate-editor/element';
+import { Element } from '../slate-editor/element';
+import React from 'react';
+import { isCustomText } from '../slate-editor/slate-utils';
+import { SerializingContext } from '../hooks/use-serializing';
 
 
 const deserialize = (el, markAttributes = {}) => {
@@ -111,47 +114,52 @@ const deserialize = (el, markAttributes = {}) => {
   }
 }
 
-const serialize = (node: Descendant) => {
-  console.log(`node type: ${node.type}`);
-  if (SlateText.isText(node)) {
-    let string = escapeHtml(node.text);
-    console.log(markComponents);
-    if (node.hasOwnProperty(EFormat.bold)) {
-      string = `<strong>${string}</strong>`
+export function serialize (node) {
+  if (isCustomText(node)) {
+    const props = {
+      leaf: node,
+      text: node.text,
+      children: node.text
     }
-    return string;
+    const leaf = React.createElement(Leaf, props);
+    return leaf;
   }
 
-  const children = node.children.map(n => serialize(n)).join('')
-  // Can I make a react element out of one of these and then call render to static?
-  // renderToStaticMarkup(node);
-
-  switch (node.type) {
-    case 'block-quote':
-      return `<blockquote><p>${children}</p></blockquote>`
-    case 'paragraph':
-      return `<p>${children}</p>`
-    case EFormat.link:
-      return `<a href="${escapeHtml(node.url)}">${children}</a>`
-    default:
-      return children
+ 
+  const children = node.children?.map(n => {
+    console.log('doing stuff');
+    return serialize(n);
+  }); 
+  
+  if (node.type) {
+    const props = {
+      children: children,
+      element: {type: node.type, children: node.children},
+    };
+    const elem = React.createElement(Element, props);
+    return elem;
   }
 }
-
 
 export function htmlToSlate(html: string) {
   console.log('htmlToSlate is broken');
   const document = new DOMParser().parseFromString(html, 'text/html');
   const val = deserialize(document.body);
-  console.log(val);
   return val;
 }
 
-export function slateToHtml(value: Node[]) { // FIXME
-  console.log('slateToHTML is broken'); 
-  let finished = ''; 
-  value.forEach(element => finished += serialize(element));
-  return finished;
+export function slateToHtml(value: Node[]) {
+  let fullHtml = '';
+  value.forEach(block => {
+    const elem = serialize(block);
+    const blockHtml = renderToStaticMarkup(
+      <SerializingContext.Provider value={true}>
+        {elem}
+      </SerializingContext.Provider>
+        );
+    fullHtml += blockHtml;
+  });
+  return fullHtml;
 }
 
 
