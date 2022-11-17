@@ -24,8 +24,11 @@ export const elementTypeMap: Record<string, string> = {
   "hr" : EFormat.horizontalRule,
   "li" : EFormat.listItem,
   "ol" : EFormat.numberedList,
-  "pre" : EFormat.preformatted
+  "pre" : EFormat.preformatted,
+  "a" : "link",
+  "img" : "image"
 };
+
 export type ElementComponent = (props: RenderElementProps) => JSX.Element;
 
 const elementComponents: Partial<Record<string, ElementComponent>> = {
@@ -69,6 +72,8 @@ const elementComponents: Partial<Record<string, ElementComponent>> = {
 
 export function registerElement(format: string, Component: ElementComponent) {
   elementComponents[format] = Component;
+  
+  elementTypeMap[format] = format; // FIXME. This doesn't work unless the html tag happens to match the type.
 }
 
 export const Element = (props: RenderElementProps) => {

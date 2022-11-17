@@ -34,7 +34,14 @@ const deserialize = (el, markAttributes = {}) => {
   const elementTag = elementTypeMap[el.nodeName.toLowerCase()];
   if (elementTag) {
     // FIXME: handle attributes
-    return jsx('element', {type: elementTag}, children);
+    const atts = el.getAttributeNames();
+    var obj = {};
+    obj.type = elementTag;
+    // FIXME:
+    // Copy attributes from html tag to jsx object. 
+    // This isn't necessarily a 1:1 mapping so this only kinda works.
+    atts.forEach(a => obj[a] = el[a]); 
+    return jsx('element', obj, children);
   }
   switch (el.nodeName) {
     case 'BODY':
