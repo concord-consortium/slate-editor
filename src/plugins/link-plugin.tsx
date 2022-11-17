@@ -15,7 +15,7 @@ export const isLinkElement = (element: CustomElement): element is LinkElement =>
 
 // Put this at the start and end of an inline component to work around this Chromium bug:
 // https://bugs.chromium.org/p/chromium/issues/detail?id=1249405
-const InlineChromiumBugfix = () => <span contentEditable={false} style={{ fontSize: 0 }}>{"\u00a0"}</span>;
+const InlineChromiumBugfix = () =>  <span contentEditable={false} style={{ fontSize: 0 }}>{"\u00a0"}</span>;
 
 
 export const LinkComponent = ({ attributes, children, element }: RenderElementProps) => {
@@ -27,11 +27,12 @@ export const LinkComponent = ({ attributes, children, element }: RenderElementPr
   const target = isSerializing ? undefined : "_blank";
   const rel = isSerializing ? undefined : "noopener noreferrer";
   const onDoubleClick = isSerializing ? undefined : () => window.open(href);
+  console.log(href);
   return (
     <a {...attributes} href={href} target={target} rel={rel} onDoubleClick={onDoubleClick}>
-      <InlineChromiumBugfix/>
+      {!isSerializing &&  <InlineChromiumBugfix/>}
       {children}
-      <InlineChromiumBugfix/>
+      {!isSerializing && <InlineChromiumBugfix/>}
     </a>
   );
 }

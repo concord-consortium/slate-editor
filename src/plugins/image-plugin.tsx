@@ -29,16 +29,17 @@ export const isImageElement = (element: CustomElement): element is ImageElement 
 };
 
 export const ImageComponent = ({ attributes, children, element }: RenderElementProps) => {
-  const editor = useSlateStatic();
   const isFocused = useFocused();
   const isSelected = useSelected();
   const isSerializing = useSerializing();
+
+  const editor = isSerializing ? null : useSlateStatic();
 
   if (!isImageElement(element)) return null;
 
   const handleDoubleClick = () => {
     console.log('doubleclick image');
-    editor.emitEvent("toolbarDialog", element);
+    editor?.emitEvent("toolbarDialog", element);
   };
 
   const onLoad = isSerializing ? undefined : () => null;
@@ -51,6 +52,9 @@ export const ImageComponent = ({ attributes, children, element }: RenderElementP
   const imgClasses = classNames(highlightClass, constrainClass, floatClasses) || undefined;
   const divClasses = kInlineBlockClass;
   return (
+    isSerializing ? 
+      <img className={imgClasses} src={src} alt={alt} title={alt} width={width} height={height}/>
+    :
     <div {...attributes} className={`${kImageNodeClass} ${divClasses}`}>
       {children}
       <div className={divClasses} contentEditable={false}>

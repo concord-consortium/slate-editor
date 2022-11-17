@@ -5,6 +5,7 @@ import { Element, elementTypeMap } from '../slate-editor/element';
 import React from 'react';
 import { isCustomText } from '../slate-editor/slate-utils';
 import { SerializingContext } from '../hooks/use-serializing';
+import { CustomElement } from '../common/slate-types';
 
 
 const deserialize = (el, markAttributes = {}) => {
@@ -29,6 +30,7 @@ const deserialize = (el, markAttributes = {}) => {
     children.push(jsx('text', nodeAttributes, ''))
   }
 
+  // This is assuming there's 1:1 mapping of tag to elements which is probably not true...
   const elementTag = elementTypeMap[el.nodeName.toLowerCase()];
   if (elementTag) {
     // FIXME: handle attributes
@@ -63,7 +65,7 @@ export function serialize (node) {
   if (node.type) {
     const props = {
       children: children,
-      element: {type: node.type, children: node.children},
+      element: node
     };
     const elem = React.createElement(Element, props);
     return elem;
