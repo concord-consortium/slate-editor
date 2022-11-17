@@ -12,7 +12,8 @@ export const ColorComponent = ({ children, leaf }: CustomRenderLeafProps) => {
   const baseStyle = { color };
   // color shouldn't change when text is selected
   const selectedStyle = isSerializing ? undefined : { "--selected-color": color };
-  return <span className={kTextColorClass} style={{ ...baseStyle, ...selectedStyle }}>{children}</span>;
+  return (isSerializing ? <span style={baseStyle}>{children}</span> : 
+     <span className={kTextColorClass} style={{ ...baseStyle, ...selectedStyle }}>{children}</span>);
 };
 
 export function withColorMark(editor: Editor) {

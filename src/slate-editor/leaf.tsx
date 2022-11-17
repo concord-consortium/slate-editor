@@ -4,6 +4,15 @@ import { CustomText, MarkType } from "../common/slate-types";
 import { useSerializing } from "../hooks/use-serializing";
 import { isCustomText } from "./slate-utils";
 
+export const markNodeMap: Record<string, MarkType> = {
+  "strong": "bold",
+  "code": "code",
+  "del": "deleted",
+  "em": "italic",
+  "sub": "subscript",
+  "sup": "superscript",
+  "u": "underlined"
+};
 
 const markComponents: Partial<Record<MarkType, (children: any, leaf: CustomText) => JSX.Element>> = {
   "bold": children => <strong>{children}</strong>,

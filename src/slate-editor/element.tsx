@@ -12,6 +12,20 @@ function eltRenderAttrs(element: CustomElement) {
   return attrs;
 }
 
+export const elementTypeMap: Record<string, string> = {
+  "blockquote" : EFormat.blockQuote,
+  "ui" : EFormat.bulletedList,
+  "h1" : EFormat.heading1,
+  "h2" : EFormat.heading2,
+  "h3" : EFormat.heading3,
+  "h4" : EFormat.heading4,
+  "h5" : EFormat.heading5,
+  "h6" : EFormat.heading6,
+  "hr" : EFormat.horizontalRule,
+  "li" : EFormat.listItem,
+  "ol" : EFormat.numberedList,
+  "pre" : EFormat.preformatted
+};
 export type ElementComponent = (props: RenderElementProps) => JSX.Element;
 
 const elementComponents: Partial<Record<string, ElementComponent>> = {
