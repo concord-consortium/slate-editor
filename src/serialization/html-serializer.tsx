@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { jsx } from 'slate-hyperscript';
 import { Leaf, markNodeMap } from '../slate-editor/leaf';
 import { renderToStaticMarkup } from "react-dom/server";
@@ -33,7 +34,6 @@ const deserialize = (el, markAttributes = {}) => {
   // This is assuming there's 1:1 mapping of tag to elements which is probably not true...
   const elementTag = elementTypeMap[el.nodeName.toLowerCase()];
   if (elementTag) {
-    // FIXME: handle attributes
     const atts = el.getAttributeNames();
     var obj = {};
     obj.type = elementTag;
@@ -45,11 +45,15 @@ const deserialize = (el, markAttributes = {}) => {
   }
   switch (el.nodeName) {
     case 'BODY':
-      return jsx('fragment', {}, children)
+      return jsx('fragment', {}, children);
     case 'BR':
       return '\n'
+    case 'P' :
+      return jsx('element', { type: 'paragraph' }, children);
+    case 'DIV' :
+      return jsx('element', { type: 'block' }, children);
     default:
-      return children
+      return children;
   }
 }
 

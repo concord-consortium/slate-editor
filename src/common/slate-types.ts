@@ -1,4 +1,4 @@
-import { Descendant, BaseEditor } from 'slate';
+import { Descendant, BaseEditor, Node } from 'slate';
 import { ReactEditor } from 'slate-react';
 import { HistoryEditor } from 'slate-history';
 import { IDialogController } from '../modal-dialog/dialog-types';
@@ -45,7 +45,7 @@ export enum EFormat {
   variable = "variable" // FIXME: just her temporarily
 }
 
-export type EditorValue = Descendant[]
+export type EditorValue = Descendant[];
 
 export function textToSlate(contents: string): EditorValue {
   const lines = contents.split(/\r|\r?\n/);

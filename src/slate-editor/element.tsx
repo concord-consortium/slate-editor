@@ -14,7 +14,7 @@ function eltRenderAttrs(element: CustomElement) {
 
 export const elementTypeMap: Record<string, string> = {
   "blockquote" : EFormat.blockQuote,
-  "ui" : EFormat.bulletedList,
+  "ul" : EFormat.bulletedList,
   "h1" : EFormat.heading1,
   "h2" : EFormat.heading2,
   "h3" : EFormat.heading3,
@@ -26,7 +26,8 @@ export const elementTypeMap: Record<string, string> = {
   "ol" : EFormat.numberedList,
   "pre" : EFormat.preformatted,
   "a" : "link",
-  "img" : "image"
+  "img" : "image",
+  "div" : EFormat.block
 };
 
 export type ElementComponent = (props: RenderElementProps) => JSX.Element;
@@ -67,6 +68,12 @@ const elementComponents: Partial<Record<string, ElementComponent>> = {
   },
   [EFormat.preformatted]: ({ attributes, children, element }) => {
     return <pre {...attributes} {...eltRenderAttrs(element)}>{children}</pre>;
+  },
+  [EFormat.block]: ({ attributes, children, element }) => {
+    return <div {...attributes} {...eltRenderAttrs(element)}>{children}</div>;
+  },
+  [EFormat.horizontalRule]: ({ attributes, children, element }) => {
+    return <hr {...attributes} {...eltRenderAttrs(element)}/>;
   }
 };
 

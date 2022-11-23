@@ -1,18 +1,12 @@
-import React, { ReactNode } from "react";
+import React from "react";
 import classNames from "classnames/dedupe";
-import clone from "lodash/clone";
 import { Editor, Range, Transforms } from "slate";
 import { ReactEditor, RenderElementProps, useFocused, useSelected, useSlateStatic } from "slate-react";
-import { CustomElement, EFormat,registerInlineFormat, VariableElement } from "../common/slate-types";
-import { hasActiveInline, unwrapElement, wrapElement } from "../slate-editor/slate-utils";
-import { IFieldValues } from "../slate-toolbar/modal-dialog";
-import { IDialogController } from "../slate-toolbar/slate-toolbar";
-import { getDataFromElement, getRenderAttributesFromNode, classArray } from "../serialization/html-utils";
-import { HtmlSerializablePlugin } from "../plugins/html-serializable-plugin";
+import { CustomElement, EFormat, VariableElement } from "../common/slate-types";
+import { unwrapElement } from "../slate-editor/slate-utils";
 import "./variable-plugin.scss";
-import editorToolbarStories from "../editor-toolbar/editor-toolbar.stories";
 import { registerElement } from "../slate-editor/element";
-import { IField } from "../modal-dialog/dialog-types";
+import { IDialogController, IField } from "../modal-dialog/dialog-types";
 import { useSerializing } from "../hooks/use-serializing";
 
 

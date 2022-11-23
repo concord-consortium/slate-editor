@@ -17,7 +17,7 @@ import InputColor from "../assets/input-color";
 import IconFontIncrease from "../assets/icon-font-increase";
 import IconFontDecrease from "../assets/icon-font-decrease";
 import { IButtonSpec, IProps as IToolbarProps } from "../editor-toolbar/editor-toolbar";
-import { isMarkActive, toggleMark, isBlockActive, toggleBlock, selectionContainsBlock, toggleSuperSubscript }
+import { isMarkActive, toggleMark, isBlockActive, toggleBlock, toggleSuperSubscript }
         from "../slate-editor/slate-utils";
 import { Editor } from "slate";
 import { useSlate, ReactEditor } from "slate-react";

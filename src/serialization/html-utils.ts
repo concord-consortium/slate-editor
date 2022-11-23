@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { RenderAttributes } from "slate-react";
 import { Block, Inline, Mark } from "slate";
 import classNames from "classnames/dedupe";

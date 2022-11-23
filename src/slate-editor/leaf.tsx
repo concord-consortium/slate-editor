@@ -17,11 +17,7 @@ export const markNodeMap: Record<string, MarkType> = {
 const markComponents: Partial<Record<MarkType, (children: any, leaf: CustomText) => JSX.Element>> = {
   "bold": children => <strong>{children}</strong>,
   "code": children => <code>{children}</code>,
-  "deleted": children => {
-   console.log('deleted stuff:');
-   console.log(children);
-   return <del>{children}</del>
-  },
+  "deleted": children =><del>{children}</del>,
   "italic": children => <em>{children}</em>,
   "subscript": children => <sub>{children}</sub>,
   "superscript": children => <sup>{children}</sup>,
@@ -31,7 +27,9 @@ const markTypes = Object.keys(markComponents) as MarkType[];
 
 export function registerMark(mark: MarkType, Component: (children: any, leaf: CustomText) => JSX.Element) {
   markTypes.push(mark);
+  markNodeMap['somehtmlTag'] = mark; // FIXME
   markComponents[mark] = Component;
+
 }
 
 export const Leaf = ({ attributes, children, leaf }: RenderLeafProps) => {

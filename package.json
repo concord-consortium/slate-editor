@@ -9,7 +9,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "npm-run-all clean lint:build build:bundle clean:build",
+    "build": "npm-run-all clean build:bundle clean:build",
     "build:bundle": "rollup -c",
     "build:dev": "npm-run-all clean lint build:bundle clean:build",
     "build:storybook": "build-storybook",
@@ -93,6 +93,7 @@
     "typescript": "^4.7.4"
   },
   "dependencies": {
+    "@concord-consortium/slate-editor": "file:.yalc/@concord-consortium/slate-editor",
     "classnames": "^2.3.1",
     "eventemitter3": "^4.0.7",
     "immutable": "^3.8.2",

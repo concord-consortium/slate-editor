@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { ReactNode } from "react";
 import _size from "lodash/size";
 import { Inline, Node } from "slate";
