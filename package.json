@@ -40,10 +40,6 @@
     "type": "git",
     "url": "git+https://github.com/concord-consortium/slate-editor.git"
   },
-  "overrides": {
-    "slate-react": "@concord-consortium/slate-react",
-    "slate-react-placeholder": "@concord-consortium/slate-react-placeholder"
-  },
   "peerDependencies": {
     "react": ">=16.14",
     "react-dom": ">=16.14"
@@ -104,6 +100,7 @@
     "lodash": "^4.17.21",
     "react-select": "^5.4.0",
     "slate": "^0.78.0",
+    "slate-history": "^0.66.0",
     "slate-react": "^0.79.0",
     "style-to-object": "^0.3.0",
     "tslib": "^2.4.0",
