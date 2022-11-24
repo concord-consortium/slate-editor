@@ -2,7 +2,7 @@ import { Editor } from "slate-react";
 
 export type FieldType = "checkbox" | "input" | "label" | "select";
 
-export type SelectValue = { value: string, label: string };
+export type SelectValue = { value: string; label: string };
 export type SelectOptions = SelectValue[];
 
 export interface IField {
@@ -16,7 +16,7 @@ export interface IField {
 export type IRow = IField | IField[];
 
 // maps name => value
-export type IFieldValues = Record<string, string>
+export type IFieldValues = Record<string, string>;
 
 export interface DisplayDialogSettings {
   title: string;

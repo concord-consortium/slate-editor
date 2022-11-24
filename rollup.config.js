@@ -1,5 +1,5 @@
 import path from "path";
-import alias from "@rollup/plugin-alias";
+// import alias from "@rollup/plugin-alias";
 import dts from "rollup-plugin-dts";
 import external from "rollup-plugin-peer-deps-external";
 import replace from 'rollup-plugin-re';

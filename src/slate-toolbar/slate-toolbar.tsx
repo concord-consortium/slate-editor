@@ -1,10 +1,13 @@
-import React, { useEffect, useMemo, useRef, useState }  from "react";
+import clone from "lodash/clone";
+import React, { useMemo, useRef, useState }  from "react";
+import { Editor } from "slate";
+import { ReactEditor, useSlate } from "slate-react";
 import { EditorToolbar, getPlatformTooltip } from "../editor-toolbar/editor-toolbar";
 import IconBold from "../assets/icon-bold";
 import IconCode from "../assets/icon-code";
 import IconItalic from "../assets/icon-italic";
-import IconImage from "../assets/icon-image";
-import IconLink from "../assets/icon-link";
+// import IconImage from "../assets/icon-image";
+// import IconLink from "../assets/icon-link";
 import IconHeading from "../assets/icon-heading";
 import IconQuote from "../assets/icon-quote";
 import IconBulletedList from "../assets/icon-list-bulleted";
@@ -14,19 +17,15 @@ import IconSubscript from "../assets/icon-subscript";
 import IconSuperscript from "../assets/icon-superscript";
 import IconUnderline from "../assets/icon-underline";
 import InputColor from "../assets/input-color";
-import IconFontIncrease from "../assets/icon-font-increase";
-import IconFontDecrease from "../assets/icon-font-decrease";
+// import IconFontIncrease from "../assets/icon-font-increase";
+// import IconFontDecrease from "../assets/icon-font-decrease";
 import { IButtonSpec, IProps as IToolbarProps } from "../editor-toolbar/editor-toolbar";
-import { hasActiveMark, selectionContainsBlock, handleToggleSuperSubscript }
-        from "../slate-editor/slate-utils";
-import { Editor } from "slate-react";
-import { SelectionJSON } from "slate";
-import { EFormat, EMetaFormat } from "../common/slate-types";
+import { isBlockActive, isMarkActive, toggleBlock, toggleMark, toggleSuperSubscript } from "../common/slate-utils";
+import { EFormat } from "../common/slate-types";
 import { DisplayDialogSettings, FieldType, IDialogController, IFieldValues } from "../modal-dialog/dialog-types";
 import { ModalDialog } from "../modal-dialog/modal-dialog";
 import { ModalDialogPortal } from "../modal-dialog/modal-dialog-portal";
-import clone from "lodash/clone";
-import EventEmitter from "eventemitter3";
+import { CustomMarks } from "../common/custom-types";
 
 export type ToolbarTransform =
   (buttons: IButtonSpec[], editor?: Editor, dialogController?: IDialogController) => IButtonSpec[];
@@ -35,12 +34,12 @@ export interface IProps extends Omit<IToolbarProps, "buttons"> {
   modalPortalRoot?: HTMLDivElement;
   modalCoverClassName?: string;
   modalDialogClassName?: string;
-  changeCount: number;
 }
 
 export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
-  const { className, editor, transform, ...others } = props;
-  const { changeCount, colors } = props;
+  const { className, transform, ...others } = props;
+  const { colors } = props;
+  const editor = useSlate();
   const [showDialog, setShowDialog] = useState(false);
   const settingsRef = useRef<DisplayDialogSettings>();
   const validValuesRef = useRef<IFieldValues>();
@@ -60,7 +59,7 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
       settingsRef.current = settings;
       validateFieldValues();
       // prevents focus-bouncing between editor and dialog
-      editor?.blur();
+      ReactEditor.blur(editor);
       setShowDialog(true);
     },
     update: (newValues: IFieldValues) => {
@@ -69,115 +68,108 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
     }
   }), [editor]);
 
-  const defaultButtons: IButtonSpec[] = useMemo(() => [
+  const defaultButtons: IButtonSpec[] = [
     {
       format: EFormat.bold,
       SvgIcon: IconBold,
       tooltip: getPlatformTooltip("bold (mod-b)"),
-      isActive: !!editor && hasActiveMark(editor.value, EFormat.bold),
-      onClick: () => editor?.command("toggleMark", EFormat.bold)
+      isActive: !!editor && isMarkActive(editor, EFormat.bold),
+      onClick: () => toggleMark(editor, EFormat.bold)
     },
     {
       format: EFormat.italic,
       SvgIcon: IconItalic,
       tooltip: getPlatformTooltip("italic (mod-i)"),
-      isActive: !!editor && hasActiveMark(editor.value, EFormat.italic),
-      onClick: () => editor?.command("toggleMark", EFormat.italic)
+      isActive: !!editor && isMarkActive(editor, EFormat.italic),
+      onClick: () => toggleMark(editor, EFormat.italic)
     },
     {
       format: EFormat.underlined,
       SvgIcon: IconUnderline,
       tooltip: getPlatformTooltip("underline (mod-u)"),
-      isActive: !!editor && hasActiveMark(editor.value, EFormat.underlined),
-      onClick: () => editor?.command("toggleMark", EFormat.underlined)
+      isActive: !!editor && isMarkActive(editor, EFormat.underlined),
+      onClick: () => toggleMark(editor, EFormat.underlined)
     },
     {
       format: EFormat.deleted,
       SvgIcon: IconStrikethrough,
       tooltip: getPlatformTooltip("strikethrough"),
-      isActive: !!editor && hasActiveMark(editor.value, EFormat.deleted),
-      onClick: () => editor?.command("toggleMark", EFormat.deleted, editor)
+      isActive: !!editor && isMarkActive(editor, EFormat.deleted),
+      onClick: () => toggleMark(editor, EFormat.deleted)
     },
     {
       format: EFormat.code,
       SvgIcon: IconCode,
       tooltip: getPlatformTooltip("code (mod-\\)"),
-      isActive: !!editor && hasActiveMark(editor.value, EFormat.code),
-      onClick: () => editor?.command("toggleMark", EFormat.code, editor)
+      isActive: !!editor && isMarkActive(editor, EFormat.code),
+      onClick: () => toggleMark(editor, EFormat.code)
     },
     {
       format: EFormat.superscript,
       SvgIcon: IconSuperscript,
       tooltip: getPlatformTooltip("superscript"),
-      isActive: !!editor && hasActiveMark(editor.value, EFormat.superscript),
-      onClick: () => editor && handleToggleSuperSubscript(EFormat.superscript, editor)
+      isActive: !!editor && isMarkActive(editor, EFormat.superscript),
+      onClick: () => editor && toggleSuperSubscript(editor, EFormat.superscript)
     },
     {
       format: EFormat.subscript,
       SvgIcon: IconSubscript,
       tooltip: getPlatformTooltip("subscript"),
-      isActive: !!editor && hasActiveMark(editor.value, EFormat.subscript),
-      onClick: () => editor && handleToggleSuperSubscript(EFormat.subscript, editor)
+      isActive: !!editor && isMarkActive(editor, EFormat.subscript),
+      onClick: () => editor && toggleSuperSubscript(editor, EFormat.subscript)
     },
     (() => {
-      let selection: SelectionJSON | undefined;
-      const fill = editor?.query("getActiveColor") || "#000000";
+      const fill = (editor?.marks as CustomMarks)?.color || "#000000";
       return {
         format: EFormat.color,
         SvgIcon: InputColor,
         colors: { ...colors?.buttonColors, fill },
         selectedColors: { ...colors?.selectedColors, fill },
         tooltip: getPlatformTooltip("color"),
-        isActive: !!editor && editor.query("hasActiveColorMark"),
-        onMouseDown: () => {
-          // cache selection - interaction with platform color picker can blur
-          selection = editor?.value.selection.toJSON();
-        },
+        isActive: !!(editor?.marks as CustomMarks)?.[EFormat.color],
         onChange: (value: string) => {
-          // restore the selection (with gratuitous use of changeCount to quiet hooks warning)
-          editor && selection && (changeCount >= 0) && editor.select(selection);
-          return editor?.command("setColorMark", value);
+          return editor?.addMark(EFormat.color, value);
         }
       };
     })(),
-    {
-      format: EFormat.image,
-      SvgIcon: IconImage,
-      tooltip: getPlatformTooltip("image"),
-      isActive: !!editor && editor.query("isImageActive"),
-      isEnabled: !!editor && editor.query("isImageEnabled"),
-      onClick: () => editor?.command("configureImage", dialogController)
-    },
-    {
-      format: EFormat.link,
-      SvgIcon: IconLink,
-      tooltip: getPlatformTooltip("link"),
-      isActive: !!editor && editor.query("isLinkActive"),
-      isEnabled: !!editor && editor.query("isLinkEnabled"),
-      onClick: () => editor?.command("configureLink", dialogController)
-    },
+    // {
+    //   format: EFormat.image,
+    //   SvgIcon: IconImage,
+    //   tooltip: getPlatformTooltip("image"),
+    //   isActive: !!editor && editor.query("isImageActive"),
+    //   isEnabled: !!editor && editor.query("isImageEnabled"),
+    //   onClick: () => editor?.command("configureImage", dialogController)
+    // },
+    // {
+    //   format: EFormat.link,
+    //   SvgIcon: IconLink,
+    //   tooltip: getPlatformTooltip("link"),
+    //   isActive: !!editor && editor.query("isLinkActive"),
+    //   isEnabled: !!editor && editor.query("isLinkEnabled"),
+    //   onClick: () => editor?.command("configureLink", dialogController)
+    // },
     {
       format: EFormat.heading1,
       SvgIcon: IconHeading,
       tooltip: getPlatformTooltip("heading 1"),
-      isActive: !!editor && selectionContainsBlock(editor.value, EFormat.heading1),
-      onClick: () => editor?.command("toggleBlock", EFormat.heading1)
+      isActive: !!editor && isBlockActive(editor, EFormat.heading1),
+      onClick: () => toggleBlock(editor, EFormat.heading1)
     },
     {
       format: EFormat.heading2,
       SvgIcon: IconHeading,
       iconSize: 14,
       tooltip: getPlatformTooltip("heading 2"),
-      isActive: !!editor && selectionContainsBlock(editor.value, EFormat.heading2),
-      onClick: () => editor?.command("toggleBlock", EFormat.heading2)
+      isActive: !!editor && isBlockActive(editor, EFormat.heading2),
+      onClick: () => toggleBlock(editor, EFormat.heading2)
     },
     {
       format: EFormat.heading3,
       SvgIcon: IconHeading,
       iconSize: 12,
       tooltip: getPlatformTooltip("heading 3"),
-      isActive: !!editor && selectionContainsBlock(editor.value, EFormat.heading3),
-      onClick: () => editor?.command("toggleBlock", EFormat.heading3)
+      isActive: !!editor && isBlockActive(editor, EFormat.heading3),
+      onClick: () => toggleBlock(editor, EFormat.heading3)
     },
     // {
     //   format: EFormat.heading4,
@@ -207,47 +199,45 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
       format: EFormat.blockQuote,
       SvgIcon: IconQuote,
       tooltip: getPlatformTooltip("block quote"),
-      isActive: !!editor && selectionContainsBlock(editor.value, EFormat.blockQuote),
-      onClick: () => editor?.command("toggleBlock", EFormat.blockQuote)
+      isActive: !!editor && isBlockActive(editor, EFormat.blockQuote),
+      onClick: () => toggleBlock(editor, EFormat.blockQuote)
     },
     {
       format: EFormat.numberedList,
       SvgIcon: IconNumberedList,
       tooltip: getPlatformTooltip("numbered list"),
-      isActive: !!editor && selectionContainsBlock(editor.value, EFormat.numberedList),
-      onClick: () => editor?.command("toggleBlock", EFormat.numberedList)
+      isActive: !!editor && isBlockActive(editor, EFormat.numberedList),
+      onClick: () => toggleBlock(editor, EFormat.numberedList)
     },
     {
       format: EFormat.bulletedList,
       SvgIcon: IconBulletedList,
       tooltip: getPlatformTooltip("bulleted list"),
-      isActive: !!editor && selectionContainsBlock(editor.value, EFormat.bulletedList),
-      onClick: () => editor?.command("toggleBlock", EFormat.bulletedList)
+      isActive: !!editor && isBlockActive(editor, EFormat.bulletedList),
+      onClick: () => toggleBlock(editor, EFormat.bulletedList)
     },
-    {
-      format: EMetaFormat.fontDecrease,
-      SvgIcon: IconFontDecrease,
-      tooltip: getPlatformTooltip("decrease font"),
-      isActive: false,
-      onClick: () => editor?.command("decreaseFontSize")
-    },
-    {
-      format: EMetaFormat.fontIncrease,
-      SvgIcon: IconFontIncrease,
-      tooltip: getPlatformTooltip("increase font"),
-      isActive: false,
-      onClick: () => editor?.command("increaseFontSize")
-    }
-  ], [changeCount, dialogController, editor, colors?.buttonColors, colors?.selectedColors]);
+    // {
+    //   format: EMetaFormat.fontDecrease,
+    //   SvgIcon: IconFontDecrease,
+    //   tooltip: getPlatformTooltip("decrease font"),
+    //   isActive: false,
+    //   onClick: () => editor?.command("decreaseFontSize")
+    // },
+    // {
+    //   format: EMetaFormat.fontIncrease,
+    //   SvgIcon: IconFontIncrease,
+    //   tooltip: getPlatformTooltip("increase font"),
+    //   isActive: false,
+    //   onClick: () => editor?.command("increaseFontSize")
+    // }
+  ];
 
-  const buttons = useMemo(() => {
-    return transform ? transform(defaultButtons, editor, dialogController) : defaultButtons;
-  }, [defaultButtons, dialogController, editor, transform]);
+  const buttons = transform ? transform(defaultButtons, editor, dialogController) : defaultButtons;
 
   const handleSetValue = (name: string, value: string, type: FieldType) => {
     setFieldValues({ [name]: value });
     if (type !== "input") {
-        callOnChange(name, value);
+      callOnChange(name, value);
     }
   };
 
@@ -306,16 +296,18 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
                   : null;
 
   // listen for configuration requests from plugins
-  useEffect(() => {
-    const emitter: EventEmitter | undefined = editor?.query("emitter");
-    const handler = (event: string, ...args: any) => {
-      editor?.command(event, dialogController, ...args);
-    };
-    emitter?.on("toolbarDialog", handler);
-    return () => {
-      emitter?.off("toolbarDialog", handler);
-    };
-  }, [editor, dialogController]);
+  // useEffect(() => {
+  //   const emitter: EventEmitter | undefined = editor?.query("emitter");
+  //   const handler = (event: string, ...args: any) => {
+  //     editor?.command(event, dialogController, ...args);
+  //   };
+  //   emitter?.on("toolbarDialog", handler);
+  //   return () => {
+  //     emitter?.off("toolbarDialog", handler);
+  //   };
+  // }, [editor, dialogController]);
+
+  console.log("SlateToolbar.FC");
 
   return (
     <div>
@@ -323,7 +315,6 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
         className={`ccrte-toolbar slate-toolbar ${props.className || ""}`}
         iconSize={16}
         buttons={buttons}
-        editor={editor}
         {...others}
         />
       {dialog}

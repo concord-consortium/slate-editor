@@ -1,4 +1,6 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
+import { createEditor } from "slate";
+import { Slate, withReact } from "slate-react";
 import { IButtonSpec } from "../editor-toolbar/editor-toolbar";
 import { SlateToolbar, ToolbarTransform } from "./slate-toolbar";
 
@@ -6,36 +8,53 @@ export default {
   title: "SlateToolbar"
 };
 
-export const Horizontal = () => (
-  <SlateToolbar changeCount={0} />
-);
+export const Horizontal = () => {
+  const editor = useMemo(() => withReact(createEditor()), []);
+  return (
+    <Slate editor={editor} value={[]}>
+      <SlateToolbar />
+    </Slate>
+  );
+};
 
-export const Vertical = () => (
-  <SlateToolbar changeCount={0} orientation="vertical" />
-);
+export const Vertical = () => {
+  const editor = useMemo(() => withReact(createEditor()), []);
+  return (
+    <Slate editor={editor} value={[]}>
+      <SlateToolbar orientation="vertical" />
+    </Slate>
+  );
+};
 
-export const Colored = () => (
-  <SlateToolbar changeCount={0}
-    orientation="vertical"
-    colors={{ buttonColors: { background: "#177991", fill: "#ffffff" } }}
-    />
-);
+export const Colored = () => {
+  const editor = useMemo(() => withReact(createEditor()), []);
+  return (
+    <Slate editor={editor} value={[]}>
+      <SlateToolbar orientation="vertical"
+        colors={{ buttonColors: { background: "#177991", fill: "#ffffff" } }} />
+    </Slate>
+  );
+};
 
-export const TwoColumns = () => (
-  <SlateToolbar changeCount={0}
-    orientation="vertical"
-    colors={{ buttonColors: { background: "#177991", fill: "#ffffff" } }}
-    buttonsPerRow={9}
-    />
-);
+export const TwoColumns = () => {
+  const editor = useMemo(() => withReact(createEditor()), []);
+  return (
+    <Slate editor={editor} value={[]}>
+      <SlateToolbar orientation="vertical" buttonsPerRow={9}
+        colors={{ buttonColors: { background: "#177991", fill: "#ffffff" } }} />
+    </Slate>
+  );
+};
 
-export const ThreeColumns = () => (
-  <SlateToolbar changeCount={0}
-    orientation="vertical"
-    colors={{ buttonColors: { background: "#177991", fill: "#ffffff" } }}
-    buttonsPerRow={6}
-    />
-);
+export const ThreeColumns = () => {
+  const editor = useMemo(() => withReact(createEditor()), []);
+  return (
+    <Slate editor={editor} value={[]}>
+      <SlateToolbar orientation="vertical" buttonsPerRow={6}
+        colors={{ buttonColors: { background: "#177991", fill: "#ffffff" } }} />
+    </Slate>
+  );
+};
 
 const order = [
         "fontDecrease", "bold", "italic", "underlined", "deleted", "code", "superscript", "subscript", "color",
@@ -43,22 +62,22 @@ const order = [
       ];
 
 export const Ordered = () => {
+  const editor = useMemo(() => withReact(createEditor()), []);
   const transform = useCallback<ToolbarTransform>(buttons => {
     return order
             .map(format => buttons.find(b => b.format === format))
             .filter(b => !!b) as IButtonSpec[];
   }, []);
   return (
-    <SlateToolbar changeCount={0}
-      orientation="vertical"
-      colors={{ buttonColors: { background: "#177991", fill: "#ffffff" } }}
-      buttonsPerRow={9}
-      transform={transform}
-      />
+    <Slate editor={editor} value={[]}>
+      <SlateToolbar orientation="vertical" buttonsPerRow={9} transform={transform}
+        colors={{ buttonColors: { background: "#177991", fill: "#ffffff" } }} />
+    </Slate>
   );
 };
 
 export const OrderedHinted = () => {
+  const editor = useMemo(() => withReact(createEditor()), []);
   const transform = useCallback<ToolbarTransform>(buttons => {
     return order
             // show subset of tools
@@ -70,14 +89,12 @@ export const OrderedHinted = () => {
               const { tooltip, ...others } = b || {};
               return { ...others, tooltip: tooltip ? `hint: ${tooltip}` : tooltip };
             })
-            .filter(b => !!b) as IButtonSpec[];
+            .filter(b => !!b?.format) as IButtonSpec[];
   }, []);
   return (
-    <SlateToolbar changeCount={0}
-      orientation="vertical"
-      colors={{ buttonColors: { background: "#177991", fill: "#ffffff" } }}
-      buttonsPerRow={7}
-      transform={transform}
-      />
+    <Slate editor={editor} value={[]}>
+      <SlateToolbar orientation="vertical" buttonsPerRow={7} transform={transform}
+        colors={{ buttonColors: { background: "#177991", fill: "#ffffff" } }} />
+    </Slate>
   );
 };
