@@ -15,7 +15,7 @@ const HOTKEYS: Record<string, string> = {
   'mod+`': 'code',
 };
 
-const LIST_TYPES = ['numbered-list', 'bulleted-list'];
+const LIST_TYPES = ['ordered-list', 'bulleted-list'];
 const TEXT_ALIGN_TYPES = ['left', 'center', 'right', 'justify'];
 
 interface IProps {
@@ -36,7 +36,7 @@ export const RichTextExample = ({ readOnly }: IProps) => {
         <BlockButton format="heading-one" icon="looks_one" />
         <BlockButton format="heading-two" icon="looks_two" />
         <BlockButton format="block-quote" icon="format_quote" />
-        <BlockButton format="numbered-list" icon="format_list_numbered" />
+        <BlockButton format="ordered-list" icon="format_list_numbered" />
         <BlockButton format="bulleted-list" icon="format_list_bulleted" />
         <BlockButton format="left" icon="format_align_left" />
         <BlockButton format="center" icon="format_align_center" />
@@ -163,7 +163,7 @@ const Element = ({ attributes, children, element }: RenderElementProps) => {
           {children}
         </li>
       );
-    case 'numbered-list':
+    case 'ordered-list':
       return (
         <ol style={style} {...attributes}>
           {children}

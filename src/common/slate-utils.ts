@@ -9,7 +9,7 @@ export function isCustomText(node: CustomText | EmptyText): node is CustomText {
           !!(node as CustomText).superscript || !!(node as CustomText).underlined;
 }
 
-const LIST_TYPES = ['numbered-list', 'bulleted-list'];
+const LIST_TYPES = ['ordered-list', 'bulleted-list'];
 const TEXT_ALIGN_TYPES = ['left', 'center', 'right', 'justify'];
 
 export const toggleBlock = (editor: Editor, format: string) => {

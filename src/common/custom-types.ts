@@ -62,7 +62,7 @@ export type ListItemElement = { type: 'list-item'; children: Descendant[] };
 // };
 
 export type NumberedListElement = {
-  type: 'numbered-list';
+  type: 'ordered-list';
   align?: string;
   children: Descendant[];
 };
