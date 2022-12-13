@@ -1,17 +1,17 @@
-import { Value } from "slate";
 import { textToSlate } from "../common/slate-types";
 
 export function deserializeValueFromLegacy(text: string) {
   const parsed = safeJsonParse(text);
   validateNodeData(parsed?.document);
-  return parsed
-          ? Value.fromJSON(parsed)
-          : textToSlate("");
+  return parsed ? parsed : textToSlate("");
+          // ? Value.fromJSON(parsed)
+          // : textToSlate("");
 }
 
-export function serializeValueToLegacy(value: Value) {
-  return JSON.stringify(value.toJSON());
-}
+// FIXME: we don't need this, right? delete?
+// export function serializeValueToLegacy(value: any) {
+//   return JSON.stringify(value.toJSON());
+// }
 
 export function validateNodeData(node: any) {
   // strip invalid "className" which can result from prior import/export bugs

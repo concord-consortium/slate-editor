@@ -6,7 +6,6 @@ import { isBlockActive, isMarkActive, selectedElements, toggleBlock, toggleMark 
 import { withLinkInlines } from "../plugins/link-plugin";
 import { withColorMark } from "../plugins/color-plugin";
 import { withImages } from "../plugins/image-plugin";
-import { withVariables } from "../plugin-examples/variable-plugin";
 
 interface ICreateEditorOptions {
   color?: boolean;
@@ -17,7 +16,7 @@ interface ICreateEditorOptions {
   onInitEditor?: (editor: Editor) => Editor;
 }
 export function createEditor(options?: ICreateEditorOptions) {
-  const { color = true, history = true, images = true, links = true, variables=true, onInitEditor } = options || {};
+  const { color = true, history = true, images = true, links = true, onInitEditor } = options || {};
   let editor = withReact(slateCreateEditor());
   editor = history ? withHistory(editor) : editor;
 
@@ -36,7 +35,6 @@ export function createEditor(options?: ICreateEditorOptions) {
   editor = color ? withColorMark(editor) : editor;
   editor = images ? withImages(editor) : editor;
   editor = links ? withLinkInlines(editor) : editor;
-  editor = variables ? withVariables(editor): editor;
 
   // allow clients to attach their own plugins, etc.
   return onInitEditor ? onInitEditor(editor) : editor;

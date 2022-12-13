@@ -1,10 +1,10 @@
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, { useCallback, useMemo } from "react";
 import IconVariable from "./icon-variable";
 import { EFormat, textToSlate } from "../common/slate-types";
-import { kVariableFormatCode, VariablesPlugin } from "./variable-plugin";
+import { kVariableFormat} from "./variable-plugin";
 import { IProps as ISlateToolbarProps, SlateToolbar, ToolbarTransform } from "../slate-toolbar/slate-toolbar";
 import { getPlatformTooltip, IButtonSpec } from "../editor-toolbar/editor-toolbar";
-import { IProps as ISlateEditorProps, SlateEditor } from "../slate-editor/slate-editor";
+import { IProps as ISlateEditorProps } from "../slate-editor/slate-editor";
 import { Editable, Slate, withReact } from "slate-react";
 import { withHistory } from "slate-history";
 import { createEditor } from "../common/create-editor";
@@ -14,11 +14,11 @@ export default {
 };
 
 /*
- * Variables
+ * Variables: FIXME: put this story back in
  *
  * Supports creation/editing of variable "chips" with optional values embedded in text.
  */
-const variablesText = "This example demonstrates a customized toolbar/editor with embedded variables in text.";
+//const variablesText = "This example demonstrates a customized toolbar/editor with embedded variables in text.";
 
 const VariablesToolbar = (props: ISlateToolbarProps) => {
   const transform = useCallback<ToolbarTransform>((buttons, editor, dialogController) => {
@@ -29,7 +29,7 @@ const VariablesToolbar = (props: ISlateToolbarProps) => {
             .filter(b => !!b),
       // add a new button for inserting/editing variable chips
       {
-        format: kVariableFormatCode,
+        format: kVariableFormat,
         SvgIcon: IconVariable,
         tooltip: getPlatformTooltip("variable"),
         isActive: !!editor && editor.isElementActive(EFormat.variable),
@@ -50,8 +50,6 @@ const VariablesToolbar = (props: ISlateToolbarProps) => {
 
 interface IVariablesProps extends Omit<ISlateEditorProps, "value" | "onValueChange"> {}
 export const Variables = (props: IVariablesProps) => {
-  const [value, setValue] = useState(textToSlate(variablesText));
-  const [changeCount, setChangeCount] = useState(0);
   //const variablesPlugin = VariablesPlugin({ a: 1, b: 2, c: 3 });
   const editor = useMemo(() => withHistory(withReact(createEditor())), []);
 
@@ -60,7 +58,7 @@ export const Variables = (props: IVariablesProps) => {
       <Slate editor={editor} value={textToSlate("hi variable test there")}>
         <Editable>
           <VariablesToolbar/>
-          {variablesPlugin}
+          FIXME
         </Editable>
       </Slate>
     

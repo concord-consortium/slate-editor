@@ -27,7 +27,6 @@ export const LinkComponent = ({ attributes, children, element }: RenderElementPr
   const target = isSerializing ? undefined : "_blank";
   const rel = isSerializing ? undefined : "noopener noreferrer";
   const onDoubleClick = isSerializing ? undefined : () => window.open(href);
-  console.log(href);
   return (
     <a {...attributes} href={href} target={target} rel={rel} onDoubleClick={onDoubleClick}>
       {!isSerializing &&  <InlineChromiumBugfix/>}
@@ -35,7 +34,7 @@ export const LinkComponent = ({ attributes, children, element }: RenderElementPr
       {!isSerializing && <InlineChromiumBugfix/>}
     </a>
   );
-}
+};
 
 export function withLinkInlines(editor: Editor) {
   const { configureElement, isElementEnabled, isInline } = editor;
@@ -84,4 +83,4 @@ export function withLinkInlines(editor: Editor) {
 
   registerElement(EFormat.link, props => <LinkComponent {...props}/>);
   return editor;
-};
+}

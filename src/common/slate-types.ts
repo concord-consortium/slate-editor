@@ -3,6 +3,19 @@ import { ReactEditor } from 'slate-react';
 import { HistoryEditor } from 'slate-history';
 import { IDialogController } from '../modal-dialog/dialog-types';
 
+export type EditorValue = Descendant[];
+
+export function textToSlate(contents: string): EditorValue {
+  const lines = contents.split(/\r|\r?\n/);
+  // FIXME: not done yet.
+  return lines.map(line => ({ type: "paragraph", children: [{ text: line }] }));
+}
+
+export function slateToText(value?: EditorValue): string {
+  return value? value.map(n => Node.string(n)).join("\n"): '';
+}
+
+// eslint-disable-next-line no-shadow
 export enum EFormat {
   // marks
   bold = "bold",
@@ -42,32 +55,24 @@ export enum EFormat {
   inline = "inline",  // generic inline (<span>)
   image = "image",
   link = "link", // <a>
-  variable = "variable" // FIXME: just her temporarily
+
+  variable = "variable" // FIXME: This should be provided via plugin registration
 }
 
-export type EditorValue = Descendant[];
-
-export function textToSlate(contents: string): EditorValue {
-  const lines = contents.split(/\r|\r?\n/);
-  // FIXME: not done yet.
-  return lines.map(line => ({ type: "paragraph", children: [{ text: line }] }));
+export interface BaseElement {
+  type: string;
+  children: Descendant[];
 }
 
-export function slateToText(value?: EditorValue): string {
-  return value? value.map(n => Node.string(n)).join("\n"): '';
-}
-
-export type BlockQuoteElement = {
+export interface BlockQuoteElement extends BaseElement {
   type: 'block-quote';
   align?: string;
-  children: Descendant[];
-};
+}
 
-export type BulletedListElement = {
+export interface BulletedListElement extends BaseElement {
   type: 'bulleted-list';
   align?: string;
-  children: Descendant[];
-};
+}
 
 // export type CheckListItemElement = {
 //   type: 'check-list-item';
@@ -75,24 +80,23 @@ export type BulletedListElement = {
 //   children: Descendant[];
 // };
 
-export type EditableVoidElement = {
+export interface EditableVoidElement extends BaseElement {
   type: 'editable-void';
   children: EmptyText[];
-};
+}
 
-export type HeadingElement = {
+export interface HeadingElement extends BaseElement {
   type: 'heading-one';
   align?: string;
-  children: Descendant[];
-};
+}
 
-export type HeadingTwoElement = {
+export interface HeadingTwoElement extends BaseElement {
   type: 'heading-two';
   align?: string;
   children: Descendant[];
-};
+}
 
-export type ImageElement = {
+export interface ImageElement extends BaseElement {
   type: 'image';
   src: string;
   alt?: string;
@@ -101,44 +105,44 @@ export type ImageElement = {
   constrain?: boolean;
   float?: 'left' | 'right';
   children: EmptyText[];
-};
+}
 
-export type LinkElement = { type: 'link'; href: string; children: Descendant[] };
+export interface LinkElement extends BaseElement { type: 'link'; href: string; children: Descendant[] }
 
-export type ButtonElement = { type: 'button'; children: Descendant[] };
+export interface ButtonElement extends BaseElement { type: 'button'; children: Descendant[] }
 
-export type ListItemElement = { type: 'list-item'; children: Descendant[] };
+export interface ListItemElement extends BaseElement { type: 'list-item'; children: Descendant[] }
 
-// export type MentionElement = {
+// export interface MentionElement extends BaseElement {
 //   type: 'mention';
 //   character: string;
 //   children: CustomText[];
 // };
 
-export type NumberedListElement = {
+export interface NumberedListElement extends BaseElement {
   type: 'numbered-list';
   align?: string;
   children: Descendant[];
-};
+}
 
-export type ParagraphElement = {
+export interface ParagraphElement extends BaseElement {
   type: 'paragraph';
   align?: string;
   children: Descendant[];
-};
+}
 
-// export type TableElement = { type: 'table'; children: TableRow[] }
+// export interface TableElement extends BaseElement { type: 'table'; children: TableRow[] }
 
-// export type TableCellElement = { type: 'table-cell'; children: CustomText[] }
+// export interface TableCellElement extends BaseElement { type: 'table-cell'; children: CustomText[] }
 
-// export type TableRowElement = { type: 'table-row'; children: TableCell[] }
+// export interface TableRowElement extends BaseElement { type: 'table-row'; children: TableCell[] }
 
-// export type TitleElement = { type: 'title'; children: Descendant[] };
+// export interface TitleElement extends BaseElement { type: 'title'; children: Descendant[] };
 
-// export type VideoElement = { type: 'video'; url: string; children: EmptyText[] };
+// export interface VideoElement extends BaseElement { type: 'video'; url: string; children: EmptyText[] };
 
 // FIXME: MOVE THIS
-export type VariableElement = { type: 'variable'; name: string; value: string; children: Descendant[] };
+export interface VariableElement extends BaseElement { type: 'variable', name: string; value: string; children: Descendant[] }
 
 export type CustomElement =
   | BlockQuoteElement
@@ -154,7 +158,8 @@ export type CustomElement =
   // | MentionElement
   | NumberedListElement
   | VariableElement // FIXME: MOve this
-  | ParagraphElement;
+  | ParagraphElement
+  | BaseElement;
   // | TableElement
   // | TableRowElement
   // | TableCellElement
@@ -172,6 +177,7 @@ export type CustomText = {
   underlined?: boolean;
   text: string;
 };
+
 export type CustomMarks = Omit<CustomText, "text">;
 export type MarkType = keyof CustomMarks;
 

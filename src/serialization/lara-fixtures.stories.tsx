@@ -19,7 +19,7 @@ export const NaturalHistoryIntro = () => {
       <div className="panel">
         <SlateContainer
           value={value}
-          onValueChange={_value => {
+          onChange={_value => {
             setValue(_value);
             setContent(slateToHtml(_value));
           }}
@@ -42,7 +42,7 @@ export const NaturalHistoryPage3 = () => {
       <div className="panel">
         <SlateContainer
           value={value}
-          onValueChange={_value => {
+          onChange={_value => {
             setValue(_value);
             setContent(slateToHtml(_value));
           }}
@@ -65,7 +65,7 @@ export const MonteCarloRisk = () => {
       <div className="panel">
         <SlateContainer
           value={value}
-          onValueChange={_value => {
+          onChange={_value => {
             setValue(_value);
             setContent(slateToHtml(_value));
           }}
@@ -88,7 +88,7 @@ export const FieldMouseFurColorIntro = () => {
       <div className="panel">
         <SlateContainer
           value={value}
-          onValueChange={_value => {
+          onChange={_value => {
             setValue(_value);
             setContent(slateToHtml(_value));
           }}
@@ -111,7 +111,7 @@ export const OilAndWaterIntro = () => {
       <div className="panel">
         <SlateContainer
           value={value}
-          onValueChange={_value => {
+          onChange={_value => {
             setValue(_value);
             setContent(slateToHtml(_value));
           }}

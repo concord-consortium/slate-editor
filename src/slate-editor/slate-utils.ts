@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Editor, Element as SlateElement, Range, Transforms } from "slate";
 import { CustomElement, CustomMarks, CustomText, EmptyText, MarkType, EFormat } from "../common/slate-types";
 
@@ -6,30 +5,24 @@ import { CustomElement, CustomMarks, CustomText, EmptyText, MarkType, EFormat } 
 const LIST_TYPES: string[] = ['bulleted-list', 'ordered-list'];
 const TEXT_ALIGN_TYPES:string[] = ['left', 'center', 'right', 'justify'];
 
-export function getBoundingRectForBlock(editor: Editor, block?: Node) {
-  const { document } = editor.value;
-  const path = block && document.getPath(block.key) || undefined;
-  // eslint-disable-next-line react/no-find-dom-node
-  const elt: HTMLElement = path && editor.findDOMNode(path) as any;
-  return elt?.getBoundingClientRect();
-}
+// FIXME: this is unused by CLUE
+// export function getBoundingRectForBlock(editor: Editor, block?: Node) {
+//   const { document } = editor.value;
+//   const path = block && document.getPath(block.key) || undefined;
+//   // eslint-disable-next-line react/no-find-dom-node
+//   const elt: HTMLElement = path && editor.findDOMNode(path) as any;
+//   return elt?.getBoundingClientRect();
+// }
 
-export function getContentHeight(editor: Editor) {
-  const { document } = editor.value;
-  const firstBounds = getBoundingRectForBlock(editor, document.nodes.first());
-  const lastBounds = getBoundingRectForBlock(editor, document.nodes.last());
-  return firstBounds && lastBounds
-          ? lastBounds.bottom - firstBounds.top
-          : undefined;
-}
-
-export function isBlockOfType(node: Node | undefined, format: EFormat) {
-  return Block.isBlock(node) && (node.type === format);
-}
-
-export function isInlineOfType(node: Node | undefined, format: EFormat) {
-  return Inline.isInline(node) && (node.type === format);
-}
+// FIXME: this seems unused... at least by CLUE.
+// export function getContentHeight(editor: Editor) {
+//   const { document } = editor.value;
+//   const firstBounds = getBoundingRectForBlock(editor, document.nodes.first());
+//   const lastBounds = getBoundingRectForBlock(editor, document.nodes.last());
+//   return firstBounds && lastBounds
+//           ? lastBounds.bottom - firstBounds.top
+//           : undefined;
+// }
 
 export const toggleBlock = (editor: Editor, format: string) => {
   const isActive = isBlockActive(

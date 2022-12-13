@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useMemo } from "react";
 import { IProps as IEditorProps, SlateEditor } from "../slate-editor/slate-editor";
 import { Editor } from "slate";
 import { SlateToolbar } from "../slate-toolbar/slate-toolbar";
@@ -6,6 +6,10 @@ import { IProps as IPortalToolbarProps, SlateToolbarPortal } from "../slate-tool
 import "./slate-container.scss";
 import { toggleMark } from "../slate-editor/slate-utils";
 import { EditorValue, EFormat } from "../common/slate-types";
+import { Slate } from "slate-react";
+import { createEditor } from "../common/create-editor";
+import { SerializingContext } from "../hooks/use-serializing";
+import { HotkeyMap } from "../common/slate-hooks";
 
 const hotkeyMap = {
         'mod+b': (editor: Editor) => toggleMark(editor, EFormat.bold),
@@ -17,65 +21,48 @@ const hotkeyMap = {
 interface IProps extends IEditorProps {
   className?: string;
   editorClassName?: string;
-  value: EditorValue; // FIXME: Should this just be Decendant[] -- I'm not sure we want to expose Descendant outside of this lib.
+  value: EditorValue;
   toolbar?: IPortalToolbarProps;
-  onChange?: (value: EditorValue) => void;
+  onChange?: (value: any) => void; // FixME
+  hotkeyMap?: HotkeyMap
 }
 
 export const SlateContainer: React.FC<IProps> = (props: IProps) => {
   const { className: toolbarClasses, portalRoot, ...toolbarOthers } = props.toolbar || {};
-  const { className, editorClassName, onChange }  = props ; //, onEditorRef, onValueChange, onContentChange,
-          //onBlur, onFocus, ...others } = props;
-  const editorRef = useRef<Editor>();
-  const [changeCount, setChangeCount] = useState(0);
+  const { className, editorClassName, onChange, onBlur, onFocus, ...others }  = props ; 
+  const editor = useMemo(() => createEditor({ history: true }), []);
 
-  // const handleEditorRef = useCallback((editor?: Editor) => {
-  //   editorRef.current = editor;
-  //   onEditorRef?.(editor);
-  //   setChangeCount(count => ++count);
-  // }, [onEditorRef]);
-  // const handleFocus = useCallback(() => {
-  //   onFocus?.(editorRef.current);
-  // }, [onFocus]);
-  // const handleBlur = useCallback(() => {
-  //   onBlur?.(editorRef.current);
-  // }, [onBlur]);
-
-  
   const toolbar = portalRoot
-                    ? <SlateToolbarPortal
-                        portalRoot={portalRoot}
-                        className={toolbarClasses}
-                        //editor={editorRef.current}
-                        //changeCount={changeCount}
-                        {...toolbarOthers}
-                      />
-                    : <SlateToolbar
-                        className={toolbarClasses}
-                        //editor={editorRef.current}
-                        //changeCount={changeCount}
-                        {...toolbarOthers}
-                      />;
+                  ? <SlateToolbarPortal
+                      portalRoot={portalRoot}
+                      className={toolbarClasses}
+                      {...toolbarOthers}
+                    />
+                  : <SlateToolbar
+                      className={toolbarClasses}
+                      {...toolbarOthers}
+                    />;
   return (
-    <div className={`ccrte-container slate-container ${className || ""}`}>
-      <SlateEditor
-        className={editorClassName}
-        value={props.value}
-        //hotkeyMap={props.hotkeyMap || hotkeyMap}
-        //onEditorRef={handleEditorRef}
-        onChange={onChange}
-        // onValueChange={value => {
-        //   onValueChange?.(value);
-        //   // trigger toolbar rerender on selection change as well
-        //   setChangeCount(count => ++count);
-        // }}
-        // onContentChange={onContentChange}
-        // onFocus={handleFocus}
-        // onBlur={handleBlur}
-        //{...others}
-      > 
-      {toolbar}
-    </SlateEditor>
-    </div>
+    <SerializingContext.Provider value={false}>
+        <div className={`ccrte-container slate-container ${className || ""}`}>
+          <Slate editor={editor} value={props.value}>
+          {toolbar}
+          <SlateEditor
+            className={editorClassName}
+            hotkeyMap={props.hotkeyMap || hotkeyMap}
+            //onEditorRef={handleEditorRef}
+            onChange={onChange}
+            // onValueChange={value => {
+            //   onValueChange?.(value);
+            //   // trigger toolbar rerender on selection change as well
+            //   setChangeCount(count => ++count);
+            // }}
+            onFocus={onFocus}
+            onBlur={onBlur}
+            {...others}
+          />
+      </Slate>
+      </div>
+    </SerializingContext.Provider>
   );
 };

@@ -32,8 +32,8 @@ export const ImageComponent = ({ attributes, children, element }: RenderElementP
   const isFocused = useFocused();
   const isSelected = useSelected();
   const isSerializing = useSerializing();
-
-  const editor = isSerializing ? null : useSlateStatic();
+  const e = useSlateStatic();
+  const editor = isSerializing ? null : e;
 
   if (!isImageElement(element)) return null;
 
@@ -85,7 +85,7 @@ function getDialogValuesFromNode(node?: CustomElement) {
                           ? "float-left"
                           : "inline";
   return values;
-};
+}
 
 function getNodeFromDialogValues(values: Record<string, string>) {
   const { source, description, width, height, constrain, placement } = values;
@@ -99,7 +99,7 @@ function getNodeFromDialogValues(values: Record<string, string>) {
   placement?.includes("float") && (imageElt.float = floatMap[placement]);
 
   return imageElt;
-};
+}
 
 export function withImages(editor: Editor) : Editor {
   const { configureElement, isInline, isVoid } = editor;
@@ -189,4 +189,4 @@ export function withImages(editor: Editor) : Editor {
   };
   registerElement(EFormat.image, props => <ImageComponent {...props}/>);
   return editor;
-};
+}

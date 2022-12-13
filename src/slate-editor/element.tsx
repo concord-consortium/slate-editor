@@ -79,7 +79,6 @@ const elementComponents: Partial<Record<string, ElementComponent>> = {
 
 export function registerElement(format: string, Component: ElementComponent) {
   elementComponents[format] = Component;
-  
   elementTypeMap[format] = format; // FIXME. This doesn't work unless the html tag happens to match the type.
 }
 

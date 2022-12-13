@@ -1,6 +1,3 @@
-// @ts-nocheck
-import { RenderAttributes } from "slate-react";
-import { Block, Inline, Mark } from "slate";
 import classNames from "classnames/dedupe";
 import parseStyle from "style-to-object";
 
@@ -40,19 +37,20 @@ export function getDataFromElement(el: Element, _data?: Record<string, string>) 
   return { data };
 }
 
-export function getRenderAttributesFromNode(obj: Block | Inline | Mark, omitProps?: string[]): RenderAttributes {
-  const { data } = obj;
-  const renderAttrs: Record<string, string | React.CSSProperties> = {};
-  data.forEach((value, key: string) => {
-    const _key = toReactAttributeKey(key);
-    if (!omitProps?.find(prop => prop === _key)) {
-      renderAttrs[_key] = _key === "style"
-                            ? toReactStyle(value)
-                            : value;
-    }
-  });
-  return renderAttrs;
-}
+// FIXME: used by Table plugin which isn't finished.
+// export function getRenderAttributesFromNode(obj: Block | Inline | Mark, omitProps?: string[]): RenderAttributes {
+//   const { data } = obj;
+//   const renderAttrs: Record<string, string | React.CSSProperties> = {};
+//   data.forEach((value, key: string) => {
+//     const _key = toReactAttributeKey(key);
+//     if (!omitProps?.find(prop => prop === _key)) {
+//       renderAttrs[_key] = _key === "style"
+//                             ? toReactStyle(value)
+//                             : value;
+//     }
+//   });
+//   return renderAttrs;
+// }
 
 export function classArray(classes?: string) {
   return classes?.split(" ").filter(c => !!c);

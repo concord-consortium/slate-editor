@@ -14,8 +14,8 @@ import IconSubscript from "../assets/icon-subscript";
 import IconSuperscript from "../assets/icon-superscript";
 import IconUnderline from "../assets/icon-underline";
 import InputColor from "../assets/input-color";
-import IconFontIncrease from "../assets/icon-font-increase";
-import IconFontDecrease from "../assets/icon-font-decrease";
+// import IconFontIncrease from "../assets/icon-font-increase"; // 
+// import IconFontDecrease from "../assets/icon-font-decrease";
 import { IButtonSpec, IProps as IToolbarProps } from "../editor-toolbar/editor-toolbar";
 import { isMarkActive, toggleMark, isBlockActive, toggleBlock, toggleSuperSubscript }
         from "../slate-editor/slate-utils";
@@ -26,9 +26,6 @@ import { DisplayDialogSettings, FieldType, IDialogController, IFieldValues } fro
 import { ModalDialog } from "../modal-dialog/modal-dialog";
 import { ModalDialogPortal } from "../modal-dialog/modal-dialog-portal";
 import clone from "lodash/clone";
-import EventEmitter from "eventemitter3";
-import { isElement } from "lodash";
-import IconVariable from "../plugin-examples/icon-variable";
 
 export type ToolbarTransform =
   (buttons: IButtonSpec[], editor?: Editor, dialogController?: IDialogController) => IButtonSpec[];
@@ -150,19 +147,6 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
       isActive: !!editor.isElementActive(EFormat.link),
       isEnabled: !!editor.isElementEnabled(EFormat.link),
       onClick: () => editor?.configureElement(EFormat.link, dialogController)
-    },
-    {
-      format: EFormat.variable, //FIXME: move this
-      SvgIcon: IconVariable,
-      tooltip: getPlatformTooltip("variable"),
-      isActive: !!editor.isElementActive(EFormat.variable),
-      isEnabled: !!editor.isElementEnabled(EFormat.variable),
-      onClick: () => {
-        console.log('click variable thing');
-        if (dialogController) {
-          editor?.configureElement(EFormat.variable, dialogController);
-        }
-      }
     },
     {
       format: EFormat.heading1,

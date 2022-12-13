@@ -5,6 +5,7 @@ export function withEmitter(editor: CustomEditor) {
   const emitter = new EventEmitter();
 
   editor.emitEvent = (event: string, ...args: any[]) => {
+    console.log('emitting event!');
     emitter.emit(event, ...args);
   };
 

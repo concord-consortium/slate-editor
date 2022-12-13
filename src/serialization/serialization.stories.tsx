@@ -3,7 +3,7 @@ import pretty from "pretty";
 import { SlateContainer } from "../slate-container/slate-container";
 import { EditorValue, textToSlate } from "../common/slate-types";
 import { slateToHtml, htmlToSlate } from "./html-serializer";
-import { serializeSelection, serializeValue } from "./serialization";
+import { serializeValue } from "./serialization";
 import "./serialization.stories.scss";
 import { Descendant } from "slate";
 
@@ -36,6 +36,116 @@ export const Serialization = () => {
     </div>
   );
 };
+
+// // FIXME: probably remove this story... Just here for testing out how to do 47->50+ conversion correctly.
+// const oldJson = "This example shows the converted editor content.";
+// export const Conversion = () => {
+//   const oldJson = {
+//     "object": "document",
+//     "nodes": [
+//       {
+//         "object": "block",
+//         "type": "paragraph",
+//         "nodes": [
+//           {
+//             "object": "text",
+//             "text": "This is editable "
+//           },
+//           {
+//             "object": "text",
+//             "text": "rich",
+//             "marks": [{ "type": "bold" }]
+//           },
+//           {
+//             "object": "text",
+//             "text": " text, "
+//           },
+//           {
+//             "object": "text",
+//             "text": "much",
+//             "marks": [{ "type": "italic" }]
+//           },
+//           {
+//             "object": "text",
+//             "text": " better than a "
+//           },
+//           {
+//             "object": "text",
+//             "text": "<textarea>",
+//             "marks": [{ "type": "code" }]
+//           },
+//           {
+//             "object": "text",
+//             "text": "!"
+//           }
+//         ]
+//       },
+//       {
+//         "object": "block",
+//         "type": "paragraph",
+//         "nodes": [
+//           {
+//             "object": "text",
+//             "text":
+//               "Since it's rich text, you can do things like turn a selection of text "
+//           },
+//           {
+//             "object": "text",
+//             "text": "bold",
+//             "marks": [{ "type": "bold" }]
+//           },
+//           {
+//             "object": "text",
+//             "text":
+//               ", or add a semantically rendered block quote in the middle of the page, like this:"
+//           }
+//         ]
+//       },
+//       {
+//         "object": "block",
+//         "type": "block-quote",
+//         "nodes": [
+//           {
+//             "object": "text",
+//             "text": "A wise quote."
+//           }
+//         ]
+//       },
+//       {
+//         "object": "block",
+//         "type": "paragraph",
+//         "nodes": [
+//           {
+//             "object": "text",
+//             "text": "Try it out for yourself!"
+//           }
+//         ]
+//       }
+//     ]
+//   };
+//   const newJson = convertDocument(oldJson);
+//   const [value, setValue] = useState(newJson.children);
+//   const [content, setContent] = useState(serializeValue(value));
+//   const handleChange = (_value: Descendant[]) => {
+//     console.log()
+//     setValue(_value);
+//     setContent(serializeValue(_value));
+//   };
+//   return (
+//     <div className="serialization-container">
+//       <div className="panel">
+//         <SlateContainer
+//           value={value}
+//           onChange={handleChange}
+//         />
+//       </div>
+//       <div className="panel output">
+//         <h3>Serialized Content</h3>
+//         <pre>{JSON.stringify(content, null, 2)}</pre>
+//       </div>
+//     </div>
+//   );
+// };
 
 const selectionSerializationText = "This example shows the serialized selection content determined by calling getDescendantsAtRange().";
 
@@ -124,8 +234,7 @@ export const ClueSerialization = () => {
   );
 };
 
-const importedHtmlText = "<h1>A header paragraph</h1><p>A simple paragraph.</p><blockquote>A quoted paragraph.</blockquote>";
-
+const importedHtmlText = "<h1>A <strong>header</strong> paragraph</h1><p>A simple paragraph.</p><blockquote>A quoted paragraph.</blockquote>";
 export const ImportedHTML = () => {
   const slateValue = htmlToSlate(importedHtmlText);
   const [value, setValue] = useState(slateValue);

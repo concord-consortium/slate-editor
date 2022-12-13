@@ -1,8 +1,8 @@
 import React from "react";
 import classNames from "classnames/dedupe";
-import { Editor, Range, Transforms } from "slate";
-import { ReactEditor, RenderElementProps, useFocused, useSelected, useSlateStatic } from "slate-react";
-import { CustomElement, EFormat, VariableElement } from "../common/slate-types";
+import { Editor, Transforms } from "slate";
+import { ReactEditor, RenderElementProps, useFocused, useSelected } from "slate-react";
+import { BaseElement, CustomElement, EFormat, VariableElement } from "../common/slate-types";
 import { unwrapElement } from "../slate-editor/slate-utils";
 import "./variable-plugin.scss";
 import { registerElement } from "../slate-editor/element";
@@ -14,13 +14,12 @@ import { useSerializing } from "../hooks/use-serializing";
 const kVariableClass = "ccrte-variable";
 const kVariableHighlightClass = "ccrte-variable-highlight";
 const kSlateVoidClass = "cc-slate-void";
+export const kVariableFormat = "variable";
 
-
-export const isVariableElement = (element: CustomElement): element is VariableElement => {
-  return element.type === EFormat.variable;
+export const isVariableElement = (element: BaseElement): element is VariableElement => {
+  return element.type === kVariableFormat;
 };
 export const VariableComponent = ({ attributes, children, element }: RenderElementProps) => {
-  const editor = useSlateStatic();
   const isFocused = useFocused();
   const isSelected = useSelected();
   const isSerializing = useSerializing();
@@ -47,23 +46,23 @@ function getNodeFromDialogValues(values: Record<string, string>) {
   const {name, value} = values;
   const imageElt: VariableElement = { type: EFormat.variable, name: name, value: value , children: [{ text: "" }]};
   return imageElt;
-};
+}
+
 function getDialogValuesFromNode(node?: CustomElement) {
   const values: Record<string, string> = {};
   if (node && !isVariableElement(node)) return {};
   node?.name && (values.name = node.name);
   node?.value && (values.value = node.value);
   return values;
-};
+}
+
 export function withVariables(editor: Editor) {
-  const { configureElement, isElementEnabled, isInline } = editor;
+  const { configureElement, isInline } = editor;
   editor.isInline = element => (element.type === EFormat.variable) || isInline(element);
   editor.configureElement = (format: string, controller: IDialogController, node?: CustomElement) => {
     if (format !== EFormat.variable) return configureElement(format, controller, node);
 
-    const {selection} = editor;
     const hasVariable = editor.isElementActive(EFormat.variable);
-    const isCollapsed = selection && Range.isCollapsed(selection);
 
     if (hasVariable) {
       unwrapElement(editor, EFormat.variable);

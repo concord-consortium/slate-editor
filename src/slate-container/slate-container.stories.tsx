@@ -1,7 +1,6 @@
-import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import { SlateContainer } from "./slate-container";
 import { textToSlate } from "../common/slate-types";
-import { initial } from "lodash";
 
 export default {
   title: "SlateContainer"
@@ -10,7 +9,7 @@ export default {
 const combinedText = "This example demonstrates a combined toolbar/editor with minimal configuration.";
 
 export const Combined = () => {
-  const [value, setValue] = useState(textToSlate(combinedText));
+  const [value] = useState(textToSlate(combinedText));
   return (
     <SlateContainer value={value}/>
   );
@@ -19,7 +18,7 @@ export const Combined = () => {
 const coloredText = "This example demonstrates a toolbar with custom colors with the selection indicated by a change in the fill color.";
 
 export const ColoredToolbarSelectedFill = () => {
-  const [value, setValue] = useState(textToSlate(coloredText));
+  const [value] = useState(textToSlate(coloredText));
   return (
     <SlateContainer value={value}
       toolbar={{ colors: {
@@ -32,7 +31,7 @@ export const ColoredToolbarSelectedFill = () => {
 const backgroundText = "This example demonstrates a toolbar with custom colors with the selection indicated by a change in the fill and background colors.";
 
 export const ColoredToolbarSelectedBackground = () => {
-  const [value, setValue] = useState(textToSlate(backgroundText));
+  const [value] = useState(textToSlate(backgroundText));
   return (
     <SlateContainer value={value}
       toolbar={{ colors: {
@@ -45,7 +44,7 @@ export const ColoredToolbarSelectedBackground = () => {
 const themeColorText = "This example demonstrates a toolbar with black icons on a white background.";
 
 export const BlackOnWhiteToolbar = () => {
-  const [value, setValue] = useState(textToSlate(themeColorText));
+  const [value] = useState(textToSlate(themeColorText));
   return (
     <SlateContainer value={value}
       toolbar={{ colors: {
@@ -59,7 +58,7 @@ export const BlackOnWhiteToolbar = () => {
 const themeColorText2 = "This example demonstrates a toolbar with white icons on a black background.";
 
 export const WhiteOnBlackToolbar = () => {
-  const [value, setValue] = useState(textToSlate(themeColorText2));
+  const [value] = useState(textToSlate(themeColorText2));
   return (
     <SlateContainer value={value}
       toolbar={{ colors: {

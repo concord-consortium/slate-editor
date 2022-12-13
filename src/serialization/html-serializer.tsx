@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
 import { jsx } from 'slate-hyperscript';
 import { Leaf, markNodeMap } from '../slate-editor/leaf';
@@ -6,17 +7,18 @@ import { Element, elementTypeMap } from '../slate-editor/element';
 import React from 'react';
 import { isCustomText } from '../slate-editor/slate-utils';
 import { SerializingContext } from '../hooks/use-serializing';
-import { CustomElement } from '../common/slate-types';
+import { Descendant } from 'slate';
 
 
-const deserialize = (el, markAttributes = {}) => {
+//FIXME: TYPES!
+const deserialize = (el : any, markAttributes = {}) : any => {
   if (el.nodeType === Node.TEXT_NODE) {
-    return jsx('text', markAttributes, el.textContent)
+    return jsx('text', markAttributes, el.textContent);
   } else if (el.nodeType !== Node.ELEMENT_NODE) {
-    return null
+    return null;
   }
 
-  const nodeAttributes = { ...markAttributes }
+  const nodeAttributes:any = { ...markAttributes }; // FIXME: type
 
   const textMark = markNodeMap[el.nodeName.toLowerCase()];
   if (textMark) {
@@ -25,17 +27,17 @@ const deserialize = (el, markAttributes = {}) => {
 
   const children = Array.from(el.childNodes)
     .map(node => deserialize(node, nodeAttributes))
-    .flat()
+    .flat();
 
   if (children.length === 0) {
-    children.push(jsx('text', nodeAttributes, ''))
+    children.push(jsx('text', nodeAttributes, ''));
   }
 
   // This is assuming there's 1:1 mapping of tag to elements which is probably not true...
   const elementTag = elementTypeMap[el.nodeName.toLowerCase()];
   if (elementTag) {
     const atts = el.getAttributeNames();
-    var obj = {};
+    const obj = {};
     obj.type = elementTag;
     // FIXME:
     // Copy attributes from html tag to jsx object. 
@@ -47,7 +49,7 @@ const deserialize = (el, markAttributes = {}) => {
     case 'BODY':
       return jsx('fragment', {}, children);
     case 'BR':
-      return '\n'
+      return '\n';
     case 'P' :
       return jsx('element', { type: 'paragraph' }, children);
     case 'DIV' :
@@ -55,15 +57,16 @@ const deserialize = (el, markAttributes = {}) => {
     default:
       return children;
   }
-}
+};
 
-export function serialize (node) {
+// FIXME: types
+export function serialize (node:any): any {
   if (isCustomText(node)) {
     const props = {
       leaf: node,
       text: node.text,
       children: node.text
-    }
+    };
     const leaf = React.createElement(Leaf, props);
     return leaf;
   }
@@ -84,13 +87,12 @@ export function serialize (node) {
 }
 
 export function htmlToSlate(html: string) {
-  console.log('htmlToSlate is broken');
   const document = new DOMParser().parseFromString(html, 'text/html');
   const val = deserialize(document.body);
   return val;
 }
 
-export function slateToHtml(value: Node[]) {
+export function slateToHtml(value: Descendant[]) {
   let fullHtml = '';
   value.forEach(block => {
     const elem = serialize(block);
