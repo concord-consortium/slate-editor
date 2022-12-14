@@ -40,7 +40,7 @@ export const toggleBlock = (editor: Editor, format: string) => {
       !TEXT_ALIGN_TYPES.includes(format),
     split: true,
   });
-  let newProperties: Partial<SlateElement>;
+  let newProperties; // FIXME: add back type
   if (TEXT_ALIGN_TYPES.includes(format)) {
     newProperties = {
       align: isActive ? undefined : format,
