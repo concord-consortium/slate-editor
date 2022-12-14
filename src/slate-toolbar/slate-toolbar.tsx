@@ -21,7 +21,7 @@ import { isMarkActive, toggleMark, isBlockActive, toggleBlock, toggleSuperSubscr
         from "../slate-editor/slate-utils";
 import { Editor } from "slate";
 import { useSlate, ReactEditor } from "slate-react";
-import { CustomElement, CustomMarks, EFormat} from "../common/slate-types";
+import { BaseElement, CustomMarks, EFormat} from "../common/slate-types";
 import { DisplayDialogSettings, FieldType, IDialogController, IFieldValues } from "../modal-dialog/dialog-types";
 import { ModalDialog } from "../modal-dialog/modal-dialog";
 import { ModalDialogPortal } from "../modal-dialog/modal-dialog-portal";
@@ -276,7 +276,7 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
 
   // listen for configuration requests from plugins
   useEffect(() => {
-    const handler = (elt: CustomElement) => {
+    const handler = (elt: BaseElement) => {
       editor.configureElement(elt.type, dialogController, elt);
     };
     editor.onEvent("toolBarDialog", handler);

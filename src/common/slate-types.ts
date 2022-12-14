@@ -196,10 +196,10 @@ interface CCBaseEditor extends BaseEditor {
   isElementActive: (format: string) => boolean;
   toggleElement: (format: string) => void;
 
-  selectedElements: () => CustomElement[];
+  selectedElements: () => BaseElement[];
 
   isElementEnabled: (format: string) => boolean;
-  configureElement: (format: string, controller: IDialogController, elt?: CustomElement) => void;
+  configureElement: (format: string, controller: IDialogController, elt?: BaseElement) => void;
 
   emitEvent: (event: string, ...args: any[]) => void;
   onEvent: (event: string, handler: (...args: any[]) => void) => void;
@@ -211,7 +211,7 @@ export type CustomEditor = CCBaseEditor & ReactEditor & HistoryEditor;
 declare module 'slate' {
   interface CustomTypes {
     Editor: CustomEditor;
-    Element: CustomElement;
+    Element: BaseElement;
     Text: CustomText | EmptyText;
   }
 }

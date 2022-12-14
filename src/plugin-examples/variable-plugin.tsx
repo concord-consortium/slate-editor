@@ -2,7 +2,7 @@ import React from "react";
 import classNames from "classnames/dedupe";
 import { Editor, Transforms } from "slate";
 import { ReactEditor, RenderElementProps, useFocused, useSelected } from "slate-react";
-import { BaseElement, CustomElement, EFormat, VariableElement } from "../common/slate-types";
+import { BaseElement, EFormat, VariableElement } from "../common/slate-types";
 import { unwrapElement } from "../slate-editor/slate-utils";
 import "./variable-plugin.scss";
 import { registerElement } from "../slate-editor/element";
@@ -48,7 +48,7 @@ function getNodeFromDialogValues(values: Record<string, string>) {
   return imageElt;
 }
 
-function getDialogValuesFromNode(node?: CustomElement) {
+function getDialogValuesFromNode(node?: BaseElement) {
   const values: Record<string, string> = {};
   if (node && !isVariableElement(node)) return {};
   node?.name && (values.name = node.name);
@@ -59,7 +59,7 @@ function getDialogValuesFromNode(node?: CustomElement) {
 export function withVariables(editor: Editor) {
   const { configureElement, isInline } = editor;
   editor.isInline = element => (element.type === EFormat.variable) || isInline(element);
-  editor.configureElement = (format: string, controller: IDialogController, node?: CustomElement) => {
+  editor.configureElement = (format: string, controller: IDialogController, node?: BaseElement) => {
     if (format !== EFormat.variable) return configureElement(format, controller, node);
 
     const hasVariable = editor.isElementActive(EFormat.variable);
