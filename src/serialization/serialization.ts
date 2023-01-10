@@ -1,10 +1,12 @@
 import { BaseElement, Descendant } from "slate";
+import { EditorValue } from "../common/slate-types";
 
 // export interface SlateDocument {
 //   key?: string; // ???
 //   children: EditorValue;
 // }
 
+// document-level metadata like fontSize
 type DocumentMetadata = Record<string, any>;
 
 export interface SlateExchangeValue {
@@ -34,7 +36,7 @@ export function serializeDocument(document: Descendant[]) {
 
 export function serializeValue(document: Descendant[], metadata?: DocumentMetadata): SlateExchangeValue {
    const data = metadata ? { data: metadata } : undefined;
-  return { object: "value", ...data, document: serializeDocument(document, metadata) };
+  return { object: "value", ...data, document: serializeDocument(document /*, metadata */) };
 }
 
 export function deserializeChildren(children: Descendant[]) {
@@ -51,7 +53,7 @@ export function deserializeNode(node: Descendant): Descendant {
   return { ...others, ...children, ...className };
 }
 
-export function deserializeValue(value: SlateExchangeValue): Value {
+export function deserializeValue(value: SlateExchangeValue): EditorValue {
   const documentJSON = value.document && deserializeDocument(value.document);
   const dataJSON = value.data ? { data: value.data } : {};
   const valueJSON: ValueJSON = {

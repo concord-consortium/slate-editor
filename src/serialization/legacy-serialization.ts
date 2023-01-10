@@ -1,16 +1,13 @@
-import { Value } from "slate";
-import { textToSlate } from "../common/slate-types";
+import { EditorValue, textToSlate } from "../common/slate-types";
 
 export function deserializeValueFromLegacy(text: string) {
   const parsed = safeJsonParse(text);
   validateNodeData(parsed?.document);
-  return parsed
-          ? Value.fromJSON(parsed)
-          : textToSlate("");
+  return parsed ?? textToSlate("");
 }
 
-export function serializeValueToLegacy(value: Value) {
-  return JSON.stringify(value.toJSON());
+export function serializeValueToLegacy(value: EditorValue) {
+  return JSON.stringify(value);
 }
 
 export function validateNodeData(node: any) {
