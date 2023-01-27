@@ -1,10 +1,10 @@
-/*
-import React, { useState } from "react";
-import pretty from "pretty";
+import React, { useCallback, useMemo, useRef, useState } from "react";
+// import pretty from "pretty";
 import { SlateContainer } from "../slate-container/slate-container";
-import { EditorValue, textToSlate } from "../common/slate-types";
-import { slateToHtml, htmlToSlate } from "./html-serializer";
-import { serializeSelection, serializeValue } from "./serialization";
+import { CustomEditor } from "../common/custom-types";
+import { textToSlate } from "../common/slate-types";
+// import { slateToHtml, htmlToSlate } from "./html-serializer";
+import { serializeValue } from "./serialization";
 import "./serialization.stories.scss";
 
 export default {
@@ -14,16 +14,31 @@ export default {
 const serializationText = "This example shows the serialized editor content.";
 
 export const Serialization = () => {
-  const slateValue = textToSlate(serializationText);
-  const [value, setValue] = useState(slateValue);
-  const [content, setContent] = useState(serializeValue(value));
+  const initialValue = useMemo(() => textToSlate(serializationText), []);
+  const [content, setContent] = useState(serializeValue(initialValue));
+  const editorRef = useRef<CustomEditor>();
+
+  const handleChange = useCallback(function handleChange() {
+    if (editorRef.current?.children) {
+      setContent(serializeValue(editorRef.current?.children));
+    }
+  }, []);
+
+  const handleInitEditor = useCallback(function handleInitEditor(editor: CustomEditor) {
+    const orgHandleChange = editor.onChange;
+    editor.onChange = function _handleChange() {
+      orgHandleChange?.();
+      handleChange?.();
+    };
+    return editorRef.current = editor;
+  }, [handleChange]);
+
   return (
     <div className="serialization-container">
       <div className="panel">
         <SlateContainer
-          value={value}
-          onValueChange={_value => setValue(_value)}
-          onContentChange={_value => setContent(serializeValue(_value))}
+          value={initialValue}
+          onInitEditor={handleInitEditor}
         />
       </div>
       <div className="panel output">
@@ -34,6 +49,7 @@ export const Serialization = () => {
   );
 };
 
+/*
 const selectionSerializationText = "This example shows the serialized selection content determined by calling getDescendantsAtRange().";
 
 export const SelectionSerialization = () => {

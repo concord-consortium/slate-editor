@@ -1,3 +1,4 @@
+/*
 import React, { useRef, useEffect, useState } from "react";
 import { textToSlate } from "../common/slate-types";
 import { SlateContainer } from "../slate-container/slate-container";
@@ -58,3 +59,4 @@ export const MultipleEditorInstances = () => {
     </>
   );
 };
+*/

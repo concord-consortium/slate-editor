@@ -1,3 +1,11 @@
+import { createElement } from "react";
+import { Descendant, Editor } from "slate";
+import { jsx } from "slate-hyperscript";
+import { CustomElement, isLegacyInlineElement } from "../common/custom-types";
+import { EFormat } from "../common/slate-types";
+import { registerElementDeserializer } from "../serialization/html-serializer";
+import { getElementAttrs } from "../serialization/html-utils";
+import { eltRenderAttrs, registerElementComponent } from "../slate-editor/element";
 /*
 import React, { ReactNode } from "react";
 import _size from "lodash/size";
@@ -6,6 +14,7 @@ import { Editor, RenderAttributes, RenderInlineProps } from "slate-react";
 import { getRenderAttributesFromNode, getDataFromElement } from "../serialization/html-utils";
 import { EFormat } from "../common/slate-types";
 import { HtmlSerializablePlugin } from "./html-serializable-plugin";
+*/
 
 const kTagToFormatMap: Record<string, string> = {
         span: EFormat.inline
@@ -29,7 +38,7 @@ const kLegacyVoidNonEmptyInlineTags = [
   "audio", "iframe", "picture", "video"
 ];
 export const kLegacyContentInlineTags = [
-  "abbr", "acronym", "big", "cite", "dfn", "label", "q", "samp", "small", /* "textarea" *\/
+  "abbr", "acronym", "big", "cite", "dfn", "label", "q", "samp", "small", /* "textarea" */
 ];
 export const kLegacyConvertedInlineTags = ["font"];
 export const kLegacyNonEmptyInlineTags = [...kLegacyContentInlineTags, ...kLegacyVoidNonEmptyInlineTags];
@@ -39,6 +48,53 @@ export const kLegacyInlineTags = [...kLegacyConvertedInlineTags, ...kLegacyConte
 // other inline tags handled as generic inlines
 kLegacyInlineTags.forEach(tag => kTagToFormatMap[tag] = EFormat.inline);
 
+export function isLegacyVoidInlineElement(element: CustomElement) {
+  return isLegacyInlineElement(element) && kLegacyVoidInlineTags.includes(element.tag);
+}
+
+let isRegistered = false;
+
+export function registerCoreInlines() {
+  if (isRegistered) return;
+
+  for (const format in kFormatToTagMap) {
+    registerElementComponent(format, ({ attributes, children: _children, element }) => {
+      const tag = getTagForInline(element);
+      const children = kLegacyEmptyInlineTags.includes(tag) ? undefined : _children;
+      return createElement(tag, { ...attributes, ...eltRenderAttrs(element) }, children);
+    });
+  }
+
+  registerElementDeserializer("span", (el: HTMLElement, children: Descendant[]) => {
+    return jsx("element", { type: EFormat.inline, ...getElementAttrs(el) }, children);
+  });
+  for (const tag of kLegacyInlineTags) {
+    registerElementDeserializer(tag, function deserializeLegacyInline(el: HTMLElement, _children: Descendant[]) {
+      const legacyTag = kLegacyInlineTags.includes(tag) ? { tag } : undefined;
+      const children = kLegacyEmptyInlineTags.includes(tag) ? undefined : _children;
+      return jsx("element", { type: kTagToFormatMap[tag], ...legacyTag, ...getElementAttrs(el) }, children);
+    });
+  }
+
+  isRegistered = true;
+}
+
+export function withCoreInlines(editor: Editor) {
+  const { isInline, isVoid } = editor;
+  registerCoreInlines();
+  editor.isInline = (element: CustomElement) => !!kFormatToTagMap[element.type] || isInline(element);
+  editor.isVoid = (element: CustomElement) => isLegacyVoidInlineElement(element) || isVoid(element);
+  return editor;
+}
+
+function getTagForInline(elt: CustomElement) {
+  const { type: format } = elt;
+  const mappedTag = kFormatToTagMap[format];
+  // use the imported tag for generic <span> elements
+  return isLegacyInlineElement(elt) ? elt.tag || mappedTag : mappedTag;
+}
+
+/*
 function isCoreInline(node: Node) {
   return Inline.isInline(node) && !!kFormatToTagMap[node.type];
 }

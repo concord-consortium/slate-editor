@@ -22,11 +22,11 @@ interface IProps extends IEditorProps {
   editorClassName?: string;
   value: EditorValue;
   toolbar?: IPortalToolbarProps;
-  onEditorRef?: (editor: Editor) => void;
+  onInitEditor?: (editor: Editor) => Editor;
 }
 
 export const SlateContainer: React.FC<IProps> = (props: IProps) => {
-  const { className, editorClassName, value, toolbar, ...others } = props;
+  const { className, editorClassName, value, toolbar, onInitEditor, ...others } = props;
   // const editorRef = useRef<Editor>();
   // const [changeCount, setChangeCount] = useState(0);
   // const handleEditorRef = useCallback((editor?: Editor) => {
@@ -41,7 +41,7 @@ export const SlateContainer: React.FC<IProps> = (props: IProps) => {
   //   onBlur?.(editorRef.current);
   // }, [onBlur]);
 
-  const editor = useMemo(() => createEditor({ history: true }), []);
+  const editor = useMemo(() => createEditor({ history: true, onInitEditor }), [onInitEditor]);
   return (
     <SerializingContext.Provider value={false}>
       <Slate editor={editor} value={value}>

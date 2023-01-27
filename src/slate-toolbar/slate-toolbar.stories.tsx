@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from "react";
-import { createEditor } from "slate";
 import { Slate, withReact } from "slate-react";
+import { createEditor } from "../create-editor";
 import { IButtonSpec } from "../editor-toolbar/editor-toolbar";
 import { SlateToolbar, ToolbarTransform } from "./slate-toolbar";
 

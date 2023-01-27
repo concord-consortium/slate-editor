@@ -2,6 +2,7 @@ import { Descendant, BaseEditor } from 'slate';
 import { ReactEditor } from 'slate-react';
 import { HistoryEditor } from 'slate-history';
 import { IDialogController } from '../modal-dialog/dialog-types';
+import { EFormat } from './slate-types';
 
 export type BlockQuoteElement = {
   type: 'block-quote';
@@ -49,6 +50,20 @@ export type ImageElement = {
   children: EmptyText[];
 };
 
+export type LegacyBlockElement = {
+  type: EFormat.block;
+  tag: string;
+  attrs: Record<string, string>;
+  children: Descendant[];
+};
+
+export type LegacyInlineElement = {
+  type: EFormat.inline;
+  tag: string;
+  attrs: Record<string, string>;
+  children: Descendant[];
+};
+
 export type LinkElement = { type: 'link'; href: string; children: Descendant[] };
 
 export type ButtonElement = { type: 'button'; children: Descendant[] };
@@ -91,6 +106,8 @@ export type CustomElement =
   | HeadingElement
   | HeadingTwoElement
   | ImageElement
+  | LegacyBlockElement
+  | LegacyInlineElement
   | LinkElement
   | ButtonElement
   | ListItemElement
@@ -108,7 +125,9 @@ export type CustomText = {
   code?: boolean;
   color?: string;
   deleted?: boolean;
+  inserted?: boolean;
   italic?: boolean;
+  marked?: boolean;
   subscript?: boolean;
   superscript?: boolean;
   underlined?: boolean;
@@ -116,6 +135,9 @@ export type CustomText = {
 };
 export type CustomMarks = Omit<CustomText, "text">;
 export type MarkType = keyof CustomMarks;
+
+export type BooleanMarks = Omit<CustomMarks, "color">;
+export type BooleanMarkType = keyof BooleanMarks;
 
 export type EmptyText = {
   text: "";
@@ -127,6 +149,8 @@ export interface CustomRenderLeafProps {
 }
 
 interface CCBaseEditor extends BaseEditor {
+  // document-level metadata (e.g. font-size/zoom level)
+  data?: Record<string, boolean | number | string>;
   isMarkActive: (format: string) => boolean;
   toggleMark: (format: string, value: any) => void;
   isElementActive: (format: string) => boolean;
@@ -151,3 +175,8 @@ declare module 'slate' {
     Text: CustomText | EmptyText;
   }
 }
+
+export const isLeafTextNode = (n: Descendant): n is CustomText | EmptyText =>
+              (n as any).text != null && (n as any).children == null;
+export const isLegacyBlockElement = (e: CustomElement): e is LegacyBlockElement => e.type === EFormat.block;
+export const isLegacyInlineElement = (e: CustomElement): e is LegacyInlineElement => e.type === EFormat.inline;

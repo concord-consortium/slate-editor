@@ -1,13 +1,16 @@
 import React from "react";
 import classNames from "classnames/dedupe";
-import { Editor, Transforms } from "slate";
+import { Descendant, Editor, Transforms } from "slate";
+import { jsx } from "slate-hyperscript";
 import { ReactEditor, RenderElementProps, useFocused, useSelected, useSlateStatic } from "slate-react";
 import { isWebUri } from "valid-url";
 import { CustomElement, ImageElement } from "../common/custom-types";
 import { EFormat } from "../common/slate-types";
 import { useSerializing } from "../hooks/use-serializing";
 import { IDialogController } from "../modal-dialog/dialog-types";
-import { registerElement } from "../slate-editor/element";
+import { registerElementDeserializer } from "../serialization/html-serializer";
+import { getElementAttrs } from "../serialization/html-utils";
+import { eltRenderAttrs, registerElementComponent } from "../slate-editor/element";
 
 import "./image-plugin.scss";
 
@@ -34,11 +37,35 @@ export const isImageElement = (element: CustomElement): element is ImageElement 
   return element.type === EFormat.image;
 };
 
-export const ImageComponent = ({ attributes, children, element }: RenderElementProps) => {
+function getImgAttrs(element: ImageElement) {
+  const { src, alt, width, height } = element;
+  return {
+    ...(src ? { src } : undefined),
+    ...(alt ? { alt } : undefined),
+    ...(width ? { width } : undefined),
+    ...(height ? { height } : undefined)
+  };
+}
+
+function getImgClasses(element: ImageElement, highlightClass?: string) {
+  const { constrain = true, float } = element;
+  const constrainClass = constrain ? undefined : kImageNoConstrainClass;
+  const floatClasses = getClassesForFloatValue(float);
+  return classNames(highlightClass, constrainClass, floatClasses) || undefined;
+}
+
+const ImageSerializeComponent = ({ attributes, children, element }: RenderElementProps) => {
+  if (!isImageElement(element)) return null;
+
+  return (
+    <img className={getImgClasses(element)} {...getImgAttrs(element)} {...eltRenderAttrs(element)} />
+  );
+};
+
+const ImageRenderComponent = ({ attributes, children, element }: RenderElementProps) => {
   const editor = useSlateStatic();
   const isFocused = useFocused();
   const isSelected = useSelected();
-  const isSerializing = useSerializing();
 
   if (!isImageElement(element)) return null;
 
@@ -46,25 +73,45 @@ export const ImageComponent = ({ attributes, children, element }: RenderElementP
     editor.emitEvent("toolbarDialog", element);
   };
 
-  const onLoad = isSerializing ? undefined : () => null;
-  const onDoubleClick = isSerializing ? undefined : handleDoubleClick;
+  const handleLoad = () => null;
 
-  const { src, alt, width, height, constrain = true, float } = element;
-  const highlightClass = isFocused && isSelected && !isSerializing ? kImageHighlightClass : undefined;
-  const constrainClass = constrain ? undefined : kImageNoConstrainClass;
-  const floatClasses = getClassesForFloatValue(float);
-  const imgClasses = classNames(highlightClass, constrainClass, floatClasses) || undefined;
+  const highlightClass = isFocused && isSelected ? kImageHighlightClass : undefined;
   const divClasses = kInlineBlockClass;
   return (
     <div {...attributes} className={`${kImageNodeClass} ${divClasses}`}>
       {children}
       <div className={divClasses} contentEditable={false}>
-        <img className={imgClasses} src={src} alt={alt} title={alt} width={width} height={height}
-            onLoad={onLoad} onDoubleClick={onDoubleClick}/>
+        <img className={getImgClasses(element, highlightClass)} {...getImgAttrs(element)} {...eltRenderAttrs(element)}
+            onLoad={handleLoad} onDoubleClick={handleDoubleClick}/>
       </div>
     </div>
   );
 };
+
+export const ImageComponent = (props: RenderElementProps) => {
+  const isSerializing = useSerializing();
+  return isSerializing
+          ? <ImageSerializeComponent {...props} />
+          : <ImageRenderComponent {...props} />;
+};
+
+const kImageTag = "img";
+
+let isRegistered = false;
+
+export function registerImageInline() {
+  if (isRegistered) return;
+
+  registerElementComponent(EFormat.image, props => <ImageComponent {...props}/>);
+  registerElementDeserializer(kImageTag, (el: HTMLElement, children: Descendant[]) => {
+    const { src, alt, width, height } = el as HTMLImageElement;
+    const attrs = { src, alt, width, height };
+    const omits = Object.keys(attrs);
+    return jsx("element", { type: EFormat.image, ...attrs, ...getElementAttrs(el, omits) }, children);
+  });
+
+  isRegistered = true;
+}
 
 function getDialogValuesFromNode(node?: CustomElement) {
   const values: Record<string, string> = {};
@@ -103,6 +150,8 @@ function getNodeFromDialogValues(values: Record<string, string>) {
 }
 
 export function withImages(editor: Editor) {
+  registerImageInline();
+
   const { configureElement, isInline, isVoid } = editor;
 
   editor.isInline = element => (element.type === EFormat.image) || isInline(element);
@@ -186,8 +235,6 @@ export function withImages(editor: Editor) {
         onClose: (_editor) => ReactEditor.focus(_editor)
       });
   };
-
-  registerElement(EFormat.image, props => <ImageComponent {...props}/>);
 
   return editor;
 }

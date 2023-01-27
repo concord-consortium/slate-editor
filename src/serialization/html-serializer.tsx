@@ -1,80 +1,145 @@
-/*
+import { flatten } from "lodash";
 import React, { ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import HtmlSerializer from "slate-html-serializer";
-import { Value } from "slate";
-import { HtmlSerializationRule } from "../plugins/html-serializable-plugin";
-import { ColorPlugin } from "../plugins/color-plugin";
-import { CoreBlocksPlugin } from "../plugins/core-blocks-plugin";
-import { CoreInlinesPlugin } from "../plugins/core-inlines-plugin";
-import { CoreMarksPlugin } from "../plugins/core-marks-plugin";
-import { ImagePlugin } from "../plugins/image-plugin";
-import { LinkPlugin } from "../plugins/link-plugin";
-import { ListPlugin } from "../plugins/list-plugin";
-import { TablePlugin } from "../plugins/table-plugin";
+import { Descendant } from "slate";
+import { jsx } from "slate-hyperscript";
+import { CustomMarks, isLeafTextNode } from "../common/custom-types";
+import { SerializingContext } from "../hooks/use-serializing";
+import { Element } from "../slate-editor/element";
+import { Leaf } from "../slate-editor/leaf";
+import { escapeHtml } from "./html-utils";
 
-// A modified version of the TEXT_RULE from the slate-html-serializer with
-// special handling for &nbsp;
-const TEXT_RULE: HtmlSerializationRule = {
-  deserialize(el) {
-    if (el.tagName && el.tagName.toLowerCase() === 'br') {
-      return {
-        object: 'text',
-        text: '\n',
-        marks: [],
-      };
-    }
+/*
+  Serializer/Deserializer registration
+ */
+interface MarkDeserializer {
+  test: (el: HTMLElement) => boolean;
+  deserializer: (el: HTMLElement, marks: CustomMarks) => void;
+}
+const markElementTags = new Set<string>();
+const markDeserializers: MarkDeserializer[] = [];
 
-    if (el.nodeName === '#text') {
-      if (el.nodeValue?.match(/<!--.*?-->/)) return;
+type ElementDeserializer = (el: HTMLElement, children: Descendant[]) => Descendant;
+const elementDeserializers: Record<string, ElementDeserializer> = {};
 
-      return {
-        object: 'text',
-        text: el.nodeValue,
-        marks: [],
-      };
-    }
-  },
+export function registerMarkDeserializer(tag: string, deserializer: MarkDeserializer) {
+  markElementTags.add(tag);
+  markDeserializers.push(deserializer);
+}
 
-  serialize(obj, children) {
-    if (obj.object === 'string') {
-      return children.split('\n').reduce((array, text, i) => {
-        if (i !== 0) array.push(<br key={i} />);
-        // encode non-breaking spaces (for visibility)
-        array.push(text.replace(/\u00A0/g, "&nbsp;"));
-        return array;
-      }, [] as ReactNode[]);
-    }
-  },
+export function registerElementDeserializer(tag: string, deserializer: ElementDeserializer) {
+  elementDeserializers[tag] = deserializer;
+}
 
-  postSerialize: function(html) {
-    // After encoding non-breaking spaces in the TEXT_RULE above,
-    // renderToStaticMarkup() re-escapes so we have to unescape.
-    return html.replace(/&amp;nbsp;/g, "&nbsp;");
+/*
+  htmlToSlate()
+ */
+export function htmlToSlate(html: string) {
+  try {
+    // console.log("parsing...");
+    const document = new DOMParser().parseFromString(html, 'text/html');
+    // console.log("parsed, deserializing...");
+    const slate = deserialize(document.body);
+    // console.log("deserialized:", JSON.stringify(slate));
+    if (!slate) return [];
+    return Array.isArray(slate) ? slate : [slate];
   }
+  catch(e) {
+    console.warn("exception caught, returning empty content");
+    return [];
+  }
+}
+
+/*
+  slateToHtml()
+ */
+export function slateToHtml(value: Descendant[]) {
+  let fullHtml = "";
+  value.forEach(block => {
+    const elem = serialize(block);
+    const blockHtml = renderToStaticMarkup(
+      <SerializingContext.Provider value={true}>
+        {elem}
+      </SerializingContext.Provider>
+    );
+    fullHtml += blockHtml;
+  });
+  return fullHtml;
+}
+
+/*
+  Deserialization helpers
+ */
+function isTextNode(el: Node) {
+  return el.nodeType === Node.TEXT_NODE;
+}
+
+function isElementNode(el: Node): el is HTMLElement {
+  return el.nodeType === Node.ELEMENT_NODE;
+}
+
+const deserialize = (el: Node, markAttributes: CustomMarks = {}): Descendant | Descendant[] | null => {
+  const elTag = el.nodeName.toLowerCase();
+
+  if (isTextNode(el)) {
+    // console.log("deserializing text node:", el.textContent);
+    return jsx('text', markAttributes, el.textContent);
+  }
+  // console.log("deserializing node of type:", el.nodeType);
+  if (!isElementNode(el)) {
+    console.warn("bailing... element is not of type:", Node.ELEMENT_NODE);
+    return null;
+  }
+
+  const marks: CustomMarks = { ...markAttributes };
+
+  // convert mark elements to mark properties
+  // console.log("hasMarkDeserializer for tag:", elTag, markElementTags.has(elTag));
+  let isMarkElement = false;
+  if (markElementTags.has(elTag)) {
+    markDeserializers.forEach(entry => {
+      if (entry.test(el)) {
+        isMarkElement = true;
+        entry.deserializer(el, marks);
+      }
+    });
+  }
+
+  const children = flatten(Array.from(el.childNodes).map(node => deserialize(node, marks)))
+                    .filter(child => child != null) as Descendant[];
+
+  if (children.length === 0) {
+    children.push(jsx('text', marks, ''));
+  }
+
+  if (!isMarkElement) {
+    const eltDeserializer = elementDeserializers[elTag];
+    // console.log("calling element deserializer for:", elTag, "hasDeserializer:", !!eltDeserializer);
+    if (eltDeserializer) return eltDeserializer(el, children);
+  }
+
+  return jsx('fragment', { tag: elTag }, children);
 };
 
-const rules: HtmlSerializationRule[] = [
-        ColorPlugin(), CoreMarksPlugin(),
-        ImagePlugin(), LinkPlugin(), CoreInlinesPlugin(),
-        ListPlugin(), TablePlugin(), CoreBlocksPlugin(),
-        TEXT_RULE];
+/*
+  Serialization helpers
+ */
 
-const htmlSerializer = new HtmlSerializer({ rules });
-
-export function htmlToSlate(html: string) {
-  return htmlSerializer.deserialize(html);
-}
-
-export function slateToHtml(value: Value) {
-  const blocks = htmlSerializer.serialize(value, { render: false });
-  // we render each top-level block element separately, so they each end up on their own line.
-  const htmlStrings = blocks.map(block => renderToStaticMarkup(<body>{block}</body>).slice(6, -7));
-  let html = htmlStrings.join("\n");
-  for (const rule of rules) {
-    // give plugins a chance to post-process the generated HTML
-    rule.postSerialize && (html = rule.postSerialize(html));
+// cf. https://docs.slatejs.org/concepts/10-serializing#html
+export function serialize (node: Descendant): ReactNode {
+  if (isLeafTextNode(node)) {
+    // console.log("serializing leaf node:", node.text);
+    return <Leaf leaf={node} text={node} attributes={{} as any}>{escapeHtml(node.text)}</Leaf>;
   }
-  return html;
+
+  // console.log("serializing children...");
+  const _children = node.children?.map(n => serialize(n));
+
+  // console.log("serializing element", node.type);
+  const children = Array.isArray(_children) && _children.length <= 1 ? _children[0] : _children;
+  return (
+    <Element element={node} attributes={{} as any}>
+      {children}
+    </Element>
+  );
 }
-*/

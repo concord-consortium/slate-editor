@@ -1,3 +1,10 @@
+import { createElement } from "react";
+import { Editor } from "slate";
+import { BooleanMarkType, CustomMarks, CustomText, MarkType } from "../common/custom-types";
+import { EFormat } from "../common/slate-types";
+import { registerMarkDeserializer } from "../serialization/html-serializer";
+import { registerMarkRenderer } from "../slate-editor/leaf";
+
 /*
 import React, { ReactNode } from "react";
 import { Mark } from "slate";
@@ -11,18 +18,19 @@ function renderMarkAsTag(tag: string, mark: Mark, attributes: RenderAttributes,
                           children: ReactNode, isSerializing = false) {
   return React.createElement(tag, attributes, children);
 }
+*/
 
-const kTagToFormatMap: Record<string, string> = {
-        code: EFormat.code,
-        del: EFormat.deleted,
-        em: EFormat.italic,
-        ins: EFormat.inserted,
-        mark: EFormat.marked,
-        strong: EFormat.bold,
-        sub: EFormat.subscript,
-        sup: EFormat.superscript,
-        u: EFormat.underlined
-      };
+export const kTagToFormatMap: Record<string, string> = {
+  code: EFormat.code,
+  del: EFormat.deleted,
+  em: EFormat.italic,
+  ins: EFormat.inserted,
+  mark: EFormat.marked,
+  strong: EFormat.bold,
+  sub: EFormat.subscript,
+  sup: EFormat.superscript,
+  u: EFormat.underlined
+};
 
 const kFormatToTagMap: Record<string, string> = {};
 
@@ -38,6 +46,37 @@ kTagToFormatMap["i"] = EFormat.italic;
 kTagToFormatMap["s"] = EFormat.deleted;
 kTagToFormatMap["strike"] = EFormat.deleted;
 
+let isRegistered = false;
+
+export function registerCoreMarks() {
+  if (isRegistered) return;
+
+  // register components for rendering each mark
+  for (const format in kFormatToTagMap) {
+    registerMarkRenderer((children: any, leaf: CustomText) => {
+      return leaf[format as MarkType]
+              ? createElement(kFormatToTagMap[format], {}, children)
+              : children;
+    });
+  }
+
+  // register deserializers for each mark tag
+  for (const tag in kTagToFormatMap) {
+    registerMarkDeserializer(tag, {
+      test: (el: HTMLElement) => el.nodeName.toLowerCase() === tag,
+      deserializer: (el: HTMLElement, marks: CustomMarks) => marks[kTagToFormatMap[tag] as BooleanMarkType] = true
+    });
+  }
+
+  isRegistered = true;
+}
+
+export function withCoreMarks(editor: Editor) {
+  registerCoreMarks();
+  return editor;
+}
+
+/*
 function getTagForMark(mark: Mark) {
   // auto-convert mark tags for consistency with TinyMCE editor
   return kFormatToTagMap[mark.type];

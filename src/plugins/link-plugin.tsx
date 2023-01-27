@@ -1,5 +1,6 @@
 import React from "react";
-import { Editor, Range } from "slate";
+import { Descendant, Editor, Range } from "slate";
+import { jsx } from "slate-hyperscript";
 import { RenderElementProps } from "slate-react";
 import { isWebUri } from "valid-url";
 import { CustomElement, LinkElement } from "../common/custom-types";
@@ -7,7 +8,9 @@ import { useSerializing } from "../hooks/use-serializing";
 import { EFormat } from "../common/slate-types";
 import { unwrapElement, wrapElement } from "../common/slate-utils";
 import { IDialogController, IField } from "../modal-dialog/dialog-types";
-import { registerElement } from "../slate-editor/element";
+import { registerElementDeserializer } from "../serialization/html-serializer";
+import { getElementAttrs } from "../serialization/html-utils";
+import { eltRenderAttrs, registerElementComponent } from "../slate-editor/element";
 
 export const isLinkElement = (element: CustomElement): element is LinkElement => {
   return element.type === EFormat.link;
@@ -27,17 +30,34 @@ export const LinkComponent = ({ attributes, children, element }: RenderElementPr
   const rel = isSerializing ? undefined : "noopener noreferrer";
   const onDoubleClick = isSerializing ? undefined : () => window.open(href);
   return (
-    <a {...attributes} href={href} target={target} rel={rel} onDoubleClick={onDoubleClick}>
-      <InlineChromiumBugfix/>
+    <a {...attributes} {...eltRenderAttrs(element)} href={href} target={target} rel={rel} onDoubleClick={onDoubleClick}>
+      {!isSerializing && <InlineChromiumBugfix/>}
       {children}
-      <InlineChromiumBugfix/>
+      {!isSerializing && <InlineChromiumBugfix/>}
     </a>
   );
 };
 
-// const kLinkTag = "a";
+const kLinkTag = "a";
 
-export function withLinkInlines(editor: Editor) {
+let isRegistered = false;
+
+export function registerLinkInline() {
+  if (isRegistered) return;
+
+  registerElementComponent(EFormat.link, props => <LinkComponent {...props}/>);
+  registerElementDeserializer(kLinkTag, (el: HTMLElement, children: Descendant[]) => {
+    const { href } = el as HTMLAnchorElement;
+    const attrs = href ? { href } : undefined;
+    return jsx("element", { type: EFormat.link, ...attrs, ...getElementAttrs(el, ["href"]) }, children);
+  });
+
+  isRegistered = true;
+}
+
+export function withLinkInline(editor: Editor) {
+  registerLinkInline();
+
   const { configureElement, isElementEnabled, isInline } = editor;
 
   editor.isInline = element => (element.type === EFormat.link) || isInline(element);
@@ -81,8 +101,6 @@ export function withLinkInlines(editor: Editor) {
       });
     }
   };
-
-  registerElement(EFormat.link, props => <LinkComponent {...props}/>);
 
   return editor;
 

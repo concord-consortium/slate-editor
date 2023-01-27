@@ -4,15 +4,18 @@ describe("HTML serializer", () => {
   });
 });
 
-/*
 import { htmlToSlate, slateToHtml } from "./html-serializer";
 import { normalizeHtml } from "./html-utils";
-import { kFieldMouseFurColorIntro, kMonteCarloRisk, kNaturalHistoryV5Intro, kNaturalHistoryV5Page3,
-          kOilAndWaterIntro } from "./lara-fixtures";
+import {
+  kFieldMouseFurColorIntro, kMonteCarloRisk, kNaturalHistoryV5Intro, kNaturalHistoryV5Page3, kOilAndWaterIntro
+} from "./lara-fixtures";
 import { kLegacyBlockTags } from "../plugins/core-blocks-plugin";
 import { kLegacyEmptyInlineTags, kLegacyNonEmptyInlineTags } from "../plugins/core-inlines-plugin";
+import { registerPlugins } from "../plugins/register-plugins";
 
 describe("htmlToSlate(), slateToHtml()", () => {
+
+  registerPlugins();
 
   it("normalizes unclosed html tags", () => {
     expect(slateToHtml(htmlToSlate("<p>"))).toBe("<p></p>");
@@ -42,7 +45,7 @@ describe("htmlToSlate(), slateToHtml()", () => {
       "<h6>heading6</h6>",
       "<blockquote>block-quote</blockquote>",
       "<hr/>",  // horizontal-rule
-      "<pre>preformatted</pre>",  // preformatted
+      "<pre>preformatted</pre>",
       "<ol>ordered-list</ol>",
       "<ul>bulleted-list</ul>",
       "<li>list-item</li>",
@@ -74,7 +77,7 @@ describe("htmlToSlate(), slateToHtml()", () => {
 
   it("can [de]serialize color spans", () => {
     [
-      `<p><span class="cc-text-color" style="color:#888888">color span</span></p>`
+      `<p><span class="ccrte-text-color" style="color:#888888">color span</span></p>`
     ].forEach(html => expect(slateToHtml(htmlToSlate(html))).toBe(html));
   });
 
@@ -101,7 +104,7 @@ describe("htmlToSlate(), slateToHtml()", () => {
     expect(slateToHtml(htmlToSlate(input))).toBe(expected);
   });
 
-  it("ignores unsupported tags", () => {
+  it.skip("ignores unsupported tags", () => {
     ["html", "link", "meta", "body", "main"]
       .map(tag => ({ in: `<${tag} ${tag}-attr="${tag}-value">${tag}</${tag}>`,
                     out: `<p>${tag}</p>` }))
@@ -117,7 +120,7 @@ describe("htmlToSlate(), slateToHtml()", () => {
       .forEach(html => expect(slateToHtml(htmlToSlate(html))).toBe(html));
   });
 
-  it("converts <font> tags to styled <span> tags", () => {
+  it.skip("converts <font> tags to styled <span> tags", () => {
     [
       { in: `<p><font color="#aabbcc">font color</font></p>`,
         out: `<p><span style="color:#aabbcc">font color</span></p>` },
@@ -144,8 +147,8 @@ describe("htmlToSlate(), slateToHtml()", () => {
 
   it("can [de]serialize links", () => {
     [
-      `<p><a href="https://concord.org">link</a></p>`,
-      `<p><a class="my-link-class" href="https://concord.org">link with class</a></p>`
+      `<p><a href="https://concord.org/">link</a></p>`,
+      `<p><a class="my-link-class" href="https://concord.org/">link with class</a></p>`
     ].forEach(html => expect(slateToHtml(htmlToSlate(html))).toBe(html));
   });
 
@@ -163,7 +166,7 @@ describe("htmlToSlate(), slateToHtml()", () => {
     ].forEach(html => expect(slateToHtml(htmlToSlate(html))).toBe(html));
   });
 
-  it("can [de]serialize HTML tables", () => {
+  it.skip("can [de]serialize HTML tables", () => {
     // cf. https://developer.mozilla.org/en-US/docs/Web/HTML/Element/table
     const table1 =
             `<table>` +
@@ -275,25 +278,24 @@ describe("htmlToSlate(), slateToHtml()", () => {
     expect(slateToHtml(htmlToSlate(table4))).toBe(table4);
   });
 
-  it.skip("can [de]serialize custom authored HTML content", () => {
+  it.skip("can [de]serialize custom authored HTML content (natural history intro)", () => {
     expect(slateToHtml(htmlToSlate(kNaturalHistoryV5Intro))).toBe(normalizeHtml(kNaturalHistoryV5Intro));
   });
 
-  it.skip("can [de]serialize custom authored HTML content", () => {
+  it.skip("can [de]serialize custom authored HTML content (natural history page 3)", () => {
     expect(slateToHtml(htmlToSlate(kNaturalHistoryV5Page3))).toBe(normalizeHtml(kNaturalHistoryV5Page3));
   });
 
-  it.skip("can [de]serialize custom authored HTML content", () => {
+  it.skip("can [de]serialize custom authored HTML content (monte carlo risk)", () => {
     expect(slateToHtml(htmlToSlate(kMonteCarloRisk))).toBe(normalizeHtml(kMonteCarloRisk));
   });
 
-  it.skip("can [de]serialize custom authored HTML content", () => {
+  it.skip("can [de]serialize custom authored HTML content (field mouse fur color)", () => {
     expect(slateToHtml(htmlToSlate(kFieldMouseFurColorIntro))).toBe(normalizeHtml(kFieldMouseFurColorIntro));
   });
 
-  it("can [de]serialize custom authored HTML content", () => {
+  it.skip("can [de]serialize custom authored HTML content (oil and water)", () => {
     expect(slateToHtml(htmlToSlate(kOilAndWaterIntro))).toBe(normalizeHtml(kOilAndWaterIntro));
   });
 
 });
-*/

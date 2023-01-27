@@ -3,19 +3,19 @@ import { withHistory } from "slate-history";
 import { withReact } from "slate-react";
 import { isBlockActive, isMarkActive, selectedElements, toggleBlock, toggleMark } from "./common/slate-utils";
 import { withColorMark } from "./plugins/color-plugin";
+import { withCoreBlocks } from "./plugins/core-blocks-plugin";
+import { withCoreInlines } from "./plugins/core-inlines-plugin";
+import { withCoreMarks } from "./plugins/core-marks-plugin";
 import { withEmitter } from "./plugins/emitter-plugin";
 import { withImages } from "./plugins/image-plugin";
-import { withLinkInlines } from "./plugins/link-plugin";
+import { withLinkInline } from "./plugins/link-plugin";
 
 interface ICreateEditorOptions {
-  color?: boolean;
   history?: boolean;
-  images?: boolean;
-  links?: boolean;
   onInitEditor?: (editor: Editor) => Editor;
 }
 export function createEditor(options?: ICreateEditorOptions) {
-  const { color = true, history = true, images = true, links = true, onInitEditor } = options || {};
+  const { history = true, onInitEditor } = options || {};
   let editor = withReact(slateCreateEditor());
   editor = history ? withHistory(editor) : editor;
 
@@ -31,10 +31,13 @@ export function createEditor(options?: ICreateEditorOptions) {
 
   editor = withEmitter(editor);
 
-  editor = color ? withColorMark(editor) : editor;
-  editor = images ? withImages(editor) : editor;
-  editor = links ? withLinkInlines(editor) : editor;
+  editor = withCoreMarks(editor);
+  editor = withColorMark(editor);
+  editor = withCoreBlocks(editor);
+  editor = withCoreInlines(editor);
+  editor = withImages(editor);
+  editor = withLinkInline(editor);
 
   // allow clients to attach their own plugins, etc.
-  return onInitEditor ? onInitEditor(editor) : editor;
+  return onInitEditor?.(editor) ?? editor;
 }
