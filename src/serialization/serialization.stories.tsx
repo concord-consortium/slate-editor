@@ -1,9 +1,9 @@
 import React, { useCallback, useMemo, useRef, useState } from "react";
-// import pretty from "pretty";
+import pretty from "pretty";
 import { SlateContainer } from "../slate-container/slate-container";
 import { CustomEditor } from "../common/custom-types";
-import { textToSlate } from "../common/slate-types";
-// import { slateToHtml, htmlToSlate } from "./html-serializer";
+import { EditorValue, textToSlate } from "../common/slate-types";
+import { htmlToSlate, slateToHtml } from "./html-serializer";
 import { serializeValue } from "./serialization";
 import "./serialization.stories.scss";
 
@@ -71,22 +71,36 @@ export const SelectionSerialization = () => {
     </div>
   );
 };
+*/
 
 const htmlSerializationText = "This example shows the editor content serialized as HTML.";
 
 export const HtmlSerialization = () => {
-  const slateValue = textToSlate(htmlSerializationText);
-  const [value, setValue] = useState(slateValue);
-  const [content, setContent] = useState(slateToHtml(value));
+  const initialValue = useMemo(() => textToSlate(htmlSerializationText), []);
+  const [content, setContent] = useState(slateToHtml(initialValue));
+  const editorRef = useRef<CustomEditor>();
+
+  const handleChange = useCallback(function handleChange() {
+    if (editorRef.current?.children) {
+      setContent(slateToHtml(editorRef.current?.children));
+    }
+  }, []);
+
+  const handleInitEditor = useCallback(function handleInitEditor(editor: CustomEditor) {
+    const orgHandleChange = editor.onChange;
+    editor.onChange = function _handleChange() {
+      orgHandleChange?.();
+      handleChange?.();
+    };
+    return editorRef.current = editor;
+  }, [handleChange]);
+
   return (
     <div className="serialization-container">
       <div className="panel">
         <SlateContainer
-          value={value}
-          onValueChange={_value => {
-            setValue(_value);
-            setContent(slateToHtml(_value));
-          }}
+          value={initialValue}
+          onInitEditor={handleInitEditor}
         />
       </div>
       <div className="panel output">
@@ -115,18 +129,31 @@ function slateToClueTile(value: EditorValue) {
 }
 
 export const ClueSerialization = () => {
-  const slateValue = textToSlate(clueSerializationText);
-  const [value, setValue] = useState(slateValue);
-  const [content, setContent] = useState(slateToClueTile(value));
+  const initialValue = textToSlate(clueSerializationText);
+  const [content, setContent] = useState(slateToClueTile(initialValue));
+  const editorRef = useRef<CustomEditor>();
+
+  const handleChange = useCallback(function handleChange() {
+    if (editorRef.current?.children) {
+      setContent(slateToClueTile(editorRef.current?.children));
+    }
+  }, []);
+
+  const handleInitEditor = useCallback(function handleInitEditor(editor: CustomEditor) {
+    const orgHandleChange = editor.onChange;
+    editor.onChange = function _handleChange() {
+      orgHandleChange?.();
+      handleChange?.();
+    };
+    return editorRef.current = editor;
+  }, [handleChange]);
+
   return (
     <div className="serialization-container">
       <div className="panel">
         <SlateContainer
-          value={value}
-          onValueChange={_value => {
-            setValue(_value);
-            setContent(slateToClueTile(_value));
-          }}
+          value={initialValue}
+          onInitEditor={handleInitEditor}
         />
       </div>
       <div className="panel output">
@@ -140,18 +167,31 @@ export const ClueSerialization = () => {
 const importedHtmlText = "<h1>A header paragraph</h1><p>A simple paragraph.</p><blockquote>A quoted paragraph.</blockquote>";
 
 export const ImportedHTML = () => {
-  const slateValue = htmlToSlate(importedHtmlText);
-  const [value, setValue] = useState(slateValue);
-  const [content, setContent] = useState(slateToHtml(value));
+  const initialValue = htmlToSlate(importedHtmlText);
+  const [content, setContent] = useState(slateToHtml(initialValue));
+  const editorRef = useRef<CustomEditor>();
+
+  const handleChange = useCallback(function handleChange() {
+    if (editorRef.current?.children) {
+      setContent(slateToHtml(editorRef.current?.children));
+    }
+  }, []);
+
+  const handleInitEditor = useCallback(function handleInitEditor(editor: CustomEditor) {
+    const orgHandleChange = editor.onChange;
+    editor.onChange = function _handleChange() {
+      orgHandleChange?.();
+      handleChange?.();
+    };
+    return editorRef.current = editor;
+  }, [handleChange]);
+
   return (
     <div className="serialization-container">
       <div className="panel">
         <SlateContainer
-          value={value}
-          onValueChange={_value => {
-            setValue(_value);
-            setContent(slateToHtml(_value));
-          }}
+          value={initialValue}
+          onInitEditor={handleInitEditor}
         />
       </div>
       <div className="panel output">
@@ -161,4 +201,3 @@ export const ImportedHTML = () => {
     </div>
   );
 };
-*/
