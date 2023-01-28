@@ -147,27 +147,27 @@ export const Serialization = () => {
 //   );
 // };
 
-const selectionSerializationText = "This example shows the serialized selection content determined by calling getDescendantsAtRange().";
+// const selectionSerializationText = "This example shows the serialized selection content determined by calling getDescendantsAtRange().";
 
-export const SelectionSerialization = () => {
-  const slateValue = textToSlate(selectionSerializationText);
-  const [value, setValue] = useState(slateValue);
-  const serializedSelection = serializeSelection(value);
-  return (
-    <div className="serialization-container">
-      <div className="panel">
-        <SlateContainer
-          value={value}
-          onChange={_value => setValue(_value)}
-        />
-      </div>
-      <div className="panel output">
-        <h3>Serialized Selection</h3>
-        <pre>{JSON.stringify(serializedSelection, null, 2)}</pre>
-      </div>
-    </div>
-  );
-};
+// export const SelectionSerialization = () => {
+//   const slateValue = textToSlate(selectionSerializationText);
+//   const [value, setValue] = useState(slateValue);
+//   const serializedSelection = serializeSelection(value);
+//   return (
+//     <div className="serialization-container">
+//       <div className="panel">
+//         <SlateContainer
+//           value={value}
+//           onValueChange={_value => setValue(_value)}
+//         />
+//       </div>
+//       <div className="panel output">
+//         <h3>Serialized Selection</h3>
+//         <pre>{JSON.stringify(serializedSelection, null, 2)}</pre>
+//       </div>
+//     </div>
+//   );
+// };
 
 const htmlSerializationText = "This example shows the editor content serialized as HTML.";
 

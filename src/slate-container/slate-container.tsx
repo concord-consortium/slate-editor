@@ -23,13 +23,12 @@ interface IProps extends IEditorProps {
   editorClassName?: string;
   value: EditorValue;
   toolbar?: IPortalToolbarProps;
-  onChange?: (value: any) => void; // FixME
   hotkeyMap?: HotkeyMap
 }
 
 export const SlateContainer: React.FC<IProps> = (props: IProps) => {
   const { className: toolbarClasses, portalRoot, ...toolbarOthers } = props.toolbar || {};
-  const { className, editorClassName, onChange, onBlur, onFocus, ...others }  = props ; 
+  const { className, editorClassName, onBlur, onFocus, ...others }  = props ;
   const editor = useMemo(() => createEditor({ history: true }), []);
 
   const toolbar = portalRoot
@@ -44,24 +43,18 @@ export const SlateContainer: React.FC<IProps> = (props: IProps) => {
                     />;
   return (
     <SerializingContext.Provider value={false}>
-        <div className={`ccrte-container slate-container ${className || ""}`}>
-          <Slate editor={editor} value={props.value}>
+      <div className={`ccrte-container slate-container ${className || ""}`}>
+        <Slate editor={editor} value={props.value}>
           {toolbar}
           <SlateEditor
             className={editorClassName}
             hotkeyMap={props.hotkeyMap || hotkeyMap}
             //onEditorRef={handleEditorRef}
-            onChange={onChange}
-            // onValueChange={value => {
-            //   onValueChange?.(value);
-            //   // trigger toolbar rerender on selection change as well
-            //   setChangeCount(count => ++count);
-            // }}
             onFocus={onFocus}
             onBlur={onBlur}
             {...others}
           />
-      </Slate>
+        </Slate>
       </div>
     </SerializingContext.Provider>
   );

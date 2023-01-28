@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import isHotkey from 'is-hotkey';
 import { Editable, useSlate} from 'slate-react';
 import {
@@ -19,7 +19,7 @@ export interface IProps {
   className?: string;
   value?: Descendant[] | string;
   children?: Descendant;
-  onChange?: (value: Descendant[] | string) => void;
+  onChange?: (children: Descendant[]) => void;
   placeholder?: string;
   readOnly?: boolean;
   // hotkeyMap?: HotkeyMap; // FIXME: Sort out hotkey map
@@ -37,7 +37,7 @@ const HOTKEYS: Record<string, string> = {
 
 
 const SlateEditor: React.FC<IProps> = (props: IProps) => {
-  const {className, onFocus, onBlur, placeholder, readOnly, } = props;
+  const {className, onChange, onFocus, onBlur, placeholder, readOnly, } = props;
   // FIXME: Add back font size
   // const value = typeof props.value === "string" ?
   //                 textToSlate(props.value)
@@ -51,6 +51,10 @@ const SlateEditor: React.FC<IProps> = (props: IProps) => {
   const renderLeaf = useCallback((propsb:any) => <Leaf {...propsb} />, []);
   
   const editor = useSlate();
+  useEffect(() => {
+    editor.onChange = () => onChange?.(editor.children);
+  }, [editor, onChange]);
+
   return (
       <Editable
         data-testid="ccrte-editor"

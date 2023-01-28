@@ -62,5 +62,5 @@ export function serializeDocument(document: Descendant[]) {
 
 export function serializeValue(document: any, metadata?: any): any {
   const data = metadata ? { data: metadata } : undefined;
-  return { object: "value", ...data, document: serializeDocument(document), metadata};
+  return { object: "value", ...data, document: serializeDocument(document)};
 }
