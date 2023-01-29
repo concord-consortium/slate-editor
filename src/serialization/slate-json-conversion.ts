@@ -22,7 +22,7 @@ function keyProp(key?: string) {
   return key != null ? { key } : {};
 }
 
-export function slate47to50(document: any, metadata: any) : any {
+export function slate47to50(document: any, metadata?: any) : any {
   const data = metadata ? { data: metadata } : undefined;
   return { object: "value", ...data, document: convertDocument(document), metadata};
 }

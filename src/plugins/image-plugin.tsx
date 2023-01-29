@@ -55,13 +55,13 @@ export const ImageComponent = ({ attributes, children, element }: RenderElementP
     isSerializing ? 
       <img className={imgClasses} src={src} alt={alt} title={alt} width={width} height={height}/>
     :
-    <div {...attributes} className={`${kImageNodeClass} ${divClasses}`}>
+    <span {...attributes} className={`${kImageNodeClass} ${divClasses}`}>
       {children}
-      <div className={divClasses} contentEditable={false}>
+      <span className={divClasses} contentEditable={false}>
         <img className={imgClasses} src={src} alt={alt} title={alt} width={width} height={height}
             onLoad={onLoad} onDoubleClick={onDoubleClick}/>
-      </div>
-    </div>
+      </span>
+    </span>
   );
 };
 

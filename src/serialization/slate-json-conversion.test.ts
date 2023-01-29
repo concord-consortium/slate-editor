@@ -1,4 +1,4 @@
-import { convertDocument, convertElement, convertMark, convertNode, convertTextNode } from "./slate-json-conversion";
+import { convertDocument, convertElement, convertMark, convertNode, convertTextNode, slate47to50 } from "./slate-json-conversion";
 
 // FIXME: Should these all be typed? 
 describe("Slate 47 to 50+ json conversion", () => {
@@ -262,5 +262,109 @@ describe("Slate 47 to 50+ json conversion", () => {
           ];
     const converted = convertDocument(links047);
     expect(converted.children).toEqual(links050);
+  });
+
+  it("can convert an empty document", () => {
+    const doc047 = {
+      "object":"document",
+      "data":{},
+      "nodes":[
+        {
+          "object":"block",
+          "type":"paragraph",
+          "data":{},
+          "nodes":[
+            {
+              "object":"text",
+              "text":"",
+              "marks":[]
+            }
+          ]
+        }
+      ]
+    };
+    const doc050 = {
+      object: "value",
+      document: {
+        children: [
+          {
+            "type":"paragraph",
+            "children":[
+              {
+                "text":""
+              }
+            ]
+          }
+        ],
+        objTypes: {
+          paragraph: "block"
+        }
+      }
+    };
+    const converted = slate47to50(doc047);
+    expect(converted).toEqual(doc050);
+  });
+
+  it("can convert a sorted list", () => {
+    const doc047 = {"object":"document","data":{},"nodes":[{"object":"block","type":"ordered-list","data":{},"nodes":[{"object":"block","type":"list-item","data":{},"nodes":[{"object":"text","text":"a","marks":[]}]},{"object":"block","type":"list-item","data":{},"nodes":[{"object":"text","text":"b","marks":[]}]},{"object":"block","type":"list-item","data":{},"nodes":[{"object":"text","text":"c","marks":[]}]}]}]};
+    const doc050 = {
+      object: "value",
+      document: {
+        children: [{"type":"ordered-list","children":[{"type":"list-item","children":[{"text":"a"}]},{"type":"list-item","children":[{"text":"b"}]},{"type":"list-item","children":[{"text":"c"}]}]}],
+        objTypes: {
+          "ordered-list": "block",
+          "list-item": "block"
+        }
+      }
+    };
+    const converted = slate47to50(doc047);
+    expect(converted).toEqual(doc050);
+  });
+
+  it("can convert an unsorted list", () => {
+    const doc047 = {"object":"document","data":{},"nodes":[{"object":"block","type":"bulleted-list","data":{},"nodes":[{"object":"block","type":"list-item","data":{},"nodes":[{"object":"text","text":"a","marks":[]}]},{"object":"block","type":"list-item","data":{},"nodes":[{"object":"text","text":"b","marks":[]}]},{"object":"block","type":"list-item","data":{},"nodes":[{"object":"text","text":"c","marks":[]}]}]}]};
+    const doc050 = {
+      object: "value",
+      document: {
+        children: [{"type":"bulleted-list","children":[{"type":"list-item","children":[{"text":"a"}]},{"type":"list-item","children":[{"text":"b"}]},{"type":"list-item","children":[{"text":"c"}]}]}],
+        objTypes: {
+          "bulleted-list": "block",
+          "list-item": "block"
+        }
+      }
+    };
+    const converted = slate47to50(doc047);
+    expect(converted).toEqual(doc050);
+  });
+
+  it("can convert text with color", () => {
+    const doc047 = {"object":"document","data":{},"nodes":[{"object":"block","type":"paragraph","data":{},"nodes":[{"object":"text","text":"some ","marks":[]},{"object":"text","text":"colorful","marks":[{"object":"mark","type":"color","data":{"color":"#ff0000"}}]},{"object":"text","text":" text","marks":[]}]}]};
+    const doc050 = {
+      object: "value",
+      document: {
+        children: [{"type":"paragraph","children":[{"text":"some "},{"text":"colorful","color":"#ff0000"},{"text":" text"}]}],
+        objTypes: {
+          "paragraph": "block"
+        }
+      }
+    };
+    const converted = slate47to50(doc047);
+    expect(converted).toEqual(doc050);
+  });
+
+  it("can convert an image", () => {
+    const doc047 = {"object":"document","data":{},"nodes":[{"object":"block","type":"paragraph","data":{},"nodes":[{"object":"text","text":"","marks":[]},{"object":"inline","type":"image","data":{"src":"https://www.commonsense.org/sites/default/files/png/2019-02/concord.png","width":225,"height":225},"nodes":[{"object":"text","text":"","marks":[]}]},{"object":"text","text":"","marks":[]}]}]};
+    const doc050 = {
+      object: "value",
+      document: {
+        children: [{"type":"paragraph","children":[{"text":""},{"type":"image","src":"https://www.commonsense.org/sites/default/files/png/2019-02/concord.png","children":[{"text":""}],"width":225,"height":225},{"text":""}]}],
+        objTypes: {
+          "paragraph": "block",
+          "image": "inline"
+        }
+      }
+    };
+    const converted = slate47to50(doc047);
+    expect(converted).toEqual(doc050);
   });
 });
