@@ -5,7 +5,7 @@ describe("HTML serializer", () => {
 });
 
 import { htmlToSlate, slateToHtml } from "./html-serializer";
-import { normalizeHtml } from "./html-utils";
+import { escapeHtmlAndNbsp, normalizeHtml } from "./html-utils";
 import {
   kFieldMouseFurColorIntro, kMonteCarloRisk, kNaturalHistoryV5Intro, kNaturalHistoryV5Page3, kOilAndWaterIntro
 } from "./lara-fixtures";
@@ -19,6 +19,14 @@ describe("htmlToSlate(), slateToHtml()", () => {
 
   it("normalizes unclosed html tags", () => {
     expect(slateToHtml(htmlToSlate("<p>"))).toBe("<p></p>");
+  });
+
+  it("escapes HTML strings appropriately", () => {
+    [
+      ["<p>", "Rock\xa0&\xa0Roll > Disco", "</p>"]
+    ].forEach(([pre, mid, post]) =>
+        expect(slateToHtml(htmlToSlate(`${pre}${mid}${post}`)))
+          .toBe(`${pre}${escapeHtmlAndNbsp(mid)}${post}`));
   });
 
   it("can [de]serialize individual marks", () => {

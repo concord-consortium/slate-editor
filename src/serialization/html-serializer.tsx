@@ -7,7 +7,7 @@ import { CustomMarks, isLeafTextNode } from "../common/custom-types";
 import { SerializingContext } from "../hooks/use-serializing";
 import { Element } from "../slate-editor/element";
 import { Leaf } from "../slate-editor/leaf";
-import { escapeHtml } from "./html-utils";
+import { escapeNbsp } from "./html-utils";
 
 /*
   Serializer/Deserializer registration
@@ -64,7 +64,9 @@ export function slateToHtml(value: Descendant[]) {
     );
     fullHtml += blockHtml;
   });
-  return fullHtml;
+  // After previously encoding non-breaking spaces,
+  // renderToStaticMarkup() re-escapes so we have to unescape.
+  return fullHtml.replace(/&amp;nbsp;/g, "&nbsp;");
 }
 
 /*
@@ -129,7 +131,8 @@ const deserialize = (el: Node, markAttributes: CustomMarks = {}): Descendant | D
 export function serialize (node: Descendant): ReactNode {
   if (isLeafTextNode(node)) {
     // console.log("serializing leaf node:", node.text);
-    return <Leaf leaf={node} text={node} attributes={{} as any}>{escapeHtml(node.text)}</Leaf>;
+    // escape non-breaking spaces for legibility
+    return <Leaf leaf={node} text={node} attributes={{} as any}>{escapeNbsp(node.text)}</Leaf>;
   }
 
   // console.log("serializing children...");

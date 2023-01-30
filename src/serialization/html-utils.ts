@@ -1,16 +1,18 @@
 // import { RenderAttributes } from "slate-react";
 // import { Block, Inline, Mark } from "slate";
 import classNames from "classnames/dedupe";
-// import { escape } from "html-escaper";
+import { escape as escapeHtml } from "html-escaper";
 import { CSSProperties } from "react";
 import rgbHex from "rgb-hex";
 import { Descendant } from "slate";
 import parseStyle from "style-to-object";
 
-export function escapeHtml(text: string) {
-  return text;
-  // const result = escape(text);
-  // return result.replace(/\u00A0/g, "&nbsp;");
+export function escapeHtmlAndNbsp(text: string) {
+  return escapeNbsp(escapeHtml(text));
+}
+
+export function escapeNbsp(text: string) {
+  return text.replace(/\u00A0/g, "&nbsp;");
 }
 
 export type RenderAttributes = Record<string, string | CSSProperties>;
