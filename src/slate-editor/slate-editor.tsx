@@ -1,5 +1,5 @@
 import isHotkey from 'is-hotkey';
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { Descendant } from 'slate';
 import { Editable, RenderLeafProps, useSlate } from 'slate-react';
 
@@ -20,6 +20,9 @@ export interface IProps {
   readOnly?: boolean;
   hotkeyMap?: HotkeyMap;
   historyKeys?: HotkeyMap;
+  // Note: in legacy slate-editor versions the onBlur/onFocus events were model-based rather than
+  // DOM-based because the two didn't always correspond and the model-level events were more useful.
+  // We'll have to see whether these newer DOM-based callbacks work as expected.
   onBlur?: React.FocusEventHandler<HTMLDivElement>;
   onChange?: (children: Descendant[]) => void;
   onFocus?: React.FocusEventHandler<HTMLDivElement>;
@@ -28,11 +31,15 @@ export const SlateEditor = ({
   className, placeholder, readOnly, hotkeyMap, historyKeys, onBlur, onChange, onFocus
 }: IProps) => {
   const editor = useSlate();
+  const origOnChangeRef = useRef<() => void>();
 
   useEffect(() => {
-    const { onChange: origOnChange } = editor;
+    origOnChangeRef.current = editor.onChange;
+  }, [editor]);
+
+  useEffect(() => {
     editor.onChange = () => {
-      origOnChange?.();
+      origOnChangeRef.current?.();
       onChange?.(editor.children);
     };
   }, [editor, onChange]);
