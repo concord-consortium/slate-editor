@@ -1,5 +1,6 @@
 import isHotkey from 'is-hotkey';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
+import { Descendant } from 'slate';
 import { Editable, RenderLeafProps, useSlate } from 'slate-react';
 
 import { Element } from './element';
@@ -19,11 +20,21 @@ export interface IProps {
   readOnly?: boolean;
   hotkeyMap?: HotkeyMap;
   historyKeys?: HotkeyMap;
+  onChange?: (children: Descendant[]) => void;
 }
 export const SlateEditor = ({
-  className, placeholder, readOnly, hotkeyMap, historyKeys
+  className, placeholder, readOnly, hotkeyMap, historyKeys, onChange
 }: IProps) => {
   const editor = useSlate();
+
+  useEffect(() => {
+    const { onChange: origOnChange } = editor;
+    editor.onChange = () => {
+      origOnChange?.();
+      onChange?.(editor.children);
+    };
+  }, [editor, onChange]);
+
   const hasHistory = "undo" in editor;
   const _historyKeys = hasHistory ? historyKeys || defaultHistoryKeys : undefined;
   const hotKeys = useMemo(() => _historyKeys

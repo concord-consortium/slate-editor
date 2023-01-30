@@ -78,13 +78,16 @@ const ImageRenderComponent = ({ attributes, children, element }: RenderElementPr
   const highlightClass = isFocused && isSelected ? kImageHighlightClass : undefined;
   const divClasses = kInlineBlockClass;
   return (
-    <div {...attributes} className={`${kImageNodeClass} ${divClasses}`}>
+    // cf. https://github.com/ianstormtaylor/slate/blob/main/site/examples/images.tsx
+    // but we use `<span>`s instead of `<div>`s due to the restriction that
+    // `Warning: validateDOMNesting(...): <div> cannot appear as a descendant of <p>`
+    <span {...attributes} className={`${kImageNodeClass} ${divClasses}`}>
       {children}
-      <div className={divClasses} contentEditable={false}>
+      <span className={divClasses} contentEditable={false}>
         <img className={getImgClasses(element, highlightClass)} {...getImgAttrs(element)} {...eltRenderAttrs(element)}
             onLoad={handleLoad} onDoubleClick={handleDoubleClick}/>
-      </div>
-    </div>
+      </span>
+    </span>
   );
 };
 
