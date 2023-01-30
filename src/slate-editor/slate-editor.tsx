@@ -40,6 +40,8 @@ export const SlateEditor = ({
   const hotKeys = useMemo(() => _historyKeys
                                   ? { ..._historyKeys, ...hotkeyMap }
                                   : hotkeyMap, [_historyKeys, hotkeyMap]);
+  // TODO: do we need useCallback here?
+  // Slate examples use it but we may be able to pass Element, Leaf directly
   const renderElement = useCallback(props => <Element {...props} />, []);
   const renderLeaf = useCallback((props: RenderLeafProps) => <Leaf {...props} />, []);
 
@@ -57,7 +59,6 @@ export const SlateEditor = ({
       renderLeaf={renderLeaf}
       placeholder={placeholder}
       spellCheck
-      autoFocus
       onKeyDown={event => {
         for (const hotkey in hotKeys) {
           if (isHotkey(hotkey, event)) {
