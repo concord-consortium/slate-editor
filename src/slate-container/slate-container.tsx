@@ -34,12 +34,6 @@ export const SlateContainer: React.FC<IProps> = (props: IProps) => {
   //   onEditorRef?.(editor);
   //   setChangeCount(count => ++count);
   // }, [onEditorRef]);
-  // const handleFocus = useCallback(() => {
-  //   onFocus?.(editorRef.current);
-  // }, [onFocus]);
-  // const handleBlur = useCallback(() => {
-  //   onBlur?.(editorRef.current);
-  // }, [onBlur]);
 
   const editor = useMemo(() => createEditor({ history: true, onInitEditor }), [onInitEditor]);
   return (
@@ -58,8 +52,6 @@ export const SlateContainer: React.FC<IProps> = (props: IProps) => {
             //   setChangeCount(count => ++count);
             // }}
             // onContentChange={onContentChange}
-            // onFocus={handleFocus}
-            // onBlur={handleBlur}
             {...others}
           />
         </div>

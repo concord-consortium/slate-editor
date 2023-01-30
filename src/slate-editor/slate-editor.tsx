@@ -20,10 +20,12 @@ export interface IProps {
   readOnly?: boolean;
   hotkeyMap?: HotkeyMap;
   historyKeys?: HotkeyMap;
+  onBlur?: React.FocusEventHandler<HTMLDivElement>;
   onChange?: (children: Descendant[]) => void;
+  onFocus?: React.FocusEventHandler<HTMLDivElement>;
 }
 export const SlateEditor = ({
-  className, placeholder, readOnly, hotkeyMap, historyKeys, onChange
+  className, placeholder, readOnly, hotkeyMap, historyKeys, onBlur, onChange, onFocus
 }: IProps) => {
   const editor = useSlate();
 
@@ -45,11 +47,6 @@ export const SlateEditor = ({
   const renderElement = useCallback(props => <Element {...props} />, []);
   const renderLeaf = useCallback((props: RenderLeafProps) => <Leaf {...props} />, []);
 
-  // const isFocused = useFocused();
-  // useEffect(() => {
-  //   console.log("SlateEditor focusChanged:", isFocused);
-  // }, [isFocused]);
-
   return (
     <Editable
       className={`ccrte-editor slate-editor ${className || ""}`}
@@ -59,6 +56,8 @@ export const SlateEditor = ({
       renderLeaf={renderLeaf}
       placeholder={placeholder}
       spellCheck
+      onBlur={onBlur}
+      onFocus={onFocus}
       onKeyDown={event => {
         for (const hotkey in hotKeys) {
           if (isHotkey(hotkey, event)) {
