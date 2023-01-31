@@ -120,8 +120,9 @@ function getDialogValuesFromNode(node?: CustomElement) {
 export function withVariables(editor: Editor) {
   registerVariableElement();
 
-  const { configureElement, isInline } = editor;
+  const { configureElement, isInline, isVoid } = editor;
   editor.isInline = element => (element.type === kVariableFormatCode) || isInline(element);
+  editor.isVoid = element => (element.type === kVariableFormatCode) || isVoid(element);
   editor.plugins.variables = { a: "1", b: "2", c: "3" };
   editor.configureElement = (format: string, controller: IDialogController, node?: CustomElement) => {
     if (format !== kVariableFormatCode) return configureElement(format, controller, node);
@@ -151,6 +152,8 @@ export function withVariables(editor: Editor) {
           const nodePath = node && ReactEditor.findPath(_editor, node);
           nodePath && Transforms.removeNodes(_editor, { at: nodePath });
           Transforms.insertNodes(_editor, variableElement, { select: node != null });
+          // Move the cursor to be after the newly inserted variable.
+          Transforms.move(_editor, { distance: 1, unit: "word" });
         },
         onClose: (_editor) => ReactEditor.focus(_editor)
       });
