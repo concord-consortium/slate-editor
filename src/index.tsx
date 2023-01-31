@@ -1,4 +1,4 @@
-export { Descendant, Editor, Transforms } from "slate";
+export { BaseElement, Descendant, Editor, Transforms } from "slate";
 export { ReactEditor, RenderElementProps, Slate, useFocused, useSelected } from "slate-react";
 export { CustomEditor, CustomElement, CustomText } from "./common/custom-types";
 export {
