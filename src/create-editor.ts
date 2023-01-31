@@ -1,7 +1,9 @@
 import { createEditor as slateCreateEditor, Editor } from "slate";
 import { withHistory } from "slate-history";
 import { withReact } from "slate-react";
-import { isBlockActive, isMarkActive, selectedElements, toggleBlock, toggleMark } from "./common/slate-utils";
+import {
+  isBlockActive, isMarkActive, selectedElements, toggleBlock, toggleMark, toggleSuperSubscript
+} from "./common/slate-utils";
 import { withColorMark } from "./plugins/color-plugin";
 import { withCoreBlocks } from "./plugins/core-blocks-plugin";
 import { withCoreInlines } from "./plugins/core-inlines-plugin";
@@ -19,8 +21,11 @@ export function createEditor(options?: ICreateEditorOptions) {
   let editor = withReact(slateCreateEditor());
   editor = history ? withHistory(editor) : editor;
 
+  editor.plugins = {};
+
   editor.isMarkActive = isMarkActive.bind(editor, editor);
-  editor.toggleMark = toggleMark.bind(editor, editor);
+  editor.toggleMark = (format: string, value: any = true) => toggleMark(editor, format, value);
+  editor.toggleSuperSubscript = toggleSuperSubscript.bind(editor, editor);
   editor.isElementActive = isBlockActive.bind(editor, editor);
   editor.toggleElement = toggleBlock.bind(editor, editor);
 

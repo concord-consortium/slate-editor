@@ -76,7 +76,7 @@ export function registerColorMark() {
       // console.log("testing for color node:", "tag:", el.nodeName, "classes:", el.className, "style:", JSON.stringify(el.style));
       return el.nodeName.toLowerCase() === "span" && el.classList.contains(kTextColorClass);
     },
-    deserializer: (el: HTMLElement, marks: CustomMarks) => marks.color = toHexIfColor(el.style.color)
+    deserialize: (el: HTMLElement, marks: CustomMarks) => marks.color = toHexIfColor(el.style.color)
   });
 
   isRegistered = true;

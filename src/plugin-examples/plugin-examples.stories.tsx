@@ -1,23 +1,24 @@
-/*
-import React, { useCallback, useRef, useState } from "react";
-import { Value } from "slate";
+import React, { useCallback, useMemo } from "react";
 import IconVariable from "./icon-variable";
 import { textToSlate } from "../common/slate-types";
-import { kVariableFormatCode, VariablesPlugin } from "./variable-plugin";
+import { kVariableFormatCode, registerVariableElement, withVariables } from "./variable-plugin";
 import { IProps as ISlateToolbarProps, SlateToolbar, ToolbarTransform } from "../slate-toolbar/slate-toolbar";
 import { getPlatformTooltip, IButtonSpec } from "../editor-toolbar/editor-toolbar";
 import { IProps as ISlateEditorProps, SlateEditor } from "../slate-editor/slate-editor";
-import { Editor } from "slate-react";
+import { createEditor } from "../create-editor";
+import { Slate } from "slate-react";
 
 export default {
   title: "Plugin Examples"
 };
 
+registerVariableElement();
+
 /*
  * Variables
  *
  * Supports creation/editing of variable "chips" with optional values embedded in text.
- *\/
+ */
 const variablesText = "This example demonstrates a customized toolbar/editor with embedded variables in text.";
 
 const VariablesToolbar = (props: ISlateToolbarProps) => {
@@ -32,10 +33,10 @@ const VariablesToolbar = (props: ISlateToolbarProps) => {
         format: kVariableFormatCode,
         SvgIcon: IconVariable,
         tooltip: getPlatformTooltip("variable"),
-        isActive: !!editor && editor.query("isVariableActive"),
-        isEnabled: !!editor && editor.query("isVariableEnabled"),
+        isActive: !!editor?.isElementActive(kVariableFormatCode),
+        isEnabled: !!editor /* ?.isElementEnabled(kVariableFormatCode) */,
         onClick: () => {
-          editor?.command("configureVariable", dialogController);
+          dialogController && editor?.configureElement(kVariableFormatCode, dialogController);
         }
       }
      ] as IButtonSpec[];
@@ -45,32 +46,15 @@ const VariablesToolbar = (props: ISlateToolbarProps) => {
   );
 };
 
-interface IVariablesProps extends Omit<ISlateEditorProps, "value" | "onValueChange"> {}
-export const Variables = (props: IVariablesProps) => {
-  const [value, setValue] = useState(textToSlate(variablesText));
-  const [changeCount, setChangeCount] = useState(0);
-  const editorRef = useRef<Editor>();
-  const handleEditorRef = useCallback((editor?: Editor) => {
-    editorRef.current = editor;
-    setChangeCount(count => ++count);
-  }, []);
-  const variablesPlugin = VariablesPlugin({ a: 1, b: 2, c: 3 });
-  const plugins = [variablesPlugin];
+export const Variables = (props: ISlateEditorProps) => {
+  const initialValue = textToSlate(variablesText);
+  const editor = useMemo(() => withVariables(createEditor()), []);
   return (
     <div className={`variables-example`}>
-      <VariablesToolbar editor={editorRef.current} changeCount={changeCount} />
-      <SlateEditor
-        plugins={plugins}
-        onEditorRef={handleEditorRef}
-        value={value}
-        onValueChange={(_value: Value) => {
-          setValue(_value);
-          // trigger toolbar rerender on selection change as well
-          setChangeCount(count => ++count);
-        }}
-        {...props}
-      />
+      <Slate editor={editor} value={initialValue}>
+        <VariablesToolbar />
+        <SlateEditor {...props} />
+      </Slate>
     </div>
   );
 };
-*/

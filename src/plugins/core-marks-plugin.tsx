@@ -64,7 +64,7 @@ export function registerCoreMarks() {
   for (const tag in kTagToFormatMap) {
     registerMarkDeserializer(tag, {
       test: (el: HTMLElement) => el.nodeName.toLowerCase() === tag,
-      deserializer: (el: HTMLElement, marks: CustomMarks) => marks[kTagToFormatMap[tag] as BooleanMarkType] = true
+      deserialize: (el: HTMLElement, marks: CustomMarks) => marks[kTagToFormatMap[tag] as BooleanMarkType] = true
     });
   }
 

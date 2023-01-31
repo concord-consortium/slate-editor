@@ -98,6 +98,12 @@ export type ParagraphElement = {
 
 // export type VideoElement = { type: 'video'; url: string; children: EmptyText[] };
 
+// plugins can install additional elements unknown to the type system
+export type UnknownElement = {
+  type: string;
+  children: Descendant[];
+};
+
 export type CustomElement =
   | BlockQuoteElement
   | BulletedListElement
@@ -113,12 +119,13 @@ export type CustomElement =
   | ListItemElement
   // | MentionElement
   | NumberedListElement
-  | ParagraphElement;
+  | ParagraphElement
   // | TableElement
   // | TableRowElement
   // | TableCellElement
   // | TitleElement
-  // | VideoElement;
+  | UnknownElement;
+  // | VideoElement
 
 export type CustomText = {
   bold?: boolean;
@@ -151,8 +158,11 @@ export interface CustomRenderLeafProps {
 interface CCBaseEditor extends BaseEditor {
   // document-level metadata (e.g. font-size/zoom level)
   data?: Record<string, boolean | number | string>;
+  // plugins can store values in maps under the plugin name
+  plugins: Record<string, Record<string, any>>;
   isMarkActive: (format: string) => boolean;
-  toggleMark: (format: string, value: any) => void;
+  toggleMark: (format: string, value?: any) => void;
+  toggleSuperSubscript: (format: EFormat.subscript | EFormat.superscript) => void;
   isElementActive: (format: string) => boolean;
   toggleElement: (format: string) => void;
 

@@ -46,10 +46,12 @@ export function registerLinkInline() {
   if (isRegistered) return;
 
   registerElementComponent(EFormat.link, props => <LinkComponent {...props}/>);
-  registerElementDeserializer(kLinkTag, (el: HTMLElement, children: Descendant[]) => {
-    const { href } = el as HTMLAnchorElement;
-    const attrs = href ? { href } : undefined;
-    return jsx("element", { type: EFormat.link, ...attrs, ...getElementAttrs(el, ["href"]) }, children);
+  registerElementDeserializer(kLinkTag, {
+    deserialize: (el: HTMLElement, children: Descendant[]) => {
+      const { href } = el as HTMLAnchorElement;
+      const attrs = href ? { href } : undefined;
+      return jsx("element", { type: EFormat.link, ...attrs, ...getElementAttrs(el, ["href"]) }, children);
+    }
   });
 
   isRegistered = true;

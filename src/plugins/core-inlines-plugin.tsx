@@ -65,14 +65,18 @@ export function registerCoreInlines() {
     });
   }
 
-  registerElementDeserializer("span", (el: HTMLElement, children: Descendant[]) => {
-    return jsx("element", { type: EFormat.inline, ...getElementAttrs(el) }, children);
+  registerElementDeserializer("span", {
+    deserialize: (el: HTMLElement, children: Descendant[]) => {
+      return jsx("element", { type: EFormat.inline, ...getElementAttrs(el) }, children);
+    }
   });
   for (const tag of kLegacyInlineTags) {
-    registerElementDeserializer(tag, function deserializeLegacyInline(el: HTMLElement, _children: Descendant[]) {
-      const legacyTag = kLegacyInlineTags.includes(tag) ? { tag } : undefined;
-      const children = kLegacyEmptyInlineTags.includes(tag) ? undefined : _children;
-      return jsx("element", { type: kTagToFormatMap[tag], ...legacyTag, ...getElementAttrs(el) }, children);
+    registerElementDeserializer(tag, {
+      deserialize: (el: HTMLElement, _children: Descendant[]) => {
+        const legacyTag = kLegacyInlineTags.includes(tag) ? { tag } : undefined;
+        const children = kLegacyEmptyInlineTags.includes(tag) ? undefined : _children;
+        return jsx("element", { type: kTagToFormatMap[tag], ...legacyTag, ...getElementAttrs(el) }, children);
+      }
     });
   }
 

@@ -1,10 +1,3 @@
-describe("HTML utility functions", () => {
-  it("TODO: fix commented out tests", () => {
-    expect(true).toBe(true);
-  });
-});
-
-/*
 import { mergeClassStrings, toReactStyle } from "./html-utils";
 
 describe("HTML utility functions", () => {
@@ -30,4 +23,3 @@ describe("HTML utility functions", () => {
     expect(mergeClassStrings("foo bar", "bar foo baz")).toBe("foo bar baz");
   });
 });
-*/

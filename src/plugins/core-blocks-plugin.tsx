@@ -76,11 +76,13 @@ export function registerCoreBlocks() {
 
   // register a deserializer for each block tag
   for (const tag in kTagToFormatMap) {
-    registerElementDeserializer(tag, (el: HTMLElement, _children: Descendant[]) => {
-      // keep the original tag in the case of legacy block tags so we can use it on export/render
-      const legacyTag = kLegacyBlockTags.includes(tag) ? { tag } : undefined;
-      const children = kVoidBlockTags.includes(tag) ? undefined : _children;
-      return jsx("element", { type: kTagToFormatMap[tag], ...legacyTag, ...getElementAttrs(el) }, children);
+    registerElementDeserializer(tag, {
+      deserialize: (el: HTMLElement, _children: Descendant[]) => {
+        // keep the original tag in the case of legacy block tags so we can use it on export/render
+        const legacyTag = kLegacyBlockTags.includes(tag) ? { tag } : undefined;
+        const children = kVoidBlockTags.includes(tag) ? undefined : _children;
+        return jsx("element", { type: kTagToFormatMap[tag], ...legacyTag, ...getElementAttrs(el) }, children);
+      }
     });
   }
 

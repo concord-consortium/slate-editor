@@ -106,11 +106,13 @@ export function registerImageInline() {
   if (isRegistered) return;
 
   registerElementComponent(EFormat.image, props => <ImageComponent {...props}/>);
-  registerElementDeserializer(kImageTag, (el: HTMLElement, children: Descendant[]) => {
-    const { src, alt, width, height } = el as HTMLImageElement;
-    const attrs = { src, alt, width, height };
-    const omits = Object.keys(attrs);
-    return jsx("element", { type: EFormat.image, ...attrs, ...getElementAttrs(el, omits) }, children);
+  registerElementDeserializer(kImageTag, {
+    deserialize: (el: HTMLElement, children: Descendant[]) => {
+      const { src, alt, width, height } = el as HTMLImageElement;
+      const attrs = { src, alt, width, height };
+      const omits = Object.keys(attrs);
+      return jsx("element", { type: EFormat.image, ...attrs, ...getElementAttrs(el, omits) }, children);
+    }
   });
 
   isRegistered = true;

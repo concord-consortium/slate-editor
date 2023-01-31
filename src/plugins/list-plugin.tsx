@@ -49,8 +49,10 @@ export function registerListBlocks() {
 
   // register a deserializer for each block tag
   for (const tag in kTagToFormatMap) {
-    registerElementDeserializer(tag, (el: HTMLElement, children: Descendant[]) => {
-      return jsx("element", { type: kTagToFormatMap[tag], ...getElementAttrs(el) }, children);
+    registerElementDeserializer(tag, {
+      deserialize: (el: HTMLElement, children: Descendant[]) => {
+        return jsx("element", { type: kTagToFormatMap[tag], ...getElementAttrs(el) }, children);
+      }
     });
   }
 

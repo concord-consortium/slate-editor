@@ -14,13 +14,16 @@ import { escapeNbsp } from "./html-utils";
  */
 interface MarkDeserializer {
   test: (el: HTMLElement) => boolean;
-  deserializer: (el: HTMLElement, marks: CustomMarks) => void;
+  deserialize: (el: HTMLElement, marks: CustomMarks) => void;
 }
 const markElementTags = new Set<string>();
 const markDeserializers: MarkDeserializer[] = [];
 
-type ElementDeserializer = (el: HTMLElement, children: Descendant[]) => Descendant;
-const elementDeserializers: Record<string, ElementDeserializer> = {};
+interface ElementDeserializer {
+  test?: (el: HTMLElement) => boolean;
+  deserialize: (el: HTMLElement, children: Descendant[]) => Descendant;
+}
+const elementDeserializers: Record<string, ElementDeserializer[]> = {};
 
 export function registerMarkDeserializer(tag: string, deserializer: MarkDeserializer) {
   markElementTags.add(tag);
@@ -28,7 +31,13 @@ export function registerMarkDeserializer(tag: string, deserializer: MarkDeserial
 }
 
 export function registerElementDeserializer(tag: string, deserializer: ElementDeserializer) {
-  elementDeserializers[tag] = deserializer;
+  if (!elementDeserializers[tag]) {
+    elementDeserializers[tag] = [deserializer];
+  }
+  else {
+    // later deserializers are inserted first so default <span> deserializer is last
+    elementDeserializers[tag].splice(0, 0, deserializer);
+  }
 }
 
 /*
@@ -102,7 +111,7 @@ const deserialize = (el: Node, markAttributes: CustomMarks = {}): Descendant | D
     markDeserializers.forEach(entry => {
       if (entry.test(el)) {
         isMarkElement = true;
-        entry.deserializer(el, marks);
+        entry.deserialize(el, marks);
       }
     });
   }
@@ -115,9 +124,15 @@ const deserialize = (el: Node, markAttributes: CustomMarks = {}): Descendant | D
   }
 
   if (!isMarkElement) {
-    const eltDeserializer = elementDeserializers[elTag];
+    const eltDeserializers = elementDeserializers[elTag];
     // console.log("calling element deserializer for:", elTag, "hasDeserializer:", !!eltDeserializer);
-    if (eltDeserializer) return eltDeserializer(el, children);
+    if (eltDeserializers) {
+      for (const eltDeserializer of eltDeserializers) {
+        if (!eltDeserializer.test || eltDeserializer.test(el)) {
+          return eltDeserializer.deserialize(el, children);
+        }
+      }
+    }
   }
 
   return jsx('fragment', { tag: elTag }, children);
