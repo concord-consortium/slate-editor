@@ -11,6 +11,7 @@ import { withCoreMarks } from "./plugins/core-marks-plugin";
 import { withEmitter } from "./plugins/emitter-plugin";
 import { withImages } from "./plugins/image-plugin";
 import { withLinkInline } from "./plugins/link-plugin";
+import { withListBlocks } from "./plugins/list-plugin";
 
 interface ICreateEditorOptions {
   history?: boolean;
@@ -39,6 +40,7 @@ export function createEditor(options?: ICreateEditorOptions) {
   editor = withCoreMarks(editor);
   editor = withColorMark(editor);
   editor = withCoreBlocks(editor);
+  editor = withListBlocks(editor);
   editor = withCoreInlines(editor);
   editor = withImages(editor);
   editor = withLinkInline(editor);
