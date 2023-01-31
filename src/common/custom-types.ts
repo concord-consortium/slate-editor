@@ -1,45 +1,40 @@
-import { Descendant, BaseEditor } from 'slate';
+import { Descendant, BaseEditor, BaseElement } from 'slate';
 import { ReactEditor } from 'slate-react';
 import { HistoryEditor } from 'slate-history';
 import { IDialogController } from '../modal-dialog/dialog-types';
 import { EFormat } from './slate-types';
 
-export type BlockQuoteElement = {
+export interface BlockQuoteElement extends BaseElement {
   type: 'block-quote';
   align?: string;
-  children: Descendant[];
-};
+}
 
-export type BulletedListElement = {
+export interface BulletedListElement extends BaseElement {
   type: 'bulleted-list';
   align?: string;
-  children: Descendant[];
-};
+}
 
-// export type CheckListItemElement = {
+// export interface CheckListItemElement extends BaseElement {
 //   type: 'check-list-item';
 //   checked: boolean;
-//   children: Descendant[];
 // };
 
-export type EditableVoidElement = {
+export interface EditableVoidElement extends BaseElement {
   type: 'editable-void';
   children: EmptyText[];
-};
+}
 
-export type HeadingElement = {
+export interface HeadingElement extends BaseElement {
   type: 'heading-one';
   align?: string;
-  children: Descendant[];
-};
+}
 
-export type HeadingTwoElement = {
+export interface HeadingTwoElement extends BaseElement {
   type: 'heading-two';
   align?: string;
-  children: Descendant[];
-};
+}
 
-export type ImageElement = {
+export interface ImageElement extends BaseElement {
   type: 'image';
   src: string;
   alt?: string;
@@ -48,61 +43,63 @@ export type ImageElement = {
   constrain?: boolean;
   float?: 'left' | 'right';
   children: EmptyText[];
-};
+}
 
-export type LegacyBlockElement = {
+export interface LegacyBlockElement extends BaseElement {
   type: EFormat.block;
   tag: string;
   attrs: Record<string, string>;
-  children: Descendant[];
-};
+}
 
-export type LegacyInlineElement = {
+export interface LegacyInlineElement extends BaseElement {
   type: EFormat.inline;
   tag: string;
   attrs: Record<string, string>;
-  children: Descendant[];
-};
+}
 
-export type LinkElement = { type: 'link'; href: string; children: Descendant[] };
+export interface LinkElement extends BaseElement {
+  type: 'link';
+  href: string;
+}
 
-export type ButtonElement = { type: 'button'; children: Descendant[] };
+export interface ButtonElement extends BaseElement {
+  type: 'button';
+}
 
-export type ListItemElement = { type: 'list-item'; children: Descendant[] };
+export interface ListItemElement extends BaseElement {
+  type: 'list-item';
+}
 
-// export type MentionElement = {
+// export interface MentionElement extends BaseElement {
 //   type: 'mention';
 //   character: string;
 //   children: CustomText[];
 // };
 
-export type NumberedListElement = {
+export interface NumberedListElement extends BaseElement {
   type: 'ordered-list';
   align?: string;
-  children: Descendant[];
-};
+}
 
-export type ParagraphElement = {
+export interface ParagraphElement extends BaseElement {
   type: 'paragraph';
   align?: string;
-  children: Descendant[];
-};
+}
 
-// export type TableElement = { type: 'table'; children: TableRow[] }
+// export interface TableElement extends BaseElement { type: 'table'; children: TableRow[] }
 
-// export type TableCellElement = { type: 'table-cell'; children: CustomText[] }
+// export interface TableCellElement extends BaseElement { type: 'table-cell'; children: CustomText[] }
 
-// export type TableRowElement = { type: 'table-row'; children: TableCell[] }
+// export interface TableRowElement extends BaseElement { type: 'table-row'; children: TableCell[] }
 
-// export type TitleElement = { type: 'title'; children: Descendant[] };
+// export interface TitleElement extends BaseElement { type: 'title'; children: Descendant[] }
 
-// export type VideoElement = { type: 'video'; url: string; children: EmptyText[] };
+// export interface VideoElement extends BaseElement { type: 'video'; url: string; children: EmptyText[] }
 
 // plugins can install additional elements unknown to the type system
-export type UnknownElement = {
+export interface UnknownElement extends BaseElement {
   type: string;
-  children: Descendant[];
-};
+}
 
 export type CustomElement =
   | BlockQuoteElement
