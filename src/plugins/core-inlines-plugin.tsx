@@ -95,7 +95,9 @@ function getTagForInline(elt: CustomElement) {
   const { type: format } = elt;
   const mappedTag = kFormatToTagMap[format];
   // use the imported tag for generic <span> elements
-  return isLegacyInlineElement(elt) ? elt.tag || mappedTag : mappedTag;
+  const tag = isLegacyInlineElement(elt) ? elt.tag || mappedTag : mappedTag;
+  // default to <span> if no tag available
+  return tag || "span";
 }
 
 /*
