@@ -97,8 +97,11 @@ export function withCoreBlocks(editor: Editor) {
 function getTagForBlock(elt: CustomElement) {
   const { type: format } = elt;
   const mappedTag = kFormatToTagMap[format];
-  // use the imported tag for generic <div> elements
-  return isLegacyBlockElement(elt) ? elt.tag || mappedTag : mappedTag;
+  // use the imported tag (if present) for generic <div> elements
+  const tag = isLegacyBlockElement(elt) ? elt.tag || mappedTag : mappedTag;
+  // default to <div> if no other tag available
+  !tag && console.warn("CoreBlocksPlugin", "no tag for block:", elt.type, "defaulting to <div>");
+  return tag || "div";
 }
 
 /*

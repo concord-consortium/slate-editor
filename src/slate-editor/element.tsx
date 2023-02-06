@@ -20,8 +20,10 @@ export function registerElementComponent(format: string, Component: ElementCompo
 export const Element = ({ attributes, children: _children, element }: RenderElementProps) => {
   // console.log("rendering Element", "element:", JSON.stringify(element),
   //             "attributes:", JSON.stringify(attributes), "children:", JSON.stringify(_children));
-  const { type } = element;
-  const Component = elementComponents[type] ?? elementComponents.p;
+  const { type, children: eltChildren, ...others } = element;
+  const Component = elementComponents[type] ?? elementComponents.inline;
+  const otherAttrs = elementComponents[type] ? undefined : { ...others };
+  !elementComponents[type] && console.warn("Element:", "no component for:", type, "defaulting to `inline`");
   const children = Array.isArray(_children) && _children.length <= 1 ? _children[0] : _children;
-  return <Component element={element} attributes={attributes}>{children}</Component>;
+  return <Component element={element} attributes={{...otherAttrs, ...attributes}}>{children}</Component>;
 };
