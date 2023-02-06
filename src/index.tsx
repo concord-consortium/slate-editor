@@ -1,9 +1,10 @@
-export { BaseElement, Descendant, Editor, Transforms } from "slate";
+export { BaseElement, BaseSelection, Descendant, Editor, Transforms } from "slate";
 export { ReactEditor, RenderElementProps, Slate, useFocused, useSelected } from "slate-react";
 export { CustomEditor, CustomElement, CustomText } from "./common/custom-types";
 export {
   /* EditorContent, EditorRange, */ EditorValue, EFormat, kSlateVoidClass, slateToText, textToSlate
 } from "./common/slate-types";
+export { defaultHotkeyMap, normalizeSelection } from "./common/slate-utils";
 export { createEditor } from "./create-editor";
 export { useSerializing } from "./hooks/use-serializing";
 export { DialogContent } from "./modal-dialog/dialog-content";

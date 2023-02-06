@@ -1,21 +1,14 @@
 import React, { useMemo } from "react";
 import { Editor } from "slate";
 import { Slate } from "slate-react";
-import { EditorValue, EFormat } from "../common/slate-types";
-import { toggleMark } from "../common/slate-utils";
+import { EditorValue } from "../common/slate-types";
+import { defaultHotkeyMap } from "../common/slate-utils";
 import { createEditor } from "../create-editor";
 import { SerializingContext } from "../hooks/use-serializing";
 import { IProps as IEditorProps, SlateEditor } from "../slate-editor/slate-editor";
 import { SlateToolbar } from "../slate-toolbar/slate-toolbar";
 import { IProps as IPortalToolbarProps, SlateToolbarPortal } from "../slate-toolbar/slate-toolbar-portal";
 import "./slate-container.scss";
-
-const hotkeyMap = {
-  'mod+b': (editor: Editor) => toggleMark(editor, EFormat.bold),
-  'mod+i': (editor: Editor) => toggleMark(editor, EFormat.italic),
-  'mod+u': (editor: Editor) => toggleMark(editor, EFormat.underlined),
-  'mod+\\': (editor: Editor) => toggleMark(editor, EFormat.code)
-};
 
 interface IProps extends IEditorProps {
   className?: string;
@@ -44,7 +37,7 @@ export const SlateContainer: React.FC<IProps> = (props: IProps) => {
           <SlateEditor
             className={editorClassName}
             // value={props.value}
-            hotkeyMap={props.hotkeyMap || hotkeyMap}
+            hotkeyMap={props.hotkeyMap || defaultHotkeyMap}
             // onEditorRef={handleEditorRef}
             // onValueChange={value => {
             //   onValueChange?.(value);

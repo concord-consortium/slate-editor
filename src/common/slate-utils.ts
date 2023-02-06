@@ -1,4 +1,4 @@
-import { Editor, Element as SlateElement, Range, Transforms } from "slate";
+import { BasePoint, Editor, Element as SlateElement, Node, Range, Transforms } from "slate";
 import { CustomElement, CustomMarks, CustomText, EmptyText, MarkType } from "./custom-types";
 import { EFormat } from "./slate-types";
 
@@ -11,6 +11,13 @@ export function isCustomText(node: CustomText | EmptyText): node is CustomText {
 
 const LIST_TYPES = ['ordered-list', 'bulleted-list'];
 const TEXT_ALIGN_TYPES = ['left', 'center', 'right', 'justify'];
+
+export const defaultHotkeyMap = {
+  'mod+b': (editor: Editor) => toggleMark(editor, EFormat.bold),
+  'mod+i': (editor: Editor) => toggleMark(editor, EFormat.italic),
+  'mod+u': (editor: Editor) => toggleMark(editor, EFormat.underlined),
+  'mod+\\': (editor: Editor) => toggleMark(editor, EFormat.code)
+};
 
 export const toggleBlock = (editor: Editor, format: string) => {
   const isActive = isBlockActive(
@@ -123,4 +130,38 @@ export function selectedElements(editor: Editor) {
               match: n => !Editor.isEditor(n) && SlateElement.isElement(n)
             })) as unknown as CustomElement[]
           : [];
+}
+
+// Returns true if the given base point is in the editor, false otherwise.
+// The base point might be outside the editor if there is no node at its path or its offset is greater than the number of characters in the node
+function validateBasePoint(editor: Editor, basePoint: BasePoint) {
+  const node = Node.get(editor, basePoint.path);
+  // Check to make sure the path is legal and results in a text node
+  if (!node || !("text" in node)) {
+    return false;
+  }
+  return basePoint.offset < node.text.length;
+}
+
+// Makes the selection legal if it has become illegal (for example, if undoing changed the underlying model).
+export function normalizeSelection(editor?: Editor) {
+  if (editor?.selection) {
+    const editorRange = Editor.range(editor, []);
+    const selection = editor.selection;
+
+    let legalSelection = Range.includes(editorRange, selection);
+    // Even if the selection and editor ranges overlap, we need to make sure that the actual points are legal.
+    // This can be a problem because offsets are not checked for any nodes except the last one.
+    if (legalSelection) {
+      legalSelection = validateBasePoint(editor, selection.anchor);
+    }
+    if (legalSelection) {
+      legalSelection = validateBasePoint(editor, selection.focus);
+    }
+
+    if (!legalSelection) {
+      const end = Editor.end(editor, []);
+      Transforms.select(editor, { anchor: end, focus: end });
+    }
+  }
 }

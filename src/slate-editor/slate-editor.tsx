@@ -6,6 +6,7 @@ import { Editable, RenderLeafProps, useSlate } from 'slate-react';
 import { Element } from './element';
 import { Leaf } from './leaf';
 import { HotkeyMap } from '../common/slate-types';
+import { defaultHotkeyMap } from '../common/slate-utils';
 
 import './slate-editor.scss';
 
@@ -46,9 +47,10 @@ export const SlateEditor = ({
 
   const hasHistory = "undo" in editor;
   const _historyKeys = hasHistory ? historyKeys || defaultHistoryKeys : undefined;
+  const _hotkeyMap = hotkeyMap || defaultHotkeyMap;
   const hotKeys = useMemo(() => _historyKeys
-                                  ? { ..._historyKeys, ...hotkeyMap }
-                                  : hotkeyMap, [_historyKeys, hotkeyMap]);
+                                  ? { ..._historyKeys, ..._hotkeyMap }
+                                  : _hotkeyMap, [_historyKeys, _hotkeyMap]);
   // TODO: do we need useCallback here?
   // Slate examples use it but we may be able to pass Element, Leaf directly
   const renderElement = useCallback(props => <Element {...props} />, []);
