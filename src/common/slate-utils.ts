@@ -132,6 +132,21 @@ export function selectedElements(editor: Editor) {
           : [];
 }
 
+export function selectedNodesOfType(editor: Editor, type: EFormat) {
+  // editor.selectedElements claims to return a BaseElement[] but it really returns
+  // a NodeEntry[], which is a list of pairs. [Node, Path]
+  // https://docs.slatejs.org/api/nodes/node-entry
+  const nodePairs = editor.selectedElements();
+  const foundNodes: Node[] = [];
+  nodePairs?.forEach((selectedItem: any) => {
+    const node = (selectedItem as any)[0];
+    if (node.type === type) {
+      foundNodes.push(node);
+    }
+  });
+  return foundNodes;
+}
+
 // Returns true if the given base point is in the editor, false otherwise.
 // The base point might be outside the editor if there is no node at its path or its offset is greater than the number of characters in the node
 function validateBasePoint(editor: Editor, basePoint: BasePoint) {
