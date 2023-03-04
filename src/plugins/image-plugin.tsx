@@ -28,10 +28,6 @@ const kFloatValueToClassesMap: Record<string, string[]> = {
 const getClassesForFloatValue = (float?: string) => {
   return float && kFloatValueToClassesMap[float] || undefined;
 };
-// const getFloatValueFromClasses = (classes: string) => {
-//   if (kFloatLeftClasses.some(c => classes.includes(c))) return "left";
-//   if (kFloatRightClasses.some(c => classes.includes(c))) return "right";
-// };
 
 export const isImageElement = (element: CustomElement): element is ImageElement => {
   return element.type === EFormat.image;
@@ -243,46 +239,3 @@ export function withImages(editor: Editor) {
 
   return editor;
 }
-
-// function getDataFromImageElement(el: Element) {
-//   const { data } = getDataFromElement(el);
-//   const _data: Record<string, string | number | boolean> = clone(data) || {};
-//   const _classes = data?.["class"] || "";
-//   let float;
-//   if (data?.width) {
-//     _data.width = Math.round(parseFloat(data.width));
-//   }
-//   if (data?.height) {
-//     _data.height = Math.round(parseFloat(data.height));
-//   }
-//   if (_classes.includes("ccrte-no-constrain")) {
-//     _data.constrain = false;
-//   }
-//   if ((float = getFloatValueFromClasses(_classes))) {
-//     _data.float = float;
-//   }
-//   return { data: _data };
-// }
-
-// const kImageTag = "img";
-
-// export function ImagePlugin(): HtmlSerializablePlugin {
-//   return {
-//     deserialize: function(el, next) {
-//       if (el.tagName.toLowerCase() === kImageTag) {
-//         const data = getDataFromImageElement(el);
-//         return {
-//           object: "inline",
-//           type: EFormat.image,
-//           ...data,
-//           nodes: next(el.childNodes),
-//         };
-//       }
-//     },
-//     serialize: function(obj, children) {
-//       const { object, type } = obj;
-//       if ((object === "inline") && (type === EFormat.image)) {
-//         const image: Inline = obj;
-//         return renderImage(image, getRenderAttributesFromNode(image), children, { isSerializing: true });
-//       }
-//     },

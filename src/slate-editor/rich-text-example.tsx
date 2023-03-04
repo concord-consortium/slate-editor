@@ -276,5 +276,3 @@ const initialValue: Descendant[] = [
     children: [{ text: 'Try it out for yourself!' }],
   },
 ];
-
-// export default RichTextExample;

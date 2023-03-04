@@ -1,5 +1,3 @@
-// import { RenderAttributes } from "slate-react";
-// import { Block, Inline, Mark } from "slate";
 import classNames from "classnames/dedupe";
 import { escape as escapeHtml } from "html-escaper";
 import { CSSProperties } from "react";
@@ -84,7 +82,6 @@ export function getRenderAttributesFromNode(obj: Descendant, omitProps?: string[
   const renderAttrs: RenderAttributes = {};
   if (attrs) {
     for (const key in attrs) {
-      // console.log("getRenderAttributesFromNode processing key:", key);
       const _key = toReactAttributeKey(key);
       if (!omitProps?.find(prop => prop === _key)) {
         const value = _key === "style" ? toReactStyle(attrs[key]) : attrs[key];

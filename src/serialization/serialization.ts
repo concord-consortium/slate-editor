@@ -1,4 +1,4 @@
-import { BaseElement, Descendant } from "slate";
+import { BaseElement, Descendant, Editor } from "slate";
 
 // document-level metadata like fontSize
 type DocumentMetadata = Record<string, any>;
@@ -14,12 +14,10 @@ export function serializeDocument(document: Descendant[]) {
   return { children: document };
 }
 
-// export function serializeSelection(value: Value) {
-//   const { document, selection } = value;
-//   const nodes = document.getDescendantsAtRange(selection).toArray();
-//   const objTypes: ObjectTypeMap = {};
-//   return nodes.map(node => serializeNode(node.toJSON(), objTypes));
-// }
+export function serializeSelection(editor: Editor) {
+  const nodes = editor.getFragment();
+  return nodes.map(node => deserializeNode(node));
+}
 
 export function serializeValue(document: Descendant[], metadata?: DocumentMetadata): SlateExchangeValue {
    const data = metadata ? { data: metadata } : undefined;

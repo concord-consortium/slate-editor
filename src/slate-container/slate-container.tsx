@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Editor } from "slate";
+import { Descendant, Editor } from "slate";
 import { Slate } from "slate-react";
 import { EditorValue } from "../common/slate-types";
 import { defaultHotkeyMap } from "../common/slate-utils";
@@ -13,38 +13,28 @@ import "./slate-container.scss";
 interface IProps extends IEditorProps {
   className?: string;
   editorClassName?: string;
-  value: EditorValue;
+  value: EditorValue | (() => EditorValue);
   toolbar?: IPortalToolbarProps;
+  onBlur?: React.FocusEventHandler<HTMLDivElement>;
+  onChange?: (children: Descendant[]) => void;
+  onFocus?: React.FocusEventHandler<HTMLDivElement>;
   onInitEditor?: (editor: Editor) => Editor;
 }
 
 export const SlateContainer: React.FC<IProps> = (props: IProps) => {
-  const { className, editorClassName, value, toolbar, onInitEditor, ...others } = props;
-  // const editorRef = useRef<Editor>();
-  // const [changeCount, setChangeCount] = useState(0);
-  // const handleEditorRef = useCallback((editor?: Editor) => {
-  //   editorRef.current = editor;
-  //   onEditorRef?.(editor);
-  //   setChangeCount(count => ++count);
-  // }, [onEditorRef]);
+  const { className, editorClassName, value, toolbar, onChange, onInitEditor, ...others } = props;
 
   const editor = useMemo(() => createEditor({ history: true, onInitEditor }), [onInitEditor]);
+  const _value = useMemo(() => Array.isArray(value) ? value : value(), [value]);
   return (
     <SerializingContext.Provider value={false}>
-      <Slate editor={editor} value={value}>
+      <Slate editor={editor} value={_value}>
         <div className={`ccrte-container slate-container ${className || ""}`}>
           {renderToolbar(toolbar)}
           <SlateEditor
             className={editorClassName}
-            // value={props.value}
             hotkeyMap={props.hotkeyMap || defaultHotkeyMap}
-            // onEditorRef={handleEditorRef}
-            // onValueChange={value => {
-            //   onValueChange?.(value);
-            //   // trigger toolbar rerender on selection change as well
-            //   setChangeCount(count => ++count);
-            // }}
-            // onContentChange={onContentChange}
+            onChange={onChange}
             {...others}
           />
         </div>

@@ -2,7 +2,7 @@ export { BaseElement, BaseSelection, Descendant, Editor, Node, Range, Transforms
 export { ReactEditor, RenderElementProps, Slate, useFocused, useSelected, useSlate } from "slate-react";
 export { CustomEditor, CustomElement, CustomText } from "./common/custom-types";
 export {
-  /* EditorContent, EditorRange, */ EditorValue, EFormat, kSlateVoidClass, slateToText, textToSlate
+  EditorValue, EFormat, kSlateVoidClass, slateToText, textToSlate
 } from "./common/slate-types";
 export { defaultHotkeyMap, normalizeSelection, selectedNodesOfType } from "./common/slate-utils";
 export { createEditor } from "./create-editor";
@@ -25,14 +25,12 @@ export {
   deserializeValueFromLegacy, serializeValueToLegacy, validateNodeData
 } from "./serialization/legacy-serialization";
 export {
-  // deserializeDocument, deserializeValue, SlateDocument
   serializeDocument, serializeValue, SlateExchangeValue
 } from "./serialization/serialization";
 export { SlateContainer } from "./slate-container/slate-container";
 export { registerElementComponent } from "./slate-editor/element";
 export { registerMarkRenderer } from "./slate-editor/leaf";
 export { SlateEditor } from "./slate-editor/slate-editor";
-// export { getContentHeight, handleToggleSuperSubscript, hasActiveInline } from "./slate-editor/slate-utils";
 export { SlateToolbar, ToolbarTransform } from "./slate-toolbar/slate-toolbar";
 export { EditorToolbar, IButtonSpec, IToolbarColors, getPlatformTooltip } from "./editor-toolbar/editor-toolbar";
 export {

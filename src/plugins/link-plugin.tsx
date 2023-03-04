@@ -105,24 +105,4 @@ export function withLinkInline(editor: Editor) {
   };
 
   return editor;
-
-  // return {
-  //   deserialize: function(el, next) {
-  //     if (el.tagName.toLowerCase() === kLinkTag) {
-  //       const data = getDataFromElement(el);
-  //       return {
-  //         object: "inline",
-  //         type: EFormat.link,
-  //         ...data,
-  //         nodes: next(el.childNodes),
-  //       };
-  //     }
-  //   },
-  //   serialize: function(obj, children) {
-  //     const { object, type } = obj;
-  //     if ((object === "inline") && (type === EFormat.link)) {
-  //       const link: Inline = obj;
-  //       return renderLink(link, getRenderAttributesFromNode(link), children, true);
-  //     }
-  //   },
 }

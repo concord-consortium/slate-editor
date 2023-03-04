@@ -42,16 +42,17 @@ export function registerElementDeserializer(tag: string, deserializer: ElementDe
 
 /*
   htmlToSlate()
+  Make sure the slate editor has been initialized before calling this!
  */
 export function htmlToSlate(html: string) {
   try {
-    // console.log("parsing...");
     const document = new DOMParser().parseFromString(html, 'text/html');
-    // console.log("parsed, deserializing...");
     const slate = deserialize(document.body);
-    // console.log("deserialized:", JSON.stringify(slate));
     if (!slate) return [];
-    return Array.isArray(slate) ? slate : [slate];
+    return Array.isArray(slate)
+      // For multiline html, we need to remove text nodes for the `\n`s that sneak in.
+      ? slate.filter((node: Descendant) => !isLeafTextNode(node))
+      : [slate];
   }
   catch(e) {
     console.warn("exception caught, returning empty content");
@@ -93,10 +94,9 @@ const deserialize = (el: Node, markAttributes: CustomMarks = {}): Descendant | D
   const elTag = el.nodeName.toLowerCase();
 
   if (isTextNode(el)) {
-    // console.log("deserializing text node:", el.textContent);
     return jsx('text', markAttributes, el.textContent);
   }
-  // console.log("deserializing node of type:", el.nodeType);
+
   if (!isElementNode(el)) {
     console.warn("bailing... element is not of type:", Node.ELEMENT_NODE);
     return null;
@@ -105,7 +105,6 @@ const deserialize = (el: Node, markAttributes: CustomMarks = {}): Descendant | D
   const marks: CustomMarks = { ...markAttributes };
 
   // convert mark elements to mark properties
-  // console.log("hasMarkDeserializer for tag:", elTag, markElementTags.has(elTag));
   let isMarkElement = false;
   if (markElementTags.has(elTag)) {
     markDeserializers.forEach(entry => {
@@ -125,7 +124,6 @@ const deserialize = (el: Node, markAttributes: CustomMarks = {}): Descendant | D
 
   if (!isMarkElement) {
     const eltDeserializers = elementDeserializers[elTag];
-    // console.log("calling element deserializer for:", elTag, "hasDeserializer:", !!eltDeserializer);
     if (eltDeserializers) {
       for (const eltDeserializer of eltDeserializers) {
         if (!eltDeserializer.test || eltDeserializer.test(el)) {
@@ -145,15 +143,12 @@ const deserialize = (el: Node, markAttributes: CustomMarks = {}): Descendant | D
 // cf. https://docs.slatejs.org/concepts/10-serializing#html
 export function serialize (node: Descendant): ReactNode {
   if (isLeafTextNode(node)) {
-    // console.log("serializing leaf node:", node.text);
     // escape non-breaking spaces for legibility
     return <Leaf leaf={node} text={node} attributes={{} as any}>{escapeNbsp(node.text)}</Leaf>;
   }
 
-  // console.log("serializing children...");
   const _children = node.children?.map(n => serialize(n));
 
-  // console.log("serializing element", node.type);
   const children = Array.isArray(_children) && _children.length <= 1 ? _children[0] : _children;
   return (
     <Element element={node} attributes={{} as any}>

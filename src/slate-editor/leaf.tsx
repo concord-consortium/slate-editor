@@ -12,7 +12,6 @@ export function registerMarkRenderer(renderFn: (children: any, leaf: CustomText)
 }
 
 export const Leaf = ({ attributes, children, leaf }: RenderLeafProps) => {
-  // console.log("rendering Leaf...");
   const isSerializing = useSerializing();
 
   // render the individual marks

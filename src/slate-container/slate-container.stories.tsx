@@ -1,5 +1,4 @@
-import React from "react";
-// import { Editor } from "slate-react";
+import React, { useCallback, useLayoutEffect, useState } from "react";
 import { SlateContainer } from "./slate-container";
 import { textToSlate } from "../common/slate-types";
 
@@ -78,15 +77,11 @@ export const WhiteOnBlackToolbar = () => {
   );
 };
 
-/*
 const portalText = "This example demonstrates rendering the toolbar in a React portal (so" +
                   " it can be attached at an arbitrary point in the DOM outside the React" +
                   " hierarchy) as well as hiding/showing the toolbar on blur/focus.";
 export const Portal = () => {
-  const editorRef = useRef<Editor>();
-  const blurTimer = useRef<number>();
   const [isFocused, setIsFocused] = useState(false);
-  const [value, setValue] = useState(textToSlate(portalText));
   const [portalRoot, setPortalRoot] = useState<HTMLDivElement>();
   useLayoutEffect(() => {
     const storyRoot = document.getElementById('root');
@@ -96,46 +91,14 @@ export const Portal = () => {
     setPortalRoot(_portalRoot);
     return (() => { storyRoot?.removeChild(_portalRoot); });
   }, []);
-  const onFocus = useCallback(() => {
-    if (blurTimer.current) {
-      clearTimeout(blurTimer.current);
-      blurTimer.current = undefined;
-    }
-    setTimeout(() => setIsFocused(true));
-  }, []);
-  const onBlur = useCallback(() => {
-    // When clicking on toolbar buttons, there is a momentary blur/focus that occurs.
-    // We don't want the toolbar to flicker, so we set a timer and only blur if we
-    // don't get a focus event shortly after.
-    if (blurTimer.current) return;
-    blurTimer.current = setTimeout(() => {
-      setIsFocused(false);
-      blurTimer.current = undefined;
-    }, 100);
-  }, []);
-  useEffect(() => {
-    const onDown = (e: MouseEvent | TouchEvent) => {
-      const elt = e.target as HTMLElement | null;
-      if (!elt?.closest(".slate-container, .slate-toolbar")) {
-        editorRef.current && editorRef.current?.blur();
-      }
-    };
-    document.addEventListener("mousedown", onDown);
-    document.addEventListener("touchstart", onDown);
-    return () => {
-      document.removeEventListener("mousedown", onDown);
-      document.removeEventListener("touchstart", onDown);
-    };
-  }, []);
+  const onFocus = useCallback(() => setIsFocused(true), []);
+  const onBlur = useCallback(() => setIsFocused(false), []);
   return (
     <SlateContainer
       toolbar={{ portalRoot, show: isFocused, buttonsPerRow: 8 }}
-      onEditorRef={editor => editorRef.current = editor}
-      value={value}
-      onValueChange={_value => setValue(_value)}
+      value={textToSlate(portalText)}
       onFocus={onFocus}
       onBlur={onBlur}
       />
   );
 };
-*/
