@@ -167,12 +167,8 @@ export function normalizeSelection(editor?: Editor) {
     let legalSelection = Range.includes(editorRange, selection);
     // Even if the selection and editor ranges overlap, we need to make sure that the actual points are legal.
     // This can be a problem because offsets are not checked for any nodes except the last one.
-    if (legalSelection) {
-      legalSelection = validateBasePoint(editor, selection.anchor);
-    }
-    if (legalSelection) {
-      legalSelection = validateBasePoint(editor, selection.focus);
-    }
+    legalSelection &&= validateBasePoint(editor, selection.anchor);
+    legalSelection &&= validateBasePoint(editor, selection.focus);
 
     if (!legalSelection) {
       const end = Editor.end(editor, []);
