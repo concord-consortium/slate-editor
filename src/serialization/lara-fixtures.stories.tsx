@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
+import { Descendant } from "slate";
 import pretty from "pretty";
 import { SlateContainer } from "../slate-container/slate-container";
 import { slateToHtml, htmlToSlate } from "./html-serializer";
@@ -10,19 +11,25 @@ export default {
   title: "LARA Fixtures"
 };
 
-export const NaturalHistoryIntro = () => {
-  const slateValue = htmlToSlate(kNaturalHistoryV5Intro);
-  const [value, setValue] = useState(slateValue);
-  const [content, setContent] = useState(slateToHtml(value));
+interface ILaraStoryProps {
+  initialContent: string;
+}
+const LaraStory = ({ initialContent }: ILaraStoryProps) => {
+  const [content, setContent] = useState("");
+  // We can only convert between html and slate after the slate editor has been initialized
+  useEffect(() => setContent(slateToHtml(htmlToSlate(initialContent))), [initialContent]);
+
+  const handleChange = useCallback(function handleChange(children: Descendant[]) {
+    setContent(slateToHtml(children));
+  }, []);
+
   return (
     <div className="serialization-container">
       <div className="panel">
         <SlateContainer
-          value={value}
-          onValueChange={_value => {
-            setValue(_value);
-            setContent(slateToHtml(_value));
-          }}
+          onChange={handleChange}
+          // We can only convert between html and slate after the slate editor has been initialized
+          value={() => htmlToSlate(initialContent)}
         />
       </div>
       <div className="panel output">
@@ -33,94 +40,12 @@ export const NaturalHistoryIntro = () => {
   );
 };
 
-export const NaturalHistoryPage3 = () => {
-  const slateValue = htmlToSlate(kNaturalHistoryV5Page3);
-  const [value, setValue] = useState(slateValue);
-  const [content, setContent] = useState(slateToHtml(value));
-  return (
-    <div className="serialization-container">
-      <div className="panel">
-        <SlateContainer
-          value={value}
-          onValueChange={_value => {
-            setValue(_value);
-            setContent(slateToHtml(_value));
-          }}
-        />
-      </div>
-      <div className="panel output">
-        <h3>Serialized HTML</h3>
-        <pre>{pretty(content)}</pre>
-      </div>
-    </div>
-  );
-};
+export const NaturalHistoryIntro = () => <LaraStory initialContent={kNaturalHistoryV5Intro} />;
 
-export const MonteCarloRisk = () => {
-  const slateValue = htmlToSlate(kMonteCarloRisk);
-  const [value, setValue] = useState(slateValue);
-  const [content, setContent] = useState(slateToHtml(value));
-  return (
-    <div className="serialization-container">
-      <div className="panel">
-        <SlateContainer
-          value={value}
-          onValueChange={_value => {
-            setValue(_value);
-            setContent(slateToHtml(_value));
-          }}
-        />
-      </div>
-      <div className="panel output">
-        <h3>Serialized HTML</h3>
-        <pre>{pretty(content)}</pre>
-      </div>
-    </div>
-  );
-};
+export const NaturalHistoryPage3 = () => <LaraStory initialContent={kNaturalHistoryV5Page3} />;
 
-export const FieldMouseFurColorIntro = () => {
-  const slateValue = htmlToSlate(kFieldMouseFurColorIntro);
-  const [value, setValue] = useState(slateValue);
-  const [content, setContent] = useState(slateToHtml(value));
-  return (
-    <div className="serialization-container">
-      <div className="panel">
-        <SlateContainer
-          value={value}
-          onValueChange={_value => {
-            setValue(_value);
-            setContent(slateToHtml(_value));
-          }}
-        />
-      </div>
-      <div className="panel output">
-        <h3>Serialized HTML</h3>
-        <pre>{pretty(content)}</pre>
-      </div>
-    </div>
-  );
-};
+export const MonteCarloRisk = () => <LaraStory initialContent={kMonteCarloRisk} />;
 
-export const OilAndWaterIntro = () => {
-  const slateValue = htmlToSlate(kOilAndWaterIntro);
-  const [value, setValue] = useState(slateValue);
-  const [content, setContent] = useState(slateToHtml(value));
-  return (
-    <div className="serialization-container">
-      <div className="panel">
-        <SlateContainer
-          value={value}
-          onValueChange={_value => {
-            setValue(_value);
-            setContent(slateToHtml(_value));
-          }}
-        />
-      </div>
-      <div className="panel output">
-        <h3>Serialized HTML</h3>
-        <pre>{pretty(content)}</pre>
-      </div>
-    </div>
-  );
-};
+export const FieldMouseFurColorIntro = () => <LaraStory initialContent={kFieldMouseFurColorIntro} />;
+
+export const OilAndWaterIntro = () => <LaraStory initialContent={kOilAndWaterIntro} />;

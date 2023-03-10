@@ -30,9 +30,11 @@ module.exports = {
     rules: {
       "@typescript-eslint/explicit-module-boundary-types": "off",
       "@typescript-eslint/interface-name-prefix": "off",
+      "@typescript-eslint/member-delimiter-style": "error",
       "@typescript-eslint/no-empty-interface": "off",
       "@typescript-eslint/no-explicit-any": "off",
       "@typescript-eslint/no-unused-vars": ["error", { "args": "none", "ignoreRestSiblings": true }],
+      "@typescript-eslint/semi": ["error", "always"],
       curly: ["error", "multi-line", "consistent"],
       eqeqeq: ["error", "smart"],
       "eslint-comments/no-unused-disable": "warn",
@@ -41,6 +43,6 @@ module.exports = {
       "no-unused-vars": "off",  // superseded by @typescript-eslint/no-unused-vars
       "prefer-const": ["error", { destructuring: "all" }],
       "react/prop-types": "off",
-      semi: ["error", "always"]
+      semi: "off" // superseded by @typescript-eslint/semi
     }
 };

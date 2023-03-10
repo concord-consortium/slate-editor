@@ -1,120 +1,108 @@
-import React, { ReactNode } from "react";
-import { Inline } from "slate";
-import { Editor, RenderAttributes, RenderInlineProps } from "slate-react";
+import React from "react";
+import { Descendant, Editor, Range } from "slate";
+import { jsx } from "slate-hyperscript";
+import { RenderElementProps } from "slate-react";
 import { isWebUri } from "valid-url";
+import { CustomElement, LinkElement } from "../common/custom-types";
+import { useSerializing } from "../hooks/use-serializing";
 import { EFormat } from "../common/slate-types";
-import { IDialogController, IField, IFieldValues } from "../modal-dialog/dialog-types";
-import { getRenderAttributesFromNode, getDataFromElement } from "../serialization/html-utils";
-import { hasActiveInline } from "../slate-editor/slate-utils";
-import { HtmlSerializablePlugin } from "./html-serializable-plugin";
+import { unwrapElement, wrapElement } from "../common/slate-utils";
+import { IDialogController, IField } from "../modal-dialog/dialog-types";
+import { registerElementDeserializer } from "../serialization/html-serializer";
+import { getElementAttrs } from "../serialization/html-utils";
+import { eltRenderAttrs, registerElementComponent } from "../slate-editor/element";
 
-function renderLink(link: Inline, attributes: RenderAttributes, children: ReactNode, isSerializing = false) {
-  const { data } = link;
-  const href: string = data.get('href');
+export const isLinkElement = (element: CustomElement): element is LinkElement => {
+  return element.type === EFormat.link;
+};
+
+// Put this at the start and end of an inline component to work around this Chromium bug:
+// https://bugs.chromium.org/p/chromium/issues/detail?id=1249405
+const InlineChromiumBugfix = () => <span contentEditable={false} style={{ fontSize: 0 }}>{"\u00a0"}</span>;
+
+export const LinkComponent = ({ attributes, children, element }: RenderElementProps) => {
+  const isSerializing = useSerializing();
+
+  if (!isLinkElement(element)) return null;
+
+  const { href } = element;
   const target = isSerializing ? undefined : "_blank";
   const rel = isSerializing ? undefined : "noopener noreferrer";
   const onDoubleClick = isSerializing ? undefined : () => window.open(href);
   return (
-    <a {...attributes} href={href} target={target} rel={rel} onDoubleClick={onDoubleClick}>
+    <a {...attributes} {...eltRenderAttrs(element)} href={href} target={target} rel={rel} onDoubleClick={onDoubleClick}>
+      {!isSerializing && <InlineChromiumBugfix/>}
       {children}
+      {!isSerializing && <InlineChromiumBugfix/>}
     </a>
   );
-}
+};
 
 const kLinkTag = "a";
 
-export function LinkPlugin(): HtmlSerializablePlugin {
-  return {
-    deserialize: function(el, next) {
-      if (el.tagName.toLowerCase() === kLinkTag) {
-        const data = getDataFromElement(el);
-        return {
-          object: "inline",
-          type: EFormat.link,
-          ...data,
-          nodes: next(el.childNodes),
-        };
-      }
-    },
-    serialize: function(obj, children) {
-      const { object, type } = obj;
-      if ((object === "inline") && (type === EFormat.link)) {
-        const link: Inline = obj;
-        return renderLink(link, getRenderAttributesFromNode(link), children, true);
-      }
-    },
+let isRegistered = false;
 
-    queries: {
-      isLinkActive: function(editor: Editor) {
-        return hasActiveInline(editor.value, EFormat.link);
-      },
-      isLinkEnabled: function(editor: Editor) {
-                // must be in a single block
-        return (editor.value.blocks.size <= 1) &&
-                // must have no selected inlines (click will insert link)
-                ((editor.value.inlines.size === 0) ||
-                // or have exactly one inline link selected (click will de-link)
-                ((editor.value.inlines.size === 1) &&
-                  editor.value.inlines.every(inline => inline?.type === EFormat.link)));
-      }
-    },
-    commands: {
-      wrapLink: function (editor: Editor, href: string) {
-        editor.wrapInline({
-          type: EFormat.link,
-          data: { href },
-        });
-        editor.moveToEnd();
-        return editor;
-      },
-      configureLink: function (editor: Editor, dialogController: IDialogController) {
-        const { value } = editor;
-        const hasLink = hasActiveInline(editor.value, EFormat.link);
+export function registerLinkInline() {
+  if (isRegistered) return;
 
-        function unwrapLink(_editor: Editor) {
-          _editor.unwrapInline(EFormat.link);
-        }
+  registerElementComponent(EFormat.link, props => <LinkComponent {...props}/>);
+  registerElementDeserializer(kLinkTag, {
+    deserialize: (el: HTMLElement, children: Descendant[]) => {
+      const { href } = el as HTMLAnchorElement;
+      const attrs = href ? { href } : undefined;
+      return jsx("element", { type: EFormat.link, ...attrs, ...getElementAttrs(el, ["href"]) }, children);
+    }
+  });
 
-        if (hasLink) {
-          editor.command(unwrapLink);
-        } else {
-          const textField: IField[] = value.selection.isExpanded
-                                        ? []
-                                        : [{ name: "linkText", type: "input",
-                                            label: "Link text:" }];
-          const urlField: IField[] = [{ name: "linkUrl", type: "input",
-                                      label: "Link URL:" }];
-          const linkCmd = value.selection.isExpanded ? "applyLink" : "insertLink";
-          dialogController.display({
-            title: "Insert Link",
-            rows: [...textField, ...urlField],
-            values: {},
-            onValidate: (values) => isWebUri(values.linkUrl) ? values : "Error: please enter a properly formatted url",
-            onAccept: (_editor, inputs) => _editor.command(linkCmd, inputs)
-          });
-        }
-        return editor;
-      },
-      insertLink: function (editor: Editor, values: IFieldValues) {
-        const text = values.linkText;
-        const href = values.linkUrl;
-        editor
-          .insertText(text)
-          .moveFocusBackward(text.length)
-          .command("wrapLink", href);
-        return editor;
-      },
-      applyLink: function (editor: Editor, values: IFieldValues) {
-        const href = values.linkUrl;
-        editor.command("wrapLink", href);
-        return editor;
-      }
-    },
-    renderInline: (props: RenderInlineProps, editor: Editor, next: () => any) => {
-      const { attributes, children, node } = props;
-      return node.type === EFormat.link
-              ? renderLink(node, { ...getRenderAttributesFromNode(node), ...attributes }, children)
-              : next();
+  isRegistered = true;
+}
+
+export function withLinkInline(editor: Editor) {
+  registerLinkInline();
+
+  const { configureElement, isElementEnabled, isInline } = editor;
+
+  editor.isInline = element => (element.type === EFormat.link) || isInline(element);
+
+  editor.isElementEnabled = format => {
+    if (format !== EFormat.link) return isElementEnabled(format);
+
+    let blocks = 0, inlines = 0, links = 0;
+
+    const elements = editor.selectedElements();
+    elements.forEach(elt => {
+      editor.isInline(elt) ? ++inlines : ++blocks;
+      isLinkElement(elt) && ++links;
+    });
+
+    // must be within a single block and no more than one inline/link selected
+    return (blocks <= 1) && ((inlines === 0) || (inlines === 1 && links === 1));
+  };
+
+  editor.configureElement = (format: string, controller: IDialogController, node?: CustomElement) => {
+    if (format !== EFormat.link) return configureElement(format, controller, node);
+
+    const { selection } = editor;
+    const isCollapsed = selection && Range.isCollapsed(selection);
+    const hasLink = editor.isElementActive(EFormat.link);
+
+    if (hasLink) {
+      unwrapElement(editor, EFormat.link);
+    } else {
+      const textField: IField[] = isCollapsed
+                                    ? [{ name: "linkText", type: "input", label: "Link text:" }]
+                                    : [];
+      const urlField: IField[] = [{ name: "linkUrl", type: "input", label: "Link URL:" }];
+
+      controller.display({
+        title: "Insert Link",
+        rows: [...textField, ...urlField],
+        values: {},
+        onValidate: (values) => isWebUri(values.linkUrl) ? values : "Error: please enter a properly formatted url",
+        onAccept: (_editor, inputs) => wrapElement(_editor, EFormat.link, { href: inputs.linkUrl }, inputs.linkText)
+      });
     }
   };
+
+  return editor;
 }

@@ -1,8 +1,8 @@
-import { Editor } from "slate-react";
+import { Editor } from "slate";
 
 export type FieldType = "checkbox" | "input" | "label" | "select";
 
-export type SelectValue = { value: string, label: string };
+export type SelectValue = { value: string; label: string };
 export type SelectOptions = SelectValue[];
 
 export interface IField {
@@ -16,7 +16,7 @@ export interface IField {
 export type IRow = IField | IField[];
 
 // maps name => value
-export type IFieldValues = Record<string, string>
+export type IFieldValues = Record<string, string>;
 
 export interface DisplayDialogSettings {
   title: string;
@@ -25,6 +25,7 @@ export interface DisplayDialogSettings {
   onChange?: (editor: Editor, name: string, value: string, values: IFieldValues) => boolean | undefined;
   onValidate?: (values: IFieldValues) => IFieldValues | string;
   onAccept?: (editor: Editor, values: IFieldValues) => void;
+  onClose?: (editor: Editor) => void;
 }
 
 export interface IDialogController {

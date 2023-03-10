@@ -1,7 +1,19 @@
-import { RenderAttributes } from "slate-react";
-import { Block, Inline, Mark } from "slate";
 import classNames from "classnames/dedupe";
+import { escape as escapeHtml } from "html-escaper";
+import { CSSProperties } from "react";
+import rgbHex from "rgb-hex";
+import { Descendant } from "slate";
 import parseStyle from "style-to-object";
+
+export function escapeHtmlAndNbsp(text: string) {
+  return escapeNbsp(escapeHtml(text));
+}
+
+export function escapeNbsp(text: string) {
+  return text.replace(/\u00A0/g, "&nbsp;");
+}
+
+export type RenderAttributes = Record<string, string | CSSProperties>;
 
 export function toReactAttributeKey(key: string) {
   return key.toLowerCase()
@@ -16,13 +28,26 @@ export function toReactStyleKey(key: string) {
   return key.replace(CAMELIZE, token => token[1].toUpperCase());
 }
 
+export function toHexIfColor(s: string) {
+  if (s.includes("rgb")) {
+    try {
+      const hex = rgbHex(s);
+      return `#${hex}` || s;
+    }
+    catch(e) {
+      // ignore
+    }
+  }
+  return s;
+}
+
 export function toReactStyle(styleStr?: string): React.CSSProperties | undefined {
   const style: Record<string, string> = {};
   let count = 0;
   styleStr && parseStyle(styleStr, (name, value) => {
                 // convert to react key format (ignoring custom css properties)
                 const key = /^--.*/.test(name) ? name : toReactStyleKey(name);
-                style[key] = value;
+                style[key] = toHexIfColor(value);
                 ++count;
               });
   return count ? style as React.CSSProperties : undefined;
@@ -39,17 +64,31 @@ export function getDataFromElement(el: Element, _data?: Record<string, string>) 
   return { data };
 }
 
-export function getRenderAttributesFromNode(obj: Block | Inline | Mark, omitProps?: string[]): RenderAttributes {
-  const { data } = obj;
-  const renderAttrs: Record<string, string | React.CSSProperties> = {};
-  data.forEach((value, key: string) => {
-    const _key = toReactAttributeKey(key);
-    if (!omitProps?.find(prop => prop === _key)) {
-      renderAttrs[_key] = _key === "style"
-                            ? toReactStyle(value)
-                            : value;
+export function getElementAttrs(el: Element, omits: string[] = []) {
+  if (!el.hasAttributes()) return {};
+  const attrs: Record<string, string> = {};
+  for (let i = 0; i < el.attributes.length; ++i) {
+    let key = el.attributes[i].name.toLowerCase();
+    if (!omits.includes(key)) {
+      if (key === "classname") key = "class";
+      attrs[key] = el.attributes[i].value;
     }
-  });
+  }
+  return { attrs };
+}
+
+export function getRenderAttributesFromNode(obj: Descendant, omitProps?: string[]): RenderAttributes {
+  const attrs: Record<string, string> | undefined = (obj as any).attrs;
+  const renderAttrs: RenderAttributes = {};
+  if (attrs) {
+    for (const key in attrs) {
+      const _key = toReactAttributeKey(key);
+      if (!omitProps?.find(prop => prop === _key)) {
+        const value = _key === "style" ? toReactStyle(attrs[key]) : attrs[key];
+        value && (renderAttrs[_key] = value);
+      }
+    }
+  }
   return renderAttrs;
 }
 

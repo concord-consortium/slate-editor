@@ -1,6 +1,8 @@
-import React, { useState } from "react";
-import { HotkeyMap } from "../common/slate-hooks";
-import { EFormat, textToSlate } from "../common/slate-types";
+import React, { useMemo } from "react";
+import { Slate } from "slate-react";
+import { EFormat, HotkeyMap, textToSlate } from "../common/slate-types";
+import { toggleMark } from "../common/slate-utils";
+import { createEditor } from "../create-editor";
 import { SlateEditor } from "./slate-editor";
 
 export default {
@@ -8,65 +10,49 @@ export default {
 };
 
 const hotkeyMap: HotkeyMap = {
-        'mod+b': editor => editor.toggleMark(EFormat.bold),
-        'mod+i': editor => editor.toggleMark(EFormat.italic),
-        'mod+u': editor => editor.toggleMark(EFormat.underlined)
-      };
-
-const baseValue = "This editor-only example has no toolbar but keyboard shortcuts should work, ";
-const initialValueWithHistory = textToSlate(baseValue + "including mod+[shift]+z for undo/redo.");
+  'mod+b': editor => toggleMark(editor, EFormat.bold),
+  'mod+i': editor => toggleMark(editor, EFormat.italic),
+  'mod+u': editor => toggleMark(editor, EFormat.underlined)
+};
 
 export const ReadOnly = () => {
-  const [value, setValue] = useState(textToSlate("This read-only text should be selectable but not editable."));
+  const editor = useMemo(() => createEditor(), []);
+  const initialValue = textToSlate("This read-only text should be selectable but not editable.");
   return (
-    <SlateEditor
-      className="slate-editor"
-      readOnly={true}
-      value={value}
-      onValueChange={_value => setValue(_value)}
-      hotkeyMap={hotkeyMap}
-      />
+    <Slate editor={editor} value={initialValue}>
+      <SlateEditor
+        className="slate-editor"
+        readOnly={true}
+        hotkeyMap={hotkeyMap}
+        />
+    </Slate>
+  );
+};
+
+const baseValue = "This editor-only example has no toolbar but keyboard shortcuts should work, ";
+const initialValueWithoutHistory = textToSlate(baseValue);
+const initialValueWithHistory = textToSlate(baseValue + "including mod+[shift]+z for undo/redo.");
+
+export const WithoutHistory = () => {
+  const editor = useMemo(() => createEditor({ history: false }), []);
+  return (
+    <Slate editor={editor} value={initialValueWithoutHistory}>
+      <SlateEditor
+        className="slate-editor"
+        hotkeyMap={hotkeyMap}
+        />
+    </Slate>
   );
 };
 
 export const WithHistory = () => {
-  const [value, setValue] = useState(initialValueWithHistory);
+  const editor = useMemo(() => createEditor({ history: true }), []);
   return (
-    <SlateEditor
-      className="slate-editor"
-      value={value}
-      onValueChange={_value => setValue(_value)}
-      hotkeyMap={hotkeyMap}
-      />
-  );
-};
-
-const initialValueWithCustomHistory = textToSlate(baseValue + "including mod+ctrl+u/r for undo/redo.");
-
-export const WithCustomHistory = () => {
-  const [value, setValue] = useState(initialValueWithCustomHistory);
-  return (
-    <SlateEditor
-      className="slate-editor"
-      value={value}
-      onValueChange={_value => setValue(_value)}
-      hotkeyMap={hotkeyMap}
-      history={{ undoHotkey: "mod+ctrl+u", redoHotkey: "mod+ctrl+r" }}
-      />
-  );
-};
-
-const initialValueWithoutHistory = textToSlate(baseValue + "except undo/redo is disabled.");
-
-export const WithoutHistory = () => {
-  const [value, setValue] = useState(initialValueWithoutHistory);
-  return (
-    <SlateEditor
-      className="slate-editor"
-      value={value}
-      onValueChange={_value => setValue(_value)}
-      hotkeyMap={hotkeyMap}
-      history={false}
-      />
+    <Slate editor={editor} value={initialValueWithHistory}>
+      <SlateEditor
+        className="slate-editor"
+        hotkeyMap={hotkeyMap}
+        />
+    </Slate>
   );
 };

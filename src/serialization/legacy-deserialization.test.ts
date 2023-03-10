@@ -1,101 +1,71 @@
-describe("Slate Editor serialization", () => {
-  it("TODO: fix commented out tests", () => {
-    expect(true).toBe(true);
-  });
-});
+import { convertDocument, convertElement, convertMark, convertNode, convertTextNode, slate47to50 } from "./legacy-deserialization";
 
-/*
-import { serializeMark, deserializeMark,
-        serializeTextNode, deserializeTextNode,
-        serializeElement, deserializeElement,
-        serializeNode, deserializeNode,
-        serializeDocument, deserializeDocument,
-        ObjectTypeMap } from "./serialization";
-import { BlockJSON, DocumentJSON, InlineJSON, MarkJSON, TextJSON } from "slate";
-
-describe("Slate Editor serialization", () => {
-
-  const boldMark: MarkJSON = { type: "bold" };
+// FIXME: Should these all be typed?
+describe("Slate 47 to 50+ json conversion", () => {
+  const boldMark = { type: "bold" };
   const colorValue = "#aabbcc";
-  const colorMark: MarkJSON = { type: "color", data: { color: colorValue } };
-  it("can serialize/deserialize marks", () => {
-    expect(serializeMark(boldMark)).toBe(true);
-    expect(deserializeMark("bold", true)).toEqual(boldMark);
-
-    expect(serializeMark(colorMark)).toBe(colorValue);
-    expect(deserializeMark("color", colorValue)).toEqual(colorMark);
-
-    const nestedValue = { key: "value" };
-    const nestedMark: MarkJSON = { type: "nested", data: nestedValue };
-    expect(serializeMark(nestedMark)).toEqual(nestedValue);
-    expect(deserializeMark("nested", nestedValue)).toEqual(nestedMark);
-  });
-
-  const emptyTextNode: TextJSON = { object: "text", text: "" };
-  const emptyText050 = { text: "" };
-  const textNode: TextJSON = { object: "text", text: "foo", marks: [boldMark] };
-  const text050 = { text: "foo", bold: true };
-  it("can serialize/deserialize text nodes", () => {
-    // empty text node
-    expect(serializeTextNode(emptyTextNode)).toEqual(emptyText050);
-    expect(deserializeTextNode(emptyText050)).toEqual(emptyTextNode);
-
-    // text node with text and marks
-    expect(serializeTextNode(textNode)).toEqual(text050);
-    expect(deserializeTextNode(text050)).toEqual(textNode);
-  });
-
-  const blockNode: BlockJSON = { object: "block", type: "my-block",
+  const colorMark = { type: "color", data: { color: colorValue } };
+  const blockNode = { object: "block", type: "my-block",
                                 nodes: [{ object: "text", text: "" }] };
   const block050 = { type: "my-block", children: [{ text: "" }] };
   const nodeData = { nodeKey: "nodeValue" };
-  const inlineNode: InlineJSON = { object: "inline", type: "my-inline",
+  const inlineNode =  { object: "inline", type: "my-inline",
                                   nodes: [{ object: "text", text: "" }],
                                   key: "my-key", data: nodeData };
   const inline050 = { type: "my-inline", children: [{ text: "" }],
                       key: "my-key", nodeKey: "nodeValue" };
-  it("can serialize/deserialize blocks/inlines", () => {
+  const emptyTextNode = { object: "text", text: "" };
+  const emptyText050 = { text: "" };
+  const textNode = { object: "text", text: "foo", marks: [boldMark] };
+  const text050 = { text: "foo", bold: true };
+
+  it("can convert marks", () => {
+    expect(convertMark(boldMark)).toBe(true);
+
+    expect(convertMark(colorMark)).toBe(colorValue);
+
+    const nestedValue = { key: "value" };
+    const nestedMark = { type: "nested", data: nestedValue };
+    expect(convertMark(nestedMark)).toEqual(nestedValue);
+  });
+
+  it("can convert text nodes", () => {
+    // empty text node
+    expect(convertTextNode(emptyTextNode)).toEqual(emptyText050);
+
+    // text node with text and marks
+    expect(convertTextNode(textNode)).toEqual(text050);
+  });
+
+  it("can convert blocks/inlines", () => {
     // block
-    const objTypes: ObjectTypeMap = {};
-    expect(serializeElement(blockNode, objTypes)).toEqual(block050);
+    const objTypes = {};
+    expect(convertElement(blockNode, objTypes)).toEqual(block050);
     expect(objTypes).toEqual({ "my-block": "block" });
-    expect(deserializeElement(block050, objTypes)).toEqual(blockNode);
 
     // inline
-    expect(serializeElement(inlineNode, objTypes)).toEqual(inline050);
+    expect(convertElement(inlineNode, objTypes)).toEqual(inline050);
     expect(objTypes).toEqual({ "my-block": "block", "my-inline": "inline" });
-    expect(deserializeElement(inline050, objTypes)).toEqual(inlineNode);
 
     // untyped blocks default to paragraphs
     const untypedTextJSON = { text: "foo" };
     const untypedParagraphJSON = { nodes: [untypedTextJSON] };
     const untypedText050 = { text: "foo" };
     const untypedParagraph050 = { children: [untypedText050] };
-    const typedTextJSON = { object: "text", text: "foo" };
-    const paragraphJSON = {
-            object: "block",
-            type: "paragraph",
-            nodes: [typedTextJSON]
-          };
-    expect(serializeNode(untypedParagraphJSON, objTypes)).toEqual(untypedParagraph050);
-    expect(deserializeNode(untypedParagraph050, objTypes)).toEqual(paragraphJSON);
+    expect(convertNode(untypedParagraphJSON, objTypes)).toEqual(untypedParagraph050);
   });
 
-  it("can serialize/deserialize documents", () => {
-    const document: DocumentJSON = { object: "document",
+  it("can convert documents", () => {
+    const document =  { object: "document",
                                     nodes: [blockNode, inlineNode, textNode] };
-    const serializedDocument = serializeDocument(document);
+    const serializedDocument = convertDocument(document);
     const doc050 = { children: [block050, inline050, text050],
                     objTypes: { "my-block": "block", "my-inline": "inline" } };
     expect(serializedDocument).toEqual(doc050);
-    expect(deserializeDocument(doc050)).toEqual(document);
   });
-});
 
-describe("More Slate Editor serialization", () => {
-
-  it("can serialize/deserialize the richtext example", () => {
-    const richText047: DocumentJSON = {
+  it("can convert the richtext example", () => {
+    const richText047 = {
             "object": "document",
             "nodes": [
               {
@@ -214,13 +184,12 @@ describe("More Slate Editor serialization", () => {
               children: [{ text: 'Try it out for yourself!' }],
             },
           ];
-    const serializedDocument = serializeDocument(richText047);
-    expect(serializedDocument.children).toEqual(richText050);
-    expect(deserializeDocument(serializedDocument)).toEqual(richText047);
+    const converted = convertDocument(richText047);
+    expect(converted.children).toEqual(richText050);
   });
 
-  it("can serialize/deserialize the links example", () => {
-    const links047: DocumentJSON = {
+  it("can convert the links example", () => {
+    const links047 = {
             "object": "document",
             "nodes": [
               {
@@ -291,9 +260,111 @@ describe("More Slate Editor serialization", () => {
               ],
             },
           ];
-    const serializedDocument = serializeDocument(links047);
-    expect(serializedDocument.children).toEqual(links050);
-    expect(deserializeDocument(serializedDocument)).toEqual(links047);
+    const converted = convertDocument(links047);
+    expect(converted.children).toEqual(links050);
+  });
+
+  it("can convert an empty document", () => {
+    const doc047 = {
+      "object":"document",
+      "data":{},
+      "nodes":[
+        {
+          "object":"block",
+          "type":"paragraph",
+          "data":{},
+          "nodes":[
+            {
+              "object":"text",
+              "text":"",
+              "marks":[]
+            }
+          ]
+        }
+      ]
+    };
+    const doc050 = {
+      object: "value",
+      document: {
+        children: [
+          {
+            "type":"paragraph",
+            "children":[
+              {
+                "text":""
+              }
+            ]
+          }
+        ],
+        objTypes: {
+          paragraph: "block"
+        }
+      }
+    };
+    const converted = slate47to50(doc047);
+    expect(converted).toEqual(doc050);
+  });
+
+  it("can convert a sorted list", () => {
+    const doc047 = {"object":"document","data":{},"nodes":[{"object":"block","type":"ordered-list","data":{},"nodes":[{"object":"block","type":"list-item","data":{},"nodes":[{"object":"text","text":"a","marks":[]}]},{"object":"block","type":"list-item","data":{},"nodes":[{"object":"text","text":"b","marks":[]}]},{"object":"block","type":"list-item","data":{},"nodes":[{"object":"text","text":"c","marks":[]}]}]}]};
+    const doc050 = {
+      object: "value",
+      document: {
+        children: [{"type":"ordered-list","children":[{"type":"list-item","children":[{"text":"a"}]},{"type":"list-item","children":[{"text":"b"}]},{"type":"list-item","children":[{"text":"c"}]}]}],
+        objTypes: {
+          "ordered-list": "block",
+          "list-item": "block"
+        }
+      }
+    };
+    const converted = slate47to50(doc047);
+    expect(converted).toEqual(doc050);
+  });
+
+  it("can convert an unsorted list", () => {
+    const doc047 = {"object":"document","data":{},"nodes":[{"object":"block","type":"bulleted-list","data":{},"nodes":[{"object":"block","type":"list-item","data":{},"nodes":[{"object":"text","text":"a","marks":[]}]},{"object":"block","type":"list-item","data":{},"nodes":[{"object":"text","text":"b","marks":[]}]},{"object":"block","type":"list-item","data":{},"nodes":[{"object":"text","text":"c","marks":[]}]}]}]};
+    const doc050 = {
+      object: "value",
+      document: {
+        children: [{"type":"bulleted-list","children":[{"type":"list-item","children":[{"text":"a"}]},{"type":"list-item","children":[{"text":"b"}]},{"type":"list-item","children":[{"text":"c"}]}]}],
+        objTypes: {
+          "bulleted-list": "block",
+          "list-item": "block"
+        }
+      }
+    };
+    const converted = slate47to50(doc047);
+    expect(converted).toEqual(doc050);
+  });
+
+  it("can convert text with color", () => {
+    const doc047 = {"object":"document","data":{},"nodes":[{"object":"block","type":"paragraph","data":{},"nodes":[{"object":"text","text":"some ","marks":[]},{"object":"text","text":"colorful","marks":[{"object":"mark","type":"color","data":{"color":"#ff0000"}}]},{"object":"text","text":" text","marks":[]}]}]};
+    const doc050 = {
+      object: "value",
+      document: {
+        children: [{"type":"paragraph","children":[{"text":"some "},{"text":"colorful","color":"#ff0000"},{"text":" text"}]}],
+        objTypes: {
+          "paragraph": "block"
+        }
+      }
+    };
+    const converted = slate47to50(doc047);
+    expect(converted).toEqual(doc050);
+  });
+
+  it("can convert an image", () => {
+    const doc047 = {"object":"document","data":{},"nodes":[{"object":"block","type":"paragraph","data":{},"nodes":[{"object":"text","text":"","marks":[]},{"object":"inline","type":"image","data":{"src":"https://www.commonsense.org/sites/default/files/png/2019-02/concord.png","width":225,"height":225},"nodes":[{"object":"text","text":"","marks":[]}]},{"object":"text","text":"","marks":[]}]}]};
+    const doc050 = {
+      object: "value",
+      document: {
+        children: [{"type":"paragraph","children":[{"text":""},{"type":"image","src":"https://www.commonsense.org/sites/default/files/png/2019-02/concord.png","children":[{"text":""}],"width":225,"height":225},{"text":""}]}],
+        objTypes: {
+          "paragraph": "block",
+          "image": "inline"
+        }
+      }
+    };
+    const converted = slate47to50(doc047);
+    expect(converted).toEqual(doc050);
   });
 });
-*/

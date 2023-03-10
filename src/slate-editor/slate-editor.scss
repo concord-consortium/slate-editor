@@ -13,9 +13,9 @@
     margin-left: 0;
     margin-right: 0;
     padding-left: 10px;
-    color: #aaa;
+    color: #888;
   }
-  .text-color {
+  .ccrte-text-color {
     // allow selected text color to be set from JavaScript via CSS variable
     &::selection {
       color: var(--selected-color);

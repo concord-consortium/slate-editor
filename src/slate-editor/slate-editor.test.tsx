@@ -1,11 +1,11 @@
-import EventEmitter from "eventemitter3";
 import React from "react";
 // not being picked up from `jest.setup.ts` for some reason
 import "@testing-library/jest-dom";
-import { render } from "@testing-library/react";
-import { Editor } from "slate-react";
-import { slateToText, textToSlate } from "../common/slate-types";
-import { IProps, SlateEditor } from "./slate-editor";
+import { render, screen } from "@testing-library/react";
+import { Slate } from "slate-react";
+import { EditorValue, slateToText, textToSlate } from "../common/slate-types";
+import { IProps as ISlateEditorProps, SlateEditor } from "./slate-editor";
+import { createEditor } from "../create-editor";
 
 describe("Slate Editor", () => {
 
@@ -15,67 +15,65 @@ describe("Slate Editor", () => {
     window.getSelection = () => null;
   });
 
-  const renderEditor = (props: IProps) => render(<SlateEditor {...props} />);
+  interface IRenderEditorProps extends ISlateEditorProps {
+    initialValue?: EditorValue;
+  }
+  const renderEditor = (props: IRenderEditorProps) => {
+    const { initialValue = [], ...editorProps } = props;
+    const editor = createEditor({ history: true });
+    const renderResult = render(
+      <Slate editor={editor} value={initialValue}>
+        <SlateEditor {...editorProps} />
+      </Slate>
+    );
+    return { ...renderResult, editor };
+  };
 
   describe("Snapshots", () => {
     it("should open with default/empty content", () => {
-      let editorRef: Editor | undefined;
-      const { getByTestId } = renderEditor({
-                                className: "test-class",
-                                onEditorRef: (ref?: Editor) => { editorRef = ref; }
-                              });
+      const { getByTestId } = screen;
+      const { editor } = renderEditor({ className: "test-class" });
 
       const slateEditor = getByTestId("ccrte-editor");
       expect(slateEditor).toHaveClass("test-class");
-      expect(slateToText(editorRef?.value)).toBe("");
+      expect(slateToText(editor.children)).toBe("");
     });
 
     it("should open with specified content", () => {
-      let editorRef: Editor | undefined;
+      const { getByTestId } = screen;
+
       const text = "Some Text!";
       const initialValue = textToSlate(text);
-      const { getByTestId } = renderEditor({
-                                className: "test-class-2",
-                                value: initialValue,
-                                onEditorRef: (ref?: Editor) => { editorRef = ref; }
-                              });
+      const { editor } = renderEditor({ className: "test-class-2", initialValue });
 
       const slateEditor = getByTestId("ccrte-editor");
       expect(slateEditor).toHaveClass("test-class-2");
-      expect(slateToText(editorRef?.value)).toBe(text);
+      expect(slateToText(editor.children)).toBe(text);
     });
 
     it("should handle two editor instances emitting separately", () => {
-      let editor1Ref: Editor | undefined;
-      let editor2Ref: Editor | undefined;
+      const editors = [createEditor({ history: true }), createEditor({ history: true })];
+      const editorValues = [textToSlate("Editor 1"), textToSlate("Editor 2")];
       render(
-        <>
-          <SlateEditor className="editor-1" onEditorRef={(ref?: Editor) => { editor1Ref = ref; }} />
-          <SlateEditor className="editor-2" onEditorRef={(ref?: Editor) => { editor2Ref = ref; }} />
-        </>);
+        <div>
+          {editors.map((editor, i) => (
+            <Slate key={`editor-${i}`} editor={editor} value={editorValues[i]}>
+              <SlateEditor className={`editor-${i}`} />
+            </Slate>
+          ))}
+        </div>
+      );
 
-      expect(editor1Ref).toBeDefined();
-      expect(editor2Ref).toBeDefined();
-      expect(editor1Ref === editor2Ref).toBe(false);
-
-      const emitter1: EventEmitter | undefined = editor1Ref?.query("emitter");
-      const emitter2: EventEmitter | undefined = editor2Ref?.query("emitter");
-      expect(emitter1).toBeDefined();
-      expect(emitter2).toBeDefined();
-      expect(emitter1 === emitter2).toBe(false);
-
-      const listener1 = jest.fn();
-      const listener2 = jest.fn();
-      emitter1?.on("foo", listener1);
-      emitter2?.on("foo", listener2);
+      const listeners = [jest.fn(), jest.fn()];
+      editors.forEach((editor, i) => editor.onEvent("foo", listeners[i]));
       // editor 1 emitting "foo" should only trigger editor 1 listener
-      editor1Ref?.command("emit", "foo");
-      expect(listener1).toBeCalledTimes(1);
-      expect(listener2).toBeCalledTimes(0);
+      editors[0].emitEvent("foo");
+      expect(listeners[0]).toBeCalledTimes(1);
+      expect(listeners[1]).toBeCalledTimes(0);
       // editor 2 emitting "foo" should only trigger editor 2 listener
-      editor2Ref?.command("emit", "foo");
-      expect(listener1).toBeCalledTimes(1);
-      expect(listener2).toBeCalledTimes(1);
+      editors[1].emitEvent("foo");
+      expect(listeners[0]).toBeCalledTimes(1);
+      expect(listeners[1]).toBeCalledTimes(1);
     });
 
   });

@@ -1,74 +1,50 @@
-import React, { useCallback, useRef, useState } from "react";
-import { Editor } from "slate-react";
-import { EFormat } from "../common/slate-types";
+import React, { useMemo } from "react";
+import { Descendant, Editor } from "slate";
+import { Slate } from "slate-react";
+import { EditorValue } from "../common/slate-types";
+import { defaultHotkeyMap } from "../common/slate-utils";
+import { createEditor } from "../create-editor";
+import { SerializingContext } from "../hooks/use-serializing";
 import { IProps as IEditorProps, SlateEditor } from "../slate-editor/slate-editor";
 import { SlateToolbar } from "../slate-toolbar/slate-toolbar";
 import { IProps as IPortalToolbarProps, SlateToolbarPortal } from "../slate-toolbar/slate-toolbar-portal";
 import "./slate-container.scss";
 
-const hotkeyMap = {
-        'mod+b': (editor: Editor) => editor.toggleMark(EFormat.bold),
-        'mod+i': (editor: Editor) => editor.toggleMark(EFormat.italic),
-        'mod+u': (editor: Editor) => editor.toggleMark(EFormat.underlined),
-        'mod+\\': (editor: Editor) => editor.toggleMark(EFormat.code)
-      };
-
 interface IProps extends IEditorProps {
   className?: string;
   editorClassName?: string;
-  toolbar?: Omit<IPortalToolbarProps, "changeCount">;
+  value: EditorValue | (() => EditorValue);
+  toolbar?: IPortalToolbarProps;
+  onBlur?: React.FocusEventHandler<HTMLDivElement>;
+  onChange?: (children: Descendant[]) => void;
+  onFocus?: React.FocusEventHandler<HTMLDivElement>;
+  onInitEditor?: (editor: Editor) => Editor;
 }
 
 export const SlateContainer: React.FC<IProps> = (props: IProps) => {
-  const { className: toolbarClasses, portalRoot, ...toolbarOthers } = props.toolbar || {};
-  const { className, editorClassName, onEditorRef, onValueChange, onContentChange,
-          onBlur, onFocus, ...others } = props;
-  const editorRef = useRef<Editor>();
-  const [changeCount, setChangeCount] = useState(0);
-  const handleEditorRef = useCallback((editor?: Editor) => {
-    editorRef.current = editor;
-    onEditorRef?.(editor);
-    setChangeCount(count => ++count);
-  }, [onEditorRef]);
-  const handleFocus = useCallback(() => {
-    onFocus?.(editorRef.current);
-  }, [onFocus]);
-  const handleBlur = useCallback(() => {
-    onBlur?.(editorRef.current);
-  }, [onBlur]);
+  const { className, editorClassName, value, toolbar, onChange, onInitEditor, ...others } = props;
 
-  const toolbar = portalRoot
-                    ? <SlateToolbarPortal
-                        portalRoot={portalRoot}
-                        className={toolbarClasses}
-                        editor={editorRef.current}
-                        changeCount={changeCount}
-                        {...toolbarOthers}
-                      />
-                    : <SlateToolbar
-                        className={toolbarClasses}
-                        editor={editorRef.current}
-                        changeCount={changeCount}
-                        {...toolbarOthers}
-                      />;
+  const editor = useMemo(() => createEditor({ history: true, onInitEditor }), [onInitEditor]);
+  const _value = useMemo(() => Array.isArray(value) ? value : value(), [value]);
   return (
-    <div className={`ccrte-container slate-container ${className || ""}`}>
-      {toolbar}
-      <SlateEditor
-        className={editorClassName}
-        value={props.value}
-        hotkeyMap={props.hotkeyMap || hotkeyMap}
-        onEditorRef={handleEditorRef}
-        onValueChange={value => {
-          onValueChange?.(value);
-          // trigger toolbar rerender on selection change as well
-          setChangeCount(count => ++count);
-        }}
-        onContentChange={onContentChange}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
-        {...others}
-      />
-    </div>
+    <SerializingContext.Provider value={false}>
+      <Slate editor={editor} value={_value}>
+        <div className={`ccrte-container slate-container ${className || ""}`}>
+          {renderToolbar(toolbar)}
+          <SlateEditor
+            className={editorClassName}
+            hotkeyMap={props.hotkeyMap || defaultHotkeyMap}
+            onChange={onChange}
+            {...others}
+          />
+        </div>
+      </Slate>
+    </SerializingContext.Provider>
   );
 };
+
+function renderToolbar(props?: IPortalToolbarProps) {
+  return props?.portalRoot
+          ? <SlateToolbarPortal {...props} />
+          : <SlateToolbar {...props} />;
+}

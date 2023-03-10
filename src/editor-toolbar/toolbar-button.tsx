@@ -2,8 +2,7 @@ import React, { CSSProperties } from "react";
 import { IconProps } from "../assets/icon-props";
 import { EFormat, EMetaFormat } from "../common/slate-types";
 
-export type OnMouseFn = (e: React.MouseEvent<HTMLDivElement>) => void;
-export type OnClickFn = (format: string, e: React.MouseEvent<HTMLDivElement>) => void;
+export type OnClickFn = (format: string) => void;
 export type OnChangeColorFn = (color: string) => void;
 export type OnChangeFn = OnChangeColorFn;
 export type OnDidInvokeToolFn = (format: string) => void;
@@ -24,21 +23,19 @@ export interface IBaseProps {
   tooltip?: string;
   isActive?: boolean;
   isEnabled?: boolean;
-  onMouseDown?: OnMouseFn;
   onClick?: OnClickFn;
   onChange?: OnChangeFn;
   onDidInvokeTool?: OnDidInvokeToolFn;
-  onSaveSelection?: () => void;
-  onRestoreSelection?: () => void;
-  onUserActionPerformed?: () => void;
 }
 export interface IProps extends IBaseProps {
   iconSize: number;
   buttonSize: number;
 }
 export const ToolbarButton: React.FC<IProps> = (props: IProps) => {
-  const { format, SvgIcon, iconSize, buttonSize, tooltip, isActive, isEnabled, colors, selectedColors, onChange,
-          onClick, onMouseDown, onDidInvokeTool, onSaveSelection, onRestoreSelection, onUserActionPerformed } = props;
+  const {
+    format, SvgIcon, iconSize, buttonSize, tooltip, isActive, isEnabled, colors, selectedColors,
+    onChange, onClick, onDidInvokeTool
+  } = props;
   const buttonStyle: CSSProperties = {
           width: buttonSize,
           height: buttonSize
@@ -56,30 +53,21 @@ export const ToolbarButton: React.FC<IProps> = (props: IProps) => {
   else if (colors?.background) {
     buttonStyle.backgroundColor = colors.background;
   }
-  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-    onSaveSelection?.();
-    onUserActionPerformed?.();
-    onMouseDown?.(e);
-  };
-  const handleEnabledClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    onRestoreSelection?.();
-    onUserActionPerformed?.();
+  const handlePointerDown = (e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
+    // trigger on mouse down and prevent default to prevent focus change
     if (format && onClick) {
-      onClick(format, e);
+      onClick(format);
       onDidInvokeTool?.(format);
-      e.preventDefault();
     }
-  };
-  const handleDisabledClick = () => {
-    onRestoreSelection?.();
+    e.preventDefault();
+    e.stopPropagation();
   };
   // enabled by default
-  const handleClick = isEnabled === false ? handleDisabledClick : handleEnabledClick;
   const onChangeProps = onChange ? { onChange } : {};
   const iconProps = { width: iconSize, height: iconSize, fill, ...onChangeProps };
   return (
     <div className={`toolbar-button ${isEnabled === false ? "disabled" : ""}`} style={buttonStyle} title={tooltip}
-          onMouseDown={handleMouseDown} onClick={handleClick}>
+          onMouseDown={handlePointerDown} onTouchStart={handlePointerDown}>
       {!!format && SvgIcon &&
         <div className="toolbar-icon-wrapper" style={wrapperStyle}>
           <SvgIcon className="toolbar-button-icon" {...iconProps} />
