@@ -49,10 +49,24 @@ export function htmlToSlate(html: string) {
     const document = new DOMParser().parseFromString(html, 'text/html');
     const slate = deserialize(document.body);
     if (!slate) return [];
-    return Array.isArray(slate)
-      // For multiline html, we need to remove text nodes for the `\n`s that sneak in.
-      ? slate.filter((node: Descendant) => !isLeafTextNode(node))
-      : [slate];
+    if (!Array.isArray(slate)) return [slate];
+    const processed: Descendant[] = [];
+    slate.forEach((node: Descendant) => {
+      // Check for top level nodes that weren't wrapped in a <p> or other block element.
+      if (isLeafTextNode(node)) {
+        // If they're empty (like a `\n` for a multiline html), skip them.
+        // If they have content, wrap them in a paragraph node.
+        if (/\S/.test(node.text)) {
+          processed.push({
+            type: "paragraph",
+            children: [node]
+          });
+        }
+      } else {
+        processed.push(node);
+      }
+    });
+    return processed;
   }
   catch(e) {
     console.warn("exception caught, returning empty content");
