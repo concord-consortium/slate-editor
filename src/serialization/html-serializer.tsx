@@ -4,6 +4,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { Descendant } from "slate";
 import { jsx } from "slate-hyperscript";
 import { CustomMarks, isLeafTextNode } from "../common/custom-types";
+import { wrapInParagraph } from "../common/slate-types";
 import { SerializingContext } from "../hooks/use-serializing";
 import { Element } from "../slate-editor/element";
 import { Leaf } from "../slate-editor/leaf";
@@ -57,10 +58,7 @@ export function htmlToSlate(html: string) {
         // If they're empty (like a `\n` for a multiline html), skip them.
         // If they have content, wrap them in a paragraph node.
         if (/\S/.test(node.text)) {
-          processed.push({
-            type: "paragraph",
-            children: [node]
-          });
+          processed.push(wrapInParagraph(node));
         }
       } else {
         processed.push(node);
