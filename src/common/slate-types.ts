@@ -54,9 +54,16 @@ export type EditorValue = Descendant[];
 
 export type HotkeyMap = Record<string, (editor: Editor) => void>;
 
+export function wrapInParagraph(_children: Descendant | Descendant[]) {
+  const children = Array.isArray(_children)
+    ? _children
+    : [_children];
+  return {type: "paragraph", children };
+}
+
 export function textToSlate(text: string): EditorValue {
   const lines = text.split(/\r|\r?\n/);
-  return lines.map(line => ({ type: "paragraph", children: [{ text: line }] }));
+  return lines.map(line => (wrapInParagraph([{ text: line }])));
 }
 
 export function slateToText(value: EditorValue = []) {

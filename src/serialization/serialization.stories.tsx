@@ -135,7 +135,7 @@ export const ClueSerialization = () => (
   />
 );
 
-const importedHtmlText = "<h1>A header paragraph</h1><p>A simple paragraph.</p><blockquote>A quoted paragraph.</blockquote>";
+const importedHtmlText = "Text outside of a paragraph tag should be wrapped when imported.<b>So should bold text</b><h1>A header paragraph</h1><p>A simple paragraph.</p><blockquote>A quoted paragraph.</blockquote>";
 
 export const ImportedHTML = () => (
   <SerializationStory
