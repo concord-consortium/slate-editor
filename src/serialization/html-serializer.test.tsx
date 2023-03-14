@@ -160,6 +160,17 @@ describe("htmlToSlate(), slateToHtml()", () => {
     ].forEach(html => expect(slateToHtml(htmlToSlate(html))).toBe(html));
   });
 
+  it("adds paragraphs around floating text", () => {
+    const html = "Free text";
+    expect(slateToHtml(htmlToSlate(html))).toBe(`<p>${html}</p>`);
+    const boldHtml = "<strong>Bold text</strong>";
+    expect(slateToHtml(htmlToSlate(boldHtml))).toBe(`<p>${boldHtml}</p>`);
+    // Currently each node gets wrapped in its own <p> tag, which might not be the desired behavior.
+    expect(slateToHtml(htmlToSlate(`${html}${boldHtml}`))).toBe(`<p>${html}</p><p>${boldHtml}</p>`);
+    const pHtml = "<p>Paragraph</p>";
+    expect(slateToHtml(htmlToSlate(`${html}${pHtml}${boldHtml}`))).toBe(`<p>${html}</p>${pHtml}<p>${boldHtml}</p>`);
+  });
+
   it("can [de]serialize images", () => {
     [
       `<p><img class="cc-slate-void" src="https://concord.org/wp-content/themes/concord2017/images/concord-logo.svg"/></p>`,
