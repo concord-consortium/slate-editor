@@ -1,6 +1,6 @@
 import { BasePoint, Editor, Element as SlateElement, Node, Range, Transforms } from "slate";
 import { CustomElement, CustomMarks, CustomText, EmptyText, MarkType } from "./custom-types";
-import { EFormat } from "./slate-types";
+import { EFormat, HotkeyMap } from "./slate-types";
 
 export function isCustomText(node: CustomText | EmptyText): node is CustomText {
   return !!node.text ||
@@ -12,7 +12,7 @@ export function isCustomText(node: CustomText | EmptyText): node is CustomText {
 const LIST_TYPES = ['ordered-list', 'bulleted-list'];
 const TEXT_ALIGN_TYPES = ['left', 'center', 'right', 'justify'];
 
-export const defaultHotkeyMap = {
+export const defaultHotkeyMap: HotkeyMap = {
   'mod+b': (editor: Editor) => toggleMark(editor, EFormat.bold),
   'mod+i': (editor: Editor) => toggleMark(editor, EFormat.italic),
   'mod+u': (editor: Editor) => toggleMark(editor, EFormat.underlined),
