@@ -19,7 +19,7 @@ export const ReadOnly = () => {
   const editor = useMemo(() => createEditor(), []);
   const initialValue = textToSlate("This read-only text should be selectable but not editable.");
   return (
-    <Slate editor={editor} value={initialValue}>
+    <Slate editor={editor} initialValue={initialValue}>
       <SlateEditor
         className="slate-editor"
         readOnly={true}
@@ -36,7 +36,7 @@ const initialValueWithHistory = textToSlate(baseValue + "including mod+[shift]+z
 export const WithoutHistory = () => {
   const editor = useMemo(() => createEditor({ history: false }), []);
   return (
-    <Slate editor={editor} value={initialValueWithoutHistory}>
+    <Slate editor={editor} initialValue={initialValueWithoutHistory}>
       <SlateEditor
         className="slate-editor"
         hotkeyMap={hotkeyMap}
@@ -48,7 +48,7 @@ export const WithoutHistory = () => {
 export const WithHistory = () => {
   const editor = useMemo(() => createEditor({ history: true }), []);
   return (
-    <Slate editor={editor} value={initialValueWithHistory}>
+    <Slate editor={editor} initialValue={initialValueWithHistory}>
       <SlateEditor
         className="slate-editor"
         hotkeyMap={hotkeyMap}

@@ -28,7 +28,7 @@ export const SlateContainer: React.FC<IProps> = (props: IProps) => {
   const _value = useMemo(() => Array.isArray(value) ? value : value(), [value]);
   return (
     <SerializingContext.Provider value={false}>
-      <Slate editor={editor} value={_value}>
+      <Slate editor={editor} initialValue={_value}>
         <div className={`ccrte-container slate-container ${className || ""}`}>
           {renderToolbar(toolbar)}
           <SlateEditor

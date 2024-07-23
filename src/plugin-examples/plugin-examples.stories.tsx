@@ -51,7 +51,7 @@ export const Variables = (props: ISlateEditorProps) => {
   const editor = useMemo(() => withVariables(createEditor()), []);
   return (
     <div className={`variables-example`}>
-      <Slate editor={editor} value={initialValue}>
+      <Slate editor={editor} initialValue={initialValue}>
         <VariablesToolbar />
         <SlateEditor {...props} />
       </Slate>

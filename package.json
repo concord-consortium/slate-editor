@@ -107,7 +107,7 @@
     "slate": "^0.103.0",
     "slate-history": "^0.100.0",
     "slate-hyperscript": "^0.100.0",
-    "slate-react": "~0.94.2",
+    "slate-react": "~0.99.0",
     "style-to-object": "^1.0.6",
     "tslib": "^2.6.3",
     "valid-url": "^1.0.9"
