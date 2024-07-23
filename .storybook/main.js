@@ -16,13 +16,6 @@ module.exports = {
       include: path.resolve(__dirname, '../'),
     });
 
-    config.module.rules.push({
-      test: /\.(ts|tsx)$/,
-      loader: require.resolve('babel-loader'),
-      options: {
-        presets: [['react-app', { flow: false, typescript: true }]],
-      },
-    });
     // config.resolve.alias['slate-react'] = '@concord-consortium/slate-react';
     config.resolve.extensions.push('.ts', '.tsx');
 
