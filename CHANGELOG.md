@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.11.0 - July 24, 2024
+
+### Features/Improvements
+- [Breaking] Update minimum React version to 17
+
 ## Version 0.10.1 - July 24, 2024
 
 ### Features/Improvements
