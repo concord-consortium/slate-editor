@@ -1,5 +1,23 @@
 # Changelog
 
+## Version 0.10.0 - July 24, 2024
+
+### Features/Improvements
+- Update `slate` to 0.103.0, `slate-react` to 0.99.0, `storybook` to 8.2.5 among other dependencies.
+
+### Bugs Fixed
+- Reduce bundle size (eliminate redundant lodash import)
+
+## Version 0.9.1 - March 13, 2023
+
+### Bugs Fixed
+- Wrap free text nodes when importing HTML
+
+## Version 0.9.0 - March 10, 2023
+
+### Features/Improvements
+- Major update to `slate` 0.86.0 and `slate-react` 0.86.0
+
 ## Version 0.8.2 - September 26, 2022
 
 ### Bugs Fixed
