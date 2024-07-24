@@ -22,7 +22,7 @@ describe("Slate Editor", () => {
     const { initialValue = [], ...editorProps } = props;
     const editor = createEditor({ history: true });
     const renderResult = render(
-      <Slate editor={editor} value={initialValue}>
+      <Slate editor={editor} initialValue={initialValue}>
         <SlateEditor {...editorProps} />
       </Slate>
     );
@@ -57,7 +57,7 @@ describe("Slate Editor", () => {
       render(
         <div>
           {editors.map((editor, i) => (
-            <Slate key={`editor-${i}`} editor={editor} value={editorValues[i]}>
+            <Slate key={`editor-${i}`} editor={editor} initialValue={editorValues[i]}>
               <SlateEditor className={`editor-${i}`} />
             </Slate>
           ))}

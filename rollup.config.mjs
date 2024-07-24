@@ -5,11 +5,11 @@ import external from "rollup-plugin-peer-deps-external";
 import replace from 'rollup-plugin-re';
 import resolve from "@rollup/plugin-node-resolve";
 import typescript from "rollup-plugin-typescript2";
-import visualizer from "rollup-plugin-visualizer";
+import { visualizer } from "rollup-plugin-visualizer";
 import commonjs from "@rollup/plugin-commonjs";
 import postcss from "rollup-plugin-postcss";
 
-import packageJson from "./package.json";
+import packageJson from "./package.json" assert { type: 'json' };
 
 export default [{
   input: "src/index.tsx",

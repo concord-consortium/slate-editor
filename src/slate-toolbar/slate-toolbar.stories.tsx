@@ -11,7 +11,7 @@ export default {
 export const Horizontal = () => {
   const editor = useMemo(() => withReact(createEditor()), []);
   return (
-    <Slate editor={editor} value={[]}>
+    <Slate editor={editor} initialValue={[]}>
       <SlateToolbar />
     </Slate>
   );
@@ -20,7 +20,7 @@ export const Horizontal = () => {
 export const Vertical = () => {
   const editor = useMemo(() => withReact(createEditor()), []);
   return (
-    <Slate editor={editor} value={[]}>
+    <Slate editor={editor} initialValue={[]}>
       <SlateToolbar orientation="vertical" />
     </Slate>
   );
@@ -29,7 +29,7 @@ export const Vertical = () => {
 export const Colored = () => {
   const editor = useMemo(() => withReact(createEditor()), []);
   return (
-    <Slate editor={editor} value={[]}>
+    <Slate editor={editor} initialValue={[]}>
       <SlateToolbar orientation="vertical"
         colors={{ buttonColors: { background: "#177991", fill: "#ffffff" } }} />
     </Slate>
@@ -39,7 +39,7 @@ export const Colored = () => {
 export const TwoColumns = () => {
   const editor = useMemo(() => withReact(createEditor()), []);
   return (
-    <Slate editor={editor} value={[]}>
+    <Slate editor={editor} initialValue={[]}>
       <SlateToolbar orientation="vertical" buttonsPerRow={9}
         colors={{ buttonColors: { background: "#177991", fill: "#ffffff" } }} />
     </Slate>
@@ -49,7 +49,7 @@ export const TwoColumns = () => {
 export const ThreeColumns = () => {
   const editor = useMemo(() => withReact(createEditor()), []);
   return (
-    <Slate editor={editor} value={[]}>
+    <Slate editor={editor} initialValue={[]}>
       <SlateToolbar orientation="vertical" buttonsPerRow={6}
         colors={{ buttonColors: { background: "#177991", fill: "#ffffff" } }} />
     </Slate>
@@ -69,7 +69,7 @@ export const Ordered = () => {
             .filter(b => !!b) as IButtonSpec[];
   }, []);
   return (
-    <Slate editor={editor} value={[]}>
+    <Slate editor={editor} initialValue={[]}>
       <SlateToolbar orientation="vertical" buttonsPerRow={9} transform={transform}
         colors={{ buttonColors: { background: "#177991", fill: "#ffffff" } }} />
     </Slate>
@@ -92,7 +92,7 @@ export const OrderedHinted = () => {
             .filter(b => !!b?.format) as IButtonSpec[];
   }, []);
   return (
-    <Slate editor={editor} value={[]}>
+    <Slate editor={editor} initialValue={[]}>
       <SlateToolbar orientation="vertical" buttonsPerRow={7} transform={transform}
         colors={{ buttonColors: { background: "#177991", fill: "#ffffff" } }} />
     </Slate>

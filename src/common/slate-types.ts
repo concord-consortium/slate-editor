@@ -15,7 +15,7 @@ export enum EFormat {
   color = "color",
 
   // blocks
-  defaultBlock = "paragraph",
+  // defaultBlock = "paragraph",
 
   block = "block",  // generic block (<div>)
   blockQuote = "block-quote",

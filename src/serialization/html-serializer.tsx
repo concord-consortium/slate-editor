@@ -1,4 +1,4 @@
-import { flatten } from "lodash";
+import flatten from "lodash/flatten";
 import React, { ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { Descendant } from "slate";
