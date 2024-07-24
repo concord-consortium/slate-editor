@@ -1,7 +1,7 @@
 import isHotkey from 'is-hotkey';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { Descendant } from 'slate';
-import { Editable, RenderLeafProps, useSlate } from 'slate-react';
+import { Editable, RenderElementProps, RenderLeafProps, useSlate } from 'slate-react';
 
 import { Element } from './element';
 import { Leaf } from './leaf';
@@ -53,7 +53,7 @@ export const SlateEditor = ({
                                   : _hotkeyMap, [_historyKeys, _hotkeyMap]);
   // TODO: do we need useCallback here?
   // Slate examples use it but we may be able to pass Element, Leaf directly
-  const renderElement = useCallback(props => <Element {...props} />, []);
+  const renderElement = useCallback((props: RenderElementProps) => <Element {...props} />, []);
   const renderLeaf = useCallback((props: RenderLeafProps) => <Leaf {...props} />, []);
 
   return (

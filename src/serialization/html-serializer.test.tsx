@@ -52,7 +52,7 @@ describe("htmlToSlate(), slateToHtml()", () => {
       "<h5>heading5</h5>",
       "<h6>heading6</h6>",
       "<blockquote>block-quote</blockquote>",
-      "<hr/>",  // horizontal-rule
+      "<hr>", // horizontal-rule
       "<pre>preformatted</pre>",
       "<ol>ordered-list</ol>",
       "<ul>bulleted-list</ul>",
@@ -66,8 +66,8 @@ describe("htmlToSlate(), slateToHtml()", () => {
       // `<p><em class="em-class">mark with class</em></p>`,
       // `<p><em style="font-style:italic">mark with inline style</em></p>`,
       `<p class="foo-class bar-class">paragraph with classes</p>`,
-      `<p style="float:right">paragraph with inline style</p>`,
-      `<p style="float:right;text-align:center">paragraph with multiple inline styles</p>`
+      `<p style="float: right;">paragraph with inline style</p>`,
+      `<p style="float: right; text-align: center;">paragraph with multiple inline styles</p>`
     ].forEach(html => expect(slateToHtml(htmlToSlate(html))).toBe(html));
   });
 
@@ -77,15 +77,15 @@ describe("htmlToSlate(), slateToHtml()", () => {
     ].forEach(html => expect(slateToHtml(htmlToSlate(html))).toBe(html.replace(/className/g, "class")));
   });
 
-  it("preserves invalid inline styles", () => {
-    [
-      `<p style="invalid:style">paragraph with invalid inline style</p>`
-    ].forEach(html => expect(slateToHtml(htmlToSlate(html))).toBe(html));
+  it("removes invalid inline styles", () => {
+    const inHtml = `<p style="invalid:style">paragraph with invalid inline style</p>`;
+    const outHtml = slateToHtml(htmlToSlate(inHtml));
+    expect(outHtml).toBe(`<p>paragraph with invalid inline style</p>`);
   });
 
   it("can [de]serialize color spans", () => {
     [
-      `<p><span class="ccrte-text-color" style="color:#888888">color span</span></p>`
+      `<p><span class="ccrte-text-color" style="color: rgb(136, 136, 136);">color span</span></p>`
     ].forEach(html => expect(slateToHtml(htmlToSlate(html))).toBe(html));
   });
 
@@ -112,7 +112,7 @@ describe("htmlToSlate(), slateToHtml()", () => {
     expect(slateToHtml(htmlToSlate(input))).toBe(expected);
   });
 
-  it.skip("ignores unsupported tags", () => {
+  it("ignores unsupported tags", () => {
     ["html", "link", "meta", "body", "main"]
       .map(tag => ({ in: `<${tag} ${tag}-attr="${tag}-value">${tag}</${tag}>`,
                     out: `<p>${tag}</p>` }))
@@ -124,7 +124,7 @@ describe("htmlToSlate(), slateToHtml()", () => {
       .map(tag => `<p><${tag} ${tag}-attr="${tag}-value">${tag}</${tag}></p>`)
       .forEach(html => expect(slateToHtml(htmlToSlate(html))).toBe(html));
     kLegacyEmptyInlineTags
-      .map(tag => `<p><${tag} ${tag}-attr="${tag}-value"/></p>`)
+      .map(tag => `<p><${tag} ${tag}-attr="${tag}-value"></p>`)
       .forEach(html => expect(slateToHtml(htmlToSlate(html))).toBe(html));
   });
 
@@ -173,8 +173,8 @@ describe("htmlToSlate(), slateToHtml()", () => {
 
   it("can [de]serialize images", () => {
     [
-      `<p><img class="cc-slate-void" src="https://concord.org/wp-content/themes/concord2017/images/concord-logo.svg"/></p>`,
-      `<p><img class="my-image-class cc-slate-void" src="https://concord.org/wp-content/themes/concord2017/images/concord-logo.svg"/></p>`
+      `<p><img class="cc-slate-void" src="https://concord.org/wp-content/themes/concord2017/images/concord-logo.svg"></p>`,
+      `<p><img class="my-image-class cc-slate-void" src="https://concord.org/wp-content/themes/concord2017/images/concord-logo.svg"></p>`
     ].forEach(html => expect(slateToHtml(htmlToSlate(html))).toBe(html));
   });
 

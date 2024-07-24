@@ -1,6 +1,5 @@
 import flatten from "lodash/flatten";
 import React, { ReactNode } from "react";
-import { renderToStaticMarkup } from "react-dom/server";
 import { Descendant } from "slate";
 import { jsx } from "slate-hyperscript";
 import { CustomMarks, isLeafTextNode } from "../common/custom-types";
@@ -9,6 +8,7 @@ import { SerializingContext } from "../hooks/use-serializing";
 import { Element } from "../slate-editor/element";
 import { Leaf } from "../slate-editor/leaf";
 import { escapeNbsp } from "./html-utils";
+import { renderToStaticMarkup } from "./react-utils";
 
 /*
   Serializer/Deserializer registration
