@@ -1,9 +1,17 @@
 # Changelog
 
+## Version 0.10.1 - July 24, 2024
+
+### Features/Improvements
+- Export `isCustomElement()` function
+
+### Bugs Fixed
+- Fix bug in `ReactEditor.focus()` by downgrading to `slate-react` 0.98.4
+
 ## Version 0.10.0 - July 24, 2024
 
 ### Features/Improvements
-- Update `slate` to 0.103.0, `slate-react` to 0.99.0, `storybook` to 8.2.5 among other dependencies.
+- Update `slate` to 0.103.0, `slate-react` to 0.99.0, `storybook` to 8.2.5 among other dependencies
 
 ### Bugs Fixed
 - Reduce bundle size (eliminate redundant lodash import)

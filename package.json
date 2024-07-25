@@ -1,6 +1,6 @@
 {
   "name": "@concord-consortium/slate-editor",
-  "version": "0.10.0",
+  "version": "0.10.1",
   "description": "Slate-based rich text editor component for use in CC projects",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
@@ -105,7 +105,7 @@
     "slate": "^0.103.0",
     "slate-history": "^0.100.0",
     "slate-hyperscript": "^0.100.0",
-    "slate-react": "~0.99.0",
+    "slate-react": "~0.98.4",
     "style-to-object": "^1.0.6",
     "tslib": "^2.6.3",
     "valid-url": "^1.0.9"
