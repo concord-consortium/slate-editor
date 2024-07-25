@@ -17,7 +17,12 @@ interface ILaraStoryProps {
 const LaraStory = ({ initialContent }: ILaraStoryProps) => {
   const [content, setContent] = useState("");
   // We can only convert between html and slate after the slate editor has been initialized
-  useEffect(() => setContent(slateToHtml(htmlToSlate(initialContent))), [initialContent]);
+  useEffect(() => {
+    // setTimeout to avoid "Warning: flushSync was called from inside a lifecycle method.
+    // React cannot flush when React is already rendering.
+    // Consider moving this call to a scheduler task or micro task."
+    setTimeout(() => setContent(slateToHtml(htmlToSlate(initialContent))));
+  }, [initialContent]);
 
   const handleChange = useCallback(function handleChange(children: Descendant[]) {
     setContent(slateToHtml(children));

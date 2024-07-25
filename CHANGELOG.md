@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 0.11.0 - July 24, 2024
+
+### Features/Improvements
+- [Breaking] Update minimum React version to 18
+- Update `slate-react` to 0.107.1 among other dependencies
+
 ## Version 0.10.1 - July 24, 2024
 
 ### Features/Improvements

@@ -24,10 +24,12 @@ const SerializationStory = (
 ) => {
   const [content, setContent] = useState("");
   // Initial content isn't defined until after the slate editor is initialized so html -> slate will convert properly.
-  useEffect(
-    () => setContent(convertContent(convertInitialContent(initialContent))),
-    [convertContent, convertInitialContent, initialContent]
-  );
+  useEffect(() => {
+    // setTimeout to avoid "Warning: flushSync was called from inside a lifecycle method.
+    // React cannot flush when React is already rendering.
+    // Consider moving this call to a scheduler task or micro task."
+    setTimeout(() => setContent(convertContent(convertInitialContent(initialContent))));
+  }, [convertContent, convertInitialContent, initialContent]);
 
   const handleChange = useCallback(function handleChange(children: EditorValue) {
     setContent(convertContent(children));
