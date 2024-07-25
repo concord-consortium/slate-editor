@@ -1,4 +1,4 @@
-import { Descendant, BaseEditor, BaseElement } from 'slate';
+import { Descendant, BaseEditor, BaseElement, Node } from 'slate';
 import { ReactEditor } from 'slate-react';
 import { HistoryEditor } from 'slate-history';
 import { IDialogController } from '../modal-dialog/dialog-types';
@@ -123,6 +123,12 @@ export type CustomElement =
   // | TitleElement
   | UnknownElement;
   // | VideoElement
+
+// type guard for whether a Node is an Element
+export function isCustomElement(elt: Node): elt is CustomElement {
+  return "children" in elt && Array.isArray(elt.children) &&
+          "type" in elt && elt.type != null;
+}
 
 export type CustomText = {
   bold?: boolean;
