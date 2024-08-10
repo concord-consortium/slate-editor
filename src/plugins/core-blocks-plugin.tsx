@@ -1,8 +1,12 @@
 import { createElement } from "react";
 import { Descendant, Editor } from "slate";
 import { jsx } from "slate-hyperscript";
+import IconHeading from "../assets/icon-heading";
+import IconQuote from "../assets/icon-quote";
 import { CustomElement, isLegacyBlockElement } from "../common/custom-types";
 import { EFormat } from "../common/slate-types";
+import { isBlockActive, toggleBlock } from "../common/slate-utils";
+import { getPlatformTooltip, registerToolbarButtons } from "../common/toolbar-utils";
 import { registerElementDeserializer } from "../serialization/html-serializer";
 import { getElementAttrs } from "../serialization/html-utils";
 import { eltRenderAttrs, registerElementComponent } from "../slate-editor/element";
@@ -76,6 +80,65 @@ export function registerCoreBlocks() {
 
 export function withCoreBlocks(editor: Editor) {
   registerCoreBlocks();
+
+  registerToolbarButtons(editor, [
+    {
+      format: EFormat.heading1,
+      SvgIcon: IconHeading,
+      tooltip: getPlatformTooltip("heading 1"),
+      isActive: () => !!editor && isBlockActive(editor, EFormat.heading1),
+      onClick: () => toggleBlock(editor, EFormat.heading1)
+    },
+    {
+      format: EFormat.heading2,
+      SvgIcon: IconHeading,
+      iconSize: 14,
+      tooltip: getPlatformTooltip("heading 2"),
+      isActive: () => !!editor && isBlockActive(editor, EFormat.heading2),
+      onClick: () => toggleBlock(editor, EFormat.heading2)
+    },
+    {
+      format: EFormat.heading3,
+      SvgIcon: IconHeading,
+      iconSize: 12,
+      tooltip: getPlatformTooltip("heading 3"),
+      isActive: () => !!editor && isBlockActive(editor, EFormat.heading3),
+      onClick: () => toggleBlock(editor, EFormat.heading3)
+    },
+    // H4-H6 have been removed from the toolbar but are left commented out in case we want to bring them back.
+    // {
+    //   format: EFormat.heading4,
+    //   SvgIcon: IconHeading,
+    //   iconSize: 10,
+    //   tooltip: getPlatformTooltip("heading 4"),
+    //   isActive: () => !!editor && isBlockActive(editor, EFormat.heading4),
+    //   onClick: () => toggleBlock(editor, EFormat.heading4)
+    // },
+    // {
+    //   format: EFormat.heading5,
+    //   SvgIcon: IconHeading,
+    //   iconSize: 8,
+    //   tooltip: getPlatformTooltip("heading 5"),
+    //   isActive: () => !!editor && isBlockActive(editor, EFormat.heading5),
+    //   onClick: () => toggleBlock(editor, EFormat.heading5)
+    // },
+    // {
+    //   format: EFormat.heading6,
+    //   SvgIcon: IconHeading,
+    //   iconSize: 6,
+    //   tooltip: getPlatformTooltip("heading 6"),
+    //   isActive: () => !!editor && isBlockActive(editor, EFormat.heading6),
+    //   onClick: () => toggleBlock(editor, EFormat.heading6)
+    // },
+    {
+      format: EFormat.blockQuote,
+      SvgIcon: IconQuote,
+      tooltip: getPlatformTooltip("block quote"),
+      isActive: () => !!editor && isBlockActive(editor, EFormat.blockQuote),
+      onClick: () => toggleBlock(editor, EFormat.blockQuote)
+    }
+  ]);
+
   return editor;
 }
 

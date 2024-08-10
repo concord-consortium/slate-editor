@@ -172,11 +172,7 @@ interface CCBaseEditor extends BaseEditor {
   selectedElements: () => CustomElement[];
 
   isElementEnabled: (format: string) => boolean;
-  configureElement: (format: string, controller: IDialogController, elt?: CustomElement) => void;
-
-  emitEvent: (event: string, ...args: any[]) => void;
-  onEvent: (event: string, handler: (...args: any[]) => void) => void;
-  offEvent: (event: string, handler: (...args: any[]) => void) => void;
+  configureElement: (format: string, controller?: IDialogController, elt?: CustomElement) => void;
 }
 
 export type CustomEditor = CCBaseEditor & ReactEditor & HistoryEditor;

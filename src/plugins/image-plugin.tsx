@@ -4,8 +4,10 @@ import { Descendant, Editor, Transforms } from "slate";
 import { jsx } from "slate-hyperscript";
 import { ReactEditor, RenderElementProps, useFocused, useSelected, useSlateStatic } from "slate-react";
 import { isWebUri } from "valid-url";
+import IconImage from "../assets/icon-image";
 import { CustomElement, ImageElement } from "../common/custom-types";
 import { EFormat } from "../common/slate-types";
+import { getDialogController, getPlatformTooltip, registerToolbarButtons } from "../common/toolbar-utils";
 import { useSerializing } from "../hooks/use-serializing";
 import { IDialogController } from "../modal-dialog/dialog-types";
 import { registerElementDeserializer } from "../serialization/html-serializer";
@@ -66,7 +68,7 @@ const ImageRenderComponent = ({ attributes, children, element }: RenderElementPr
   if (!isImageElement(element)) return null;
 
   const handleDoubleClick = () => {
-    editor.emitEvent("toolbarDialog", element);
+    editor.configureElement(EFormat.image, getDialogController(editor), element);
   };
 
   const handleLoad = () => null;
@@ -153,15 +155,24 @@ function getNodeFromDialogValues(values: Record<string, string>) {
 export function withImages(editor: Editor) {
   registerImageInline();
 
+  registerToolbarButtons(editor, [{
+    format: EFormat.image,
+    SvgIcon: IconImage,
+    tooltip: getPlatformTooltip("image"),
+    isActive: () => !!editor.isElementActive(EFormat.image),
+    isEnabled: () => !!editor.isElementEnabled(EFormat.image),
+    onClick: () => editor?.configureElement(EFormat.image, getDialogController(editor))
+  }]);
+
   const { configureElement, isInline, isVoid } = editor;
 
   editor.isInline = element => (element.type === EFormat.image) || isInline(element);
   editor.isVoid = element => (element.type === EFormat.image) || isVoid(element);
 
-  editor.configureElement = (format: string, controller: IDialogController, node?: CustomElement) => {
+  editor.configureElement = (format: string, controller?: IDialogController, node?: CustomElement) => {
     if (format !== EFormat.image) return configureElement(format, controller, node);
 
-      controller.display({
+      controller?.display({
         title: "Insert Image",
         rows: [
           { name: "source", type: "input", label: "Image URL:" },

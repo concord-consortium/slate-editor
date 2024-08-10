@@ -1,9 +1,6 @@
 import React from "react";
-import { IBaseProps, IButtonColors, ToolbarButton } from "./toolbar-button";
-
-export interface IButtonSpec extends IBaseProps {
-  iconSize?: number;
-}
+import { IButtonSpec } from "../common/toolbar-utils";
+import { IButtonColors, ToolbarButton } from "./toolbar-button";
 
 export interface IToolbarColors {
   buttonColors?: IButtonColors;
@@ -30,13 +27,6 @@ const kDefaultProps: Partial<IProps> = {
   buttonSize: 24
 };
 
-export function getPlatformTooltip(str: string) {
-  const IS_MAC = typeof window != 'undefined' &&
-                  /Mac|iPod|iPhone|iPad/.test(window.navigator.platform);
-  const modKey = IS_MAC ? "cmd-" : "ctrl-";
-  return str.replace("mod-", modKey);
-}
-
 export const EditorToolbar: React.FC<IProps> = (iProps: IProps) => {
   const props = { ...kDefaultProps, ...iProps } as Required<IProps>;
   const { orientation, colors, buttonsPerRow, iconSize, buttonSize, buttons, padding } = props;
@@ -60,12 +50,14 @@ export const EditorToolbar: React.FC<IProps> = (iProps: IProps) => {
       <div className={`editor-toolbar-container ${orientationClass}`} style={toolbarStyle} >
         {
           buttons.map((button, i) => {
-            const { format, ...others } = button;
+            const { format, colors: colorsFn, selectedColors: selectedColorsFn, ...others } = button;
             const key = format ? `key-${format}` : `key-placeholder-${i}`;
             const _iconSize = button.iconSize || iconSize;
+            const _colors = colorsFn?.(colors?.buttonColors ?? {}) ?? colors?.buttonColors;
+            const _selectedColors = selectedColorsFn?.(colors?.selectedColors ?? {}) ?? colors?.selectedColors;
             return (
               <ToolbarButton key={`key-${key}`} format={format} iconSize={_iconSize} buttonSize={buttonSize}
-                colors={colors?.buttonColors} selectedColors={colors?.selectedColors} {...others} />
+                colors={_colors} selectedColors={_selectedColors} {...others} />
             );
           })
         }

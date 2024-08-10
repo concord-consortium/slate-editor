@@ -1,7 +1,11 @@
 import { createElement } from "react";
 import { Descendant, Editor } from "slate";
 import { jsx } from "slate-hyperscript";
+import IconBulletedList from "../assets/icon-list-bulleted";
+import IconNumberedList from "../assets/icon-list-numbered";
 import { EFormat } from "../common/slate-types";
+import { isBlockActive, toggleBlock } from "../common/slate-utils";
+import { getPlatformTooltip, registerToolbarButtons } from "../common/toolbar-utils";
 import { registerElementDeserializer } from "../serialization/html-serializer";
 import { getElementAttrs } from "../serialization/html-utils";
 import { eltRenderAttrs, registerElementComponent } from "../slate-editor/element";
@@ -46,5 +50,23 @@ export function registerListBlocks() {
 
 export function withListBlocks(editor: Editor) {
   registerListBlocks();
+
+  registerToolbarButtons(editor, [
+    {
+      format: EFormat.numberedList,
+      SvgIcon: IconNumberedList,
+      tooltip: getPlatformTooltip("numbered list"),
+      isActive: () => !!editor && isBlockActive(editor, EFormat.numberedList),
+      onClick: () => toggleBlock(editor, EFormat.numberedList)
+    },
+    {
+      format: EFormat.bulletedList,
+      SvgIcon: IconBulletedList,
+      tooltip: getPlatformTooltip("bulleted list"),
+      isActive: () => !!editor && isBlockActive(editor, EFormat.bulletedList),
+      onClick: () => toggleBlock(editor, EFormat.bulletedList)
+    }
+  ]);
+
   return editor;
 }

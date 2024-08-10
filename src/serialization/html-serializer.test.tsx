@@ -9,13 +9,14 @@ import { escapeHtmlAndNbsp, normalizeHtml } from "./html-utils";
 import {
   kFieldMouseFurColorIntro, kMonteCarloRisk, kNaturalHistoryV5Intro, kNaturalHistoryV5Page3, kOilAndWaterIntro
 } from "./lara-fixtures";
+import { createEditor } from "../create-editor";
 import { kLegacyBlockTags } from "../plugins/core-blocks-plugin";
 import { kLegacyEmptyInlineTags, kLegacyNonEmptyInlineTags } from "../plugins/core-inlines-plugin";
-import { registerPlugins } from "../plugins/register-plugins";
 
 describe("htmlToSlate(), slateToHtml()", () => {
 
-  registerPlugins();
+  const editor = createEditor();
+  expect(editor).toBeDefined();
 
   it("normalizes unclosed html tags", () => {
     expect(slateToHtml(htmlToSlate("<p>"))).toBe("<p></p>");

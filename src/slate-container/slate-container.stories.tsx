@@ -84,7 +84,8 @@ export const Portal = () => {
   const [isFocused, setIsFocused] = useState(false);
   const [portalRoot, setPortalRoot] = useState<HTMLDivElement>();
   useLayoutEffect(() => {
-    const storyRoot = document.getElementById('root');
+    // root of the storybook container
+    const storyRoot = document.querySelector('.sb-show-main');
     const _portalRoot = document.createElement('div');
     _portalRoot.className = 'react-toolbar-portal';
     storyRoot?.appendChild(_portalRoot);

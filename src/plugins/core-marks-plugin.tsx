@@ -1,7 +1,16 @@
 import { createElement } from "react";
 import { Editor } from "slate";
+import IconBold from "../assets/icon-bold";
+import IconCode from "../assets/icon-code";
+import IconItalic from "../assets/icon-italic";
+import IconStrikethrough from "../assets/icon-strikethrough";
+import IconSubscript from "../assets/icon-subscript";
+import IconSuperscript from "../assets/icon-superscript";
+import IconUnderline from "../assets/icon-underline";
 import { BooleanMarkType, CustomMarks, CustomText, MarkType } from "../common/custom-types";
 import { EFormat } from "../common/slate-types";
+import { isMarkActive, toggleMark, toggleSuperSubscript } from "../common/slate-utils";
+import { getPlatformTooltip, registerToolbarButtons } from "../common/toolbar-utils";
 import { registerMarkDeserializer } from "../serialization/html-serializer";
 import { registerMarkRenderer } from "../slate-editor/leaf";
 
@@ -58,5 +67,59 @@ export function registerCoreMarks() {
 
 export function withCoreMarks(editor: Editor) {
   registerCoreMarks();
+
+  // register toolbar buttons for each mark
+  registerToolbarButtons(editor, [
+    {
+      format: EFormat.bold,
+      SvgIcon: IconBold,
+      tooltip: getPlatformTooltip("bold (mod-b)"),
+      isActive: () => !!editor && isMarkActive(editor, EFormat.bold),
+      onClick: () => editor && toggleMark(editor, EFormat.bold)
+    },
+    {
+      format: EFormat.italic,
+      SvgIcon: IconItalic,
+      tooltip: getPlatformTooltip("italic (mod-i)"),
+      isActive: () => !!editor && isMarkActive(editor, EFormat.italic),
+      onClick: () => editor && toggleMark(editor, EFormat.italic)
+    },
+    {
+      format: EFormat.underlined,
+      SvgIcon: IconUnderline,
+      tooltip: getPlatformTooltip("underline (mod-u)"),
+      isActive: () => !!editor && isMarkActive(editor, EFormat.underlined),
+      onClick: () => editor && toggleMark(editor, EFormat.underlined)
+    },
+    {
+      format: EFormat.deleted,
+      SvgIcon: IconStrikethrough,
+      tooltip: getPlatformTooltip("strikethrough"),
+      isActive: () => !!editor && isMarkActive(editor, EFormat.deleted),
+      onClick: () => editor && toggleMark(editor, EFormat.deleted)
+    },
+    {
+      format: EFormat.code,
+      SvgIcon: IconCode,
+      tooltip: getPlatformTooltip("code (mod-\\)"),
+      isActive: () => !!editor && isMarkActive(editor, EFormat.code),
+      onClick: () => editor && toggleMark(editor, EFormat.code)
+    },
+    {
+      format: EFormat.superscript,
+      SvgIcon: IconSuperscript,
+      tooltip: getPlatformTooltip("superscript"),
+      isActive: () => !!editor && isMarkActive(editor, EFormat.superscript),
+      onClick: () => editor && toggleSuperSubscript(editor, EFormat.superscript)
+    },
+    {
+      format: EFormat.subscript,
+      SvgIcon: IconSubscript,
+      tooltip: getPlatformTooltip("subscript"),
+      isActive: () => !!editor && isMarkActive(editor, EFormat.subscript),
+      onClick: () => editor && toggleSuperSubscript(editor, EFormat.subscript)
+    }
+  ]);
+
   return editor;
 }

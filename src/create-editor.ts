@@ -8,7 +8,6 @@ import { withColorMark } from "./plugins/color-plugin";
 import { withCoreBlocks } from "./plugins/core-blocks-plugin";
 import { withCoreInlines } from "./plugins/core-inlines-plugin";
 import { withCoreMarks } from "./plugins/core-marks-plugin";
-import { withEmitter } from "./plugins/emitter-plugin";
 import { withImages } from "./plugins/image-plugin";
 import { withLinkInline } from "./plugins/link-plugin";
 import { withListBlocks } from "./plugins/list-plugin";
@@ -34,8 +33,6 @@ export function createEditor(options?: ICreateEditorOptions) {
 
   editor.isElementEnabled = () => true;
   editor.configureElement = () => null;
-
-  editor = withEmitter(editor);
 
   editor = withCoreMarks(editor);
   editor = withColorMark(editor);
