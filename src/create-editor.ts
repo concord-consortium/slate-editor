@@ -8,6 +8,7 @@ import { withColorMark } from "./plugins/color-plugin";
 import { withCoreBlocks } from "./plugins/core-blocks-plugin";
 import { withCoreInlines } from "./plugins/core-inlines-plugin";
 import { withCoreMarks } from "./plugins/core-marks-plugin";
+import { withFontSize } from "./plugins/font-size-plugin";
 import { withImages } from "./plugins/image-plugin";
 import { withLinkInline } from "./plugins/link-plugin";
 import { withListBlocks } from "./plugins/list-plugin";
@@ -22,6 +23,8 @@ export function createEditor(options?: ICreateEditorOptions) {
   editor = history ? withHistory(editor) : editor;
 
   editor.plugins = {};
+
+  editor.globalStyle = () => ({});
 
   editor.isMarkActive = isMarkActive.bind(editor, editor);
   editor.toggleMark = (format: string, value: any = true) => toggleMark(editor, format, value);
@@ -41,6 +44,7 @@ export function createEditor(options?: ICreateEditorOptions) {
   editor = withCoreInlines(editor);
   editor = withImages(editor);
   editor = withLinkInline(editor);
+  editor = withFontSize(editor);
 
   // allow clients to attach their own plugins, etc.
   return onInitEditor?.(editor) ?? editor;
