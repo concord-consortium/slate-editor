@@ -66,9 +66,9 @@ export function withLinkInline(editor: Editor) {
     format: EFormat.link,
     SvgIcon: IconLink,
     tooltip: getPlatformTooltip("link"),
-    isActive: () => !!editor.isElementActive(EFormat.link),
-    isEnabled: () => !!editor.isElementEnabled(EFormat.link),
-    onClick: () => editor?.configureElement(EFormat.link, getDialogController(editor))
+    isActive: () => editor.isElementActive(EFormat.link),
+    isEnabled: () => editor.isElementEnabled(EFormat.link),
+    onClick: () => editor.configureElement(EFormat.link, getDialogController(editor))
   }]);
 
   const { configureElement, isElementEnabled, isInline } = editor;

@@ -29,13 +29,13 @@ export function getToolbarButton(editor: Editor, format: ButtonSpecKey) {
 }
 
 export function registerToolbarButtons(editor: Editor, buttons: IButtonSpec[]) {
+  let editorButtons = gButtonRegistry.get(editor);
+  if (!editorButtons) {
+    editorButtons = new Map<ButtonSpecKey, IButtonSpec>();
+    gButtonRegistry.set(editor, editorButtons);
+  }
   for (const button of buttons) {
     if (button.format) {
-      let editorButtons = gButtonRegistry.get(editor);
-      if (!editorButtons) {
-        editorButtons = new Map<ButtonSpecKey, IButtonSpec>();
-        gButtonRegistry.set(editor, editorButtons);
-      }
       editorButtons.set(button.format, button);
     }
   }

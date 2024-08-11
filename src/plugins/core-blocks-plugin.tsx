@@ -86,7 +86,7 @@ export function withCoreBlocks(editor: Editor) {
       format: EFormat.heading1,
       SvgIcon: IconHeading,
       tooltip: getPlatformTooltip("heading 1"),
-      isActive: () => !!editor && isBlockActive(editor, EFormat.heading1),
+      isActive: () => isBlockActive(editor, EFormat.heading1),
       onClick: () => toggleBlock(editor, EFormat.heading1)
     },
     {
@@ -94,7 +94,7 @@ export function withCoreBlocks(editor: Editor) {
       SvgIcon: IconHeading,
       iconSize: 14,
       tooltip: getPlatformTooltip("heading 2"),
-      isActive: () => !!editor && isBlockActive(editor, EFormat.heading2),
+      isActive: () => isBlockActive(editor, EFormat.heading2),
       onClick: () => toggleBlock(editor, EFormat.heading2)
     },
     {
@@ -102,7 +102,7 @@ export function withCoreBlocks(editor: Editor) {
       SvgIcon: IconHeading,
       iconSize: 12,
       tooltip: getPlatformTooltip("heading 3"),
-      isActive: () => !!editor && isBlockActive(editor, EFormat.heading3),
+      isActive: () => isBlockActive(editor, EFormat.heading3),
       onClick: () => toggleBlock(editor, EFormat.heading3)
     },
     // H4-H6 have been removed from the toolbar but are left commented out in case we want to bring them back.
@@ -111,7 +111,7 @@ export function withCoreBlocks(editor: Editor) {
     //   SvgIcon: IconHeading,
     //   iconSize: 10,
     //   tooltip: getPlatformTooltip("heading 4"),
-    //   isActive: () => !!editor && isBlockActive(editor, EFormat.heading4),
+    //   isActive: () => isBlockActive(editor, EFormat.heading4),
     //   onClick: () => toggleBlock(editor, EFormat.heading4)
     // },
     // {
@@ -119,7 +119,7 @@ export function withCoreBlocks(editor: Editor) {
     //   SvgIcon: IconHeading,
     //   iconSize: 8,
     //   tooltip: getPlatformTooltip("heading 5"),
-    //   isActive: () => !!editor && isBlockActive(editor, EFormat.heading5),
+    //   isActive: () => isBlockActive(editor, EFormat.heading5),
     //   onClick: () => toggleBlock(editor, EFormat.heading5)
     // },
     // {
@@ -127,14 +127,14 @@ export function withCoreBlocks(editor: Editor) {
     //   SvgIcon: IconHeading,
     //   iconSize: 6,
     //   tooltip: getPlatformTooltip("heading 6"),
-    //   isActive: () => !!editor && isBlockActive(editor, EFormat.heading6),
+    //   isActive: () => isBlockActive(editor, EFormat.heading6),
     //   onClick: () => toggleBlock(editor, EFormat.heading6)
     // },
     {
       format: EFormat.blockQuote,
       SvgIcon: IconQuote,
       tooltip: getPlatformTooltip("block quote"),
-      isActive: () => !!editor && isBlockActive(editor, EFormat.blockQuote),
+      isActive: () => isBlockActive(editor, EFormat.blockQuote),
       onClick: () => toggleBlock(editor, EFormat.blockQuote)
     }
   ]);

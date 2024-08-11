@@ -74,50 +74,50 @@ export function withCoreMarks(editor: Editor) {
       format: EFormat.bold,
       SvgIcon: IconBold,
       tooltip: getPlatformTooltip("bold (mod-b)"),
-      isActive: () => !!editor && isMarkActive(editor, EFormat.bold),
-      onClick: () => editor && toggleMark(editor, EFormat.bold)
+      isActive: () => isMarkActive(editor, EFormat.bold),
+      onClick: () => toggleMark(editor, EFormat.bold)
     },
     {
       format: EFormat.italic,
       SvgIcon: IconItalic,
       tooltip: getPlatformTooltip("italic (mod-i)"),
-      isActive: () => !!editor && isMarkActive(editor, EFormat.italic),
-      onClick: () => editor && toggleMark(editor, EFormat.italic)
+      isActive: () => isMarkActive(editor, EFormat.italic),
+      onClick: () => toggleMark(editor, EFormat.italic)
     },
     {
       format: EFormat.underlined,
       SvgIcon: IconUnderline,
       tooltip: getPlatformTooltip("underline (mod-u)"),
-      isActive: () => !!editor && isMarkActive(editor, EFormat.underlined),
-      onClick: () => editor && toggleMark(editor, EFormat.underlined)
+      isActive: () => isMarkActive(editor, EFormat.underlined),
+      onClick: () => toggleMark(editor, EFormat.underlined)
     },
     {
       format: EFormat.deleted,
       SvgIcon: IconStrikethrough,
       tooltip: getPlatformTooltip("strikethrough"),
-      isActive: () => !!editor && isMarkActive(editor, EFormat.deleted),
-      onClick: () => editor && toggleMark(editor, EFormat.deleted)
+      isActive: () => isMarkActive(editor, EFormat.deleted),
+      onClick: () => toggleMark(editor, EFormat.deleted)
     },
     {
       format: EFormat.code,
       SvgIcon: IconCode,
       tooltip: getPlatformTooltip("code (mod-\\)"),
-      isActive: () => !!editor && isMarkActive(editor, EFormat.code),
-      onClick: () => editor && toggleMark(editor, EFormat.code)
+      isActive: () => isMarkActive(editor, EFormat.code),
+      onClick: () => toggleMark(editor, EFormat.code)
     },
     {
       format: EFormat.superscript,
       SvgIcon: IconSuperscript,
       tooltip: getPlatformTooltip("superscript"),
-      isActive: () => !!editor && isMarkActive(editor, EFormat.superscript),
-      onClick: () => editor && toggleSuperSubscript(editor, EFormat.superscript)
+      isActive: () => isMarkActive(editor, EFormat.superscript),
+      onClick: () => toggleSuperSubscript(editor, EFormat.superscript)
     },
     {
       format: EFormat.subscript,
       SvgIcon: IconSubscript,
       tooltip: getPlatformTooltip("subscript"),
-      isActive: () => !!editor && isMarkActive(editor, EFormat.subscript),
-      onClick: () => editor && toggleSuperSubscript(editor, EFormat.subscript)
+      isActive: () => isMarkActive(editor, EFormat.subscript),
+      onClick: () => toggleSuperSubscript(editor, EFormat.subscript)
     }
   ]);
 

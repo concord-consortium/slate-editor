@@ -56,14 +56,14 @@ export function withListBlocks(editor: Editor) {
       format: EFormat.numberedList,
       SvgIcon: IconNumberedList,
       tooltip: getPlatformTooltip("numbered list"),
-      isActive: () => !!editor && isBlockActive(editor, EFormat.numberedList),
+      isActive: () => isBlockActive(editor, EFormat.numberedList),
       onClick: () => toggleBlock(editor, EFormat.numberedList)
     },
     {
       format: EFormat.bulletedList,
       SvgIcon: IconBulletedList,
       tooltip: getPlatformTooltip("bulleted list"),
-      isActive: () => !!editor && isBlockActive(editor, EFormat.bulletedList),
+      isActive: () => isBlockActive(editor, EFormat.bulletedList),
       onClick: () => toggleBlock(editor, EFormat.bulletedList)
     }
   ]);

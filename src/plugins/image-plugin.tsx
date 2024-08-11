@@ -159,9 +159,9 @@ export function withImages(editor: Editor) {
     format: EFormat.image,
     SvgIcon: IconImage,
     tooltip: getPlatformTooltip("image"),
-    isActive: () => !!editor.isElementActive(EFormat.image),
-    isEnabled: () => !!editor.isElementEnabled(EFormat.image),
-    onClick: () => editor?.configureElement(EFormat.image, getDialogController(editor))
+    isActive: () => editor.isElementActive(EFormat.image),
+    isEnabled: () => editor.isElementEnabled(EFormat.image),
+    onClick: () => editor.configureElement(EFormat.image, getDialogController(editor))
   }]);
 
   const { configureElement, isInline, isVoid } = editor;
