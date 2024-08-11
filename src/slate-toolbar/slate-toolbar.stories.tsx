@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from "react";
 import { Slate, withReact } from "slate-react";
+import { IButtonSpec } from "../common/toolbar-utils";
 import { createEditor } from "../create-editor";
-import { IButtonSpec } from "../editor-toolbar/editor-toolbar";
 import { SlateToolbar, ToolbarTransform } from "./slate-toolbar";
 
 export default {
@@ -56,21 +56,16 @@ export const ThreeColumns = () => {
   );
 };
 
-const order = [
+const buttons = [
         "fontDecrease", "bold", "italic", "underlined", "deleted", "code", "superscript", "subscript", "color",
         "fontIncrease", "heading1", "heading2", "heading3", "block-quote", "bulleted-list", "ordered-list", "image", "link"
       ];
 
 export const Ordered = () => {
   const editor = useMemo(() => withReact(createEditor()), []);
-  const transform = useCallback<ToolbarTransform>(buttons => {
-    return order
-            .map(format => buttons.find(b => b.format === format))
-            .filter(b => !!b) as IButtonSpec[];
-  }, []);
   return (
     <Slate editor={editor} initialValue={[]}>
-      <SlateToolbar orientation="vertical" buttonsPerRow={9} transform={transform}
+      <SlateToolbar orientation="vertical" buttonsPerRow={9} buttons={buttons}
         colors={{ buttonColors: { background: "#177991", fill: "#ffffff" } }} />
     </Slate>
   );
@@ -78,12 +73,12 @@ export const Ordered = () => {
 
 export const OrderedHinted = () => {
   const editor = useMemo(() => withReact(createEditor()), []);
-  const transform = useCallback<ToolbarTransform>(buttons => {
-    return order
+  const transform = useCallback<ToolbarTransform>(buttonSpecs => {
+    return buttons
             // show subset of tools
             .filter((f, i) => (i + 1) % 4 !== 0)
             .reverse()
-            .map(format => buttons.find(b => b.format === format))
+            .map(format => buttonSpecs.find(b => b.format === format))
             // override tooltips
             .map(b => {
               const { tooltip, ...others } = b || {};

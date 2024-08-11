@@ -96,7 +96,6 @@
   "dependencies": {
     "@emotion/css": "^11.13.0",
     "classnames": "^2.5.1",
-    "eventemitter3": "^5.0.1",
     "html-escaper": "^3.0.3",
     "is-hotkey": "^0.2.0",
     "lodash": "^4.17.21",

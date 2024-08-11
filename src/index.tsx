@@ -5,6 +5,9 @@ export {
   EditorValue, EFormat, kSlateVoidClass, slateToText, textToSlate
 } from "./common/slate-types";
 export { defaultHotkeyMap, normalizeSelection, selectedNodesOfType } from "./common/slate-utils";
+export {
+  ButtonSpecColorFn, getDialogController, getPlatformTooltip, getToolbarButton, IButtonSpec
+} from "./common/toolbar-utils";
 export { createEditor } from "./create-editor";
 export { useSerializing } from "./hooks/use-serializing";
 export { DialogContent } from "./modal-dialog/dialog-content";
@@ -15,7 +18,6 @@ export {
 } from "./modal-dialog/dialog-types";
 export { ModalCover } from "./modal-dialog/modal-cover";
 export { ModalDialog, IProps as IModalDialogProps } from "./modal-dialog/modal-dialog";
-export { registerPlugins } from "./plugins/register-plugins";
 export { convertDocument } from "./serialization/legacy-deserialization";
 export {
   htmlToSlate, registerElementDeserializer, registerMarkDeserializer, slateToHtml
@@ -32,7 +34,7 @@ export { registerElementComponent } from "./slate-editor/element";
 export { registerMarkRenderer } from "./slate-editor/leaf";
 export { SlateEditor } from "./slate-editor/slate-editor";
 export { SlateToolbar, ToolbarTransform } from "./slate-toolbar/slate-toolbar";
-export { EditorToolbar, IButtonSpec, IToolbarColors, getPlatformTooltip } from "./editor-toolbar/editor-toolbar";
+export { EditorToolbar, IToolbarColors } from "./editor-toolbar/editor-toolbar";
 export {
   OnChangeColorFn, OnChangeFn, OnClickFn, OnDidInvokeToolFn, /* OnMouseFn, */ ToolbarButton
 } from "./editor-toolbar/toolbar-button";

@@ -1,11 +1,13 @@
 import React from "react";
 import { Editor } from "slate";
 import { CustomMarks, CustomRenderLeafProps, CustomText } from "../common/custom-types";
-import { useSerializing } from "../hooks/use-serializing";
 import { EFormat } from "../common/slate-types";
+import { ButtonSpecColorFn, getPlatformTooltip, registerToolbarButtons } from "../common/toolbar-utils";
+import { useSerializing } from "../hooks/use-serializing";
 import { registerMarkRenderer } from "../slate-editor/leaf";
 import { registerMarkDeserializer } from "../serialization/html-serializer";
 import { toHexIfColor } from "../serialization/html-utils";
+import InputColor from "./input-color";
 
 const kTextColorClass = "ccrte-text-color";
 
@@ -42,5 +44,26 @@ export function registerColorMark() {
 
 export function withColorMark(editor: Editor) {
   registerColorMark();
+
+  registerToolbarButtons(editor, [
+    (() => {
+      const setFillColor: ButtonSpecColorFn = colors => {
+        const fill = (Editor.marks(editor) as CustomMarks)?.color || "#000000";
+        return { ...colors, fill };
+      };
+      return {
+        format: EFormat.color,
+        SvgIcon: InputColor,
+        colors: setFillColor,
+        selectedColors: setFillColor,
+        tooltip: getPlatformTooltip("color"),
+        isActive: () => !!(Editor.marks(editor) as CustomMarks)?.color,
+        onChange: (value: string) => {
+          return editor?.addMark(EFormat.color, value);
+        }
+      };
+    })()
+  ]);
+
   return editor;
 }

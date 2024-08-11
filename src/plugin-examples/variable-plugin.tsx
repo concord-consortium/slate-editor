@@ -6,11 +6,13 @@ import { ReactEditor, RenderElementProps, useFocused, useSelected, useSlateStati
 import { CustomElement } from "../common/custom-types";
 import { kSlateVoidClass } from "../common/slate-types";
 import { unwrapElement } from "../common/slate-utils";
+import { getDialogController, getPlatformTooltip, registerToolbarButtons } from "../common/toolbar-utils";
 import { useSerializing } from "../hooks/use-serializing";
 import { IDialogController, IField } from "../modal-dialog/dialog-types";
 import { registerElementDeserializer } from "../serialization/html-serializer";
 import { classArray, getElementAttrs } from "../serialization/html-utils";
 import { registerElementComponent } from "../slate-editor/element";
+import IconVariable from "./icon-variable";
 import "./variable-plugin.scss";
 
 export const kVariableFormatCode = "variable";
@@ -46,7 +48,9 @@ function VariableRenderComponent({ element, attributes, children }: RenderElemen
   const highlightClass = isFocused && isSelected ? kVariableHighlightClass : undefined;
   const classes = classNames(classArray(className), kSlateVoidClass, kVariableClass, highlightClass) || undefined;
   const hasValue = !isEmptyValue(value);
-  const handleDoubleClick = () => editor.emitEvent("toolbarDialog", element);
+  const handleDoubleClick = () => {
+    editor.configureElement(kVariableFormatCode, getDialogController(editor), element);
+  };
   return (
     <span className={classes} {...otherAttributes} onDoubleClick={handleDoubleClick}>
       <span className="ccrte-name">{name}</span>
@@ -119,16 +123,28 @@ function getDialogValuesFromNode(node?: CustomElement) {
 export function withVariables(editor: Editor) {
   registerVariableElement();
 
+  registerToolbarButtons(editor, [{
+    format: kVariableFormatCode,
+    SvgIcon: IconVariable,
+    tooltip: getPlatformTooltip("variable"),
+    isActive: () => !!editor?.isElementActive(kVariableFormatCode),
+    isEnabled: () => !!editor /* ?.isElementEnabled(kVariableFormatCode) */,
+    onClick: () => {
+      editor?.configureElement(kVariableFormatCode, getDialogController(editor));
+    }
+  }]);
+
   const { configureElement, isInline, isVoid } = editor;
   editor.isInline = element => (element.type === kVariableFormatCode) || isInline(element);
   editor.isVoid = element => (element.type === kVariableFormatCode) || isVoid(element);
   editor.plugins.variables = { a: "1", b: "2", c: "3" };
-  editor.configureElement = (format: string, controller: IDialogController, node?: CustomElement) => {
+  editor.configureElement = (format: string, controller?: IDialogController, node?: CustomElement) => {
     if (format !== kVariableFormatCode) return configureElement(format, controller, node);
 
     const hasVariable = editor.isElementActive(kVariableFormatCode);
 
-    if (hasVariable) {
+    if (!node && hasVariable) {
+      // in theory, clicking toolbar button (!node) with a variable selected turns it back into text
       unwrapElement(editor, kVariableFormatCode);
     } else {
       const newVariableRow: IField[] = [{ name: "name", type: "input", label: "Name:" }, { name: "value", type: "input", label: "Value:" }];
@@ -140,7 +156,7 @@ export function withVariables(editor: Editor) {
       const orRow: IField[] =  [{ name: "or", type: "label", label: "or" }];
       const createNewRow: IField[] =  [{ name: "create", type: "label", label: "Create new" }];
 
-      controller.display({
+      controller?.display({
         title: "Insert Variable",
         rows: [...existingVariables, orRow, createNewRow, newVariableRow],
         values: getDialogValuesFromNode(node),
