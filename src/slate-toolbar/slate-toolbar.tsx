@@ -2,9 +2,7 @@ import clone from "lodash/clone";
 import React, { useEffect, useRef, useState }  from "react";
 import { Editor } from "slate";
 import { ReactEditor, useSlate } from "slate-react";
-// import IconFontIncrease from "../assets/icon-font-increase";
-// import IconFontDecrease from "../assets/icon-font-decrease";
-import { EFormat } from "../common/slate-types";
+import { EFormat, EMetaFormat } from "../common/slate-types";
 import { EFormatOrButtonSpec, getToolbarButton, IButtonSpec, setDialogController } from "../common/toolbar-utils";
 import { EditorToolbar, IProps as IToolbarProps } from "../editor-toolbar/editor-toolbar";
 import { DisplayDialogSettings, FieldType, IDialogController, IFieldValues } from "../modal-dialog/dialog-types";
@@ -76,20 +74,8 @@ export const SlateToolbar: React.FC<IProps> = (props: IProps) => {
     EFormat.blockQuote,
     EFormat.numberedList,
     EFormat.bulletedList,
-    // {
-    //   format: EMetaFormat.fontDecrease,
-    //   SvgIcon: IconFontDecrease,
-    //   tooltip: getPlatformTooltip("decrease font"),
-    //   isActive: () => false,
-    //   onClick: () => editor?.command("decreaseFontSize")
-    // },
-    // {
-    //   format: EMetaFormat.fontIncrease,
-    //   SvgIcon: IconFontIncrease,
-    //   tooltip: getPlatformTooltip("increase font"),
-    //   isActive: () => false,
-    //   onClick: () => editor?.command("increaseFontSize")
-    // }
+    EMetaFormat.fontIncrease,
+    EMetaFormat.fontDecrease
   ];
 
   const _buttonSpecs = (inButtons ?? defaultButtons).map(spec => {

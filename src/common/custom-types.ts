@@ -163,6 +163,9 @@ interface CCBaseEditor extends BaseEditor {
   data?: Record<string, boolean | number | string>;
   // plugins can store values in maps under the plugin name
   plugins: Record<string, Record<string, any>>;
+
+  globalStyle: (style: React.CSSProperties) => React.CSSProperties;
+
   isMarkActive: (format: string) => boolean;
   toggleMark: (format: string, value?: any) => void;
   toggleSuperSubscript: (format: EFormat.subscript | EFormat.superscript) => void;
