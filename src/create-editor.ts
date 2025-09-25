@@ -9,16 +9,18 @@ import { withCoreBlocks } from "./plugins/core-blocks-plugin";
 import { withCoreInlines } from "./plugins/core-inlines-plugin";
 import { withCoreMarks } from "./plugins/core-marks-plugin";
 import { withFontSize } from "./plugins/font-size-plugin";
-import { withImages } from "./plugins/image-plugin";
-import { withLinkInline } from "./plugins/link-plugin";
+import { withImages, IOptions as IImageOptions } from "./plugins/image-plugin";
+import { withLinkInline, IOptions as ILinkOptions } from "./plugins/link-plugin";
 import { withListBlocks } from "./plugins/list-plugin";
 
 interface ICreateEditorOptions {
   history?: boolean;
+  imageOptions?: IImageOptions;
+  linkOptions?: ILinkOptions;
   onInitEditor?: (editor: Editor) => Editor;
 }
 export function createEditor(options?: ICreateEditorOptions) {
-  const { history = true, onInitEditor } = options || {};
+  const { history = true, imageOptions, linkOptions, onInitEditor } = options || {};
   let editor = withReact(slateCreateEditor());
   editor = history ? withHistory(editor) : editor;
 
@@ -42,8 +44,8 @@ export function createEditor(options?: ICreateEditorOptions) {
   editor = withCoreBlocks(editor);
   editor = withListBlocks(editor);
   editor = withCoreInlines(editor);
-  editor = withImages(editor);
-  editor = withLinkInline(editor);
+  editor = withImages(editor, imageOptions);
+  editor = withLinkInline(editor, linkOptions);
   editor = withFontSize(editor);
 
   // allow clients to attach their own plugins, etc.

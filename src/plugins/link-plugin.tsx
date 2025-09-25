@@ -1,7 +1,7 @@
 import React from "react";
 import { Descendant, Editor, Range } from "slate";
 import { jsx } from "slate-hyperscript";
-import { RenderElementProps } from "slate-react";
+import { RenderElementProps, useSlateStatic } from "slate-react";
 import { isWebUri } from "valid-url";
 import IconLink from "../assets/icon-link";
 import { CustomElement, LinkElement } from "../common/custom-types";
@@ -23,6 +23,7 @@ export const isLinkElement = (element: CustomElement): element is LinkElement =>
 const InlineChromiumBugfix = () => <span contentEditable={false} style={{ fontSize: 0 }}>{"\u00a0"}</span>;
 
 export const LinkComponent = ({ attributes, children, element }: RenderElementProps) => {
+  const editor = useSlateStatic();
   const isSerializing = useSerializing();
 
   if (!isLinkElement(element)) return null;
@@ -30,9 +31,20 @@ export const LinkComponent = ({ attributes, children, element }: RenderElementPr
   const { href } = element;
   const target = isSerializing ? undefined : "_blank";
   const rel = isSerializing ? undefined : "noopener noreferrer";
-  const onDoubleClick = isSerializing ? undefined : () => window.open(href);
+  const onClick = isSerializing
+                    ? undefined
+                    : editor.plugins?.links?.onClick
+                      ? () => editor.plugins.links.onClick(editor, element)
+                      : undefined;
+  const onDoubleClick = isSerializing
+                          ? undefined
+                          : editor.plugins?.links?.onDoubleClick
+                            ? () => editor.plugins.links.onDoubleClick(editor, element)
+                            // rel attribute is space-delimited, but window.open expects comma-delimited
+                            : () => window.open(href, target, rel?.replace(/ /g, ","));
   return (
-    <a {...attributes} {...eltRenderAttrs(element)} href={href} target={target} rel={rel} onDoubleClick={onDoubleClick}>
+    <a {...attributes} {...eltRenderAttrs(element)} href={href} target={target} rel={rel}
+        onClick={onClick} onDoubleClick={onDoubleClick}>
       {!isSerializing && <InlineChromiumBugfix/>}
       {children}
       {!isSerializing && <InlineChromiumBugfix/>}
@@ -59,7 +71,12 @@ export function registerLinkInline() {
   isRegistered = true;
 }
 
-export function withLinkInline(editor: Editor) {
+export interface IOptions {
+  onClick?: (editor: Editor, element: LinkElement) => void;
+  onDoubleClick?: (editor: Editor, element: LinkElement) => void;
+}
+
+export function withLinkInline(editor: Editor, options?: IOptions) {
   registerLinkInline();
 
   registerToolbarButtons(editor, [{
@@ -72,6 +89,8 @@ export function withLinkInline(editor: Editor) {
   }]);
 
   const { configureElement, isElementEnabled, isInline } = editor;
+
+  editor.plugins.links = options || {};
 
   editor.isInline = element => (element.type === EFormat.link) || isInline(element);
 
