@@ -5,10 +5,10 @@ import { RenderElementProps, useSlateStatic } from "slate-react";
 import { isWebUri } from "valid-url";
 import IconLink from "../assets/icon-link";
 import { CustomElement, LinkElement } from "../common/custom-types";
-import { getDialogController, getPlatformTooltip, registerToolbarButtons } from "../common/toolbar-utils";
-import { useSerializing } from "../hooks/use-serializing";
 import { EFormat } from "../common/slate-types";
 import { unwrapElement, wrapElement } from "../common/slate-utils";
+import { getDialogController, getPlatformTooltip, registerToolbarButtons } from "../common/toolbar-utils";
+import { useSerializing } from "../hooks/use-serializing";
 import { IDialogController, IField } from "../modal-dialog/dialog-types";
 import { registerElementDeserializer } from "../serialization/html-serializer";
 import { getElementAttrs } from "../serialization/html-utils";
@@ -22,34 +22,43 @@ export const isLinkElement = (element: CustomElement): element is LinkElement =>
 // https://bugs.chromium.org/p/chromium/issues/detail?id=1249405
 const InlineChromiumBugfix = () => <span contentEditable={false} style={{ fontSize: 0 }}>{"\u00a0"}</span>;
 
-export const LinkComponent = ({ attributes, children, element }: RenderElementProps) => {
+const LinkSerializeComponent = ({ attributes, children, element }: RenderElementProps) => {
+  if (!isLinkElement(element)) return null;
+
+  const { href } = element;
+  return (
+    <a {...attributes} {...eltRenderAttrs(element)} href={href}>
+      {children}
+    </a>
+  );
+};
+
+const LinkRenderComponent = ({ attributes, children, element }: RenderElementProps) => {
   const editor = useSlateStatic();
-  const isSerializing = useSerializing();
+  const config: typeof editor.plugins.links | undefined = editor.plugins?.links;
 
   if (!isLinkElement(element)) return null;
 
   const { href } = element;
-  const target = isSerializing ? undefined : "_blank";
-  const rel = isSerializing ? undefined : "noopener noreferrer";
-  const onClick = isSerializing
-                    ? undefined
-                    : editor.plugins?.links?.onClick
-                      ? () => editor.plugins.links.onClick(editor, element)
-                      : undefined;
-  const onDoubleClick = isSerializing
-                          ? undefined
-                          : editor.plugins?.links?.onDoubleClick
-                            ? () => editor.plugins.links.onDoubleClick(editor, element)
-                            // rel attribute is space-delimited, but window.open expects comma-delimited
-                            : () => window.open(href, target, rel?.replace(/ /g, ","));
+  const onClick = config?.onClick ? () => config.onClick(editor, element) : undefined;
+  const onDoubleClick = config?.onDoubleClick
+                          ? () => config.onDoubleClick(editor, element)
+                          : () => window.open(href, "_blank", "noopener,noreferrer");
   return (
-    <a {...attributes} {...eltRenderAttrs(element)} href={href} target={target} rel={rel}
+    <a {...attributes} {...eltRenderAttrs(element)} href={href} target="_blank" rel="noopener noreferrer"
         onClick={onClick} onDoubleClick={onDoubleClick}>
-      {!isSerializing && <InlineChromiumBugfix/>}
+      <InlineChromiumBugfix/>
       {children}
-      {!isSerializing && <InlineChromiumBugfix/>}
+      <InlineChromiumBugfix/>
     </a>
   );
+};
+
+export const LinkComponent = (props: RenderElementProps) => {
+  const isSerializing = useSerializing();
+  return isSerializing
+          ? <LinkSerializeComponent {...props} />
+          : <LinkRenderComponent {...props} />;
 };
 
 const kLinkTag = "a";

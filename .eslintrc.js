@@ -25,7 +25,8 @@ module.exports = {
       "plugin:eslint-comments/recommended",
       "plugin:@typescript-eslint/recommended",
       "plugin:react/recommended",
-      "plugin:react-hooks/recommended"
+      "plugin:react-hooks/recommended",
+      "plugin:storybook/recommended"
     ],
     rules: {
       "@typescript-eslint/explicit-module-boundary-types": "off",
