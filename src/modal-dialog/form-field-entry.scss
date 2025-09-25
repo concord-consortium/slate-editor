@@ -1,4 +1,4 @@
-@import "./dialog-vars.scss";
+@use "./dialog-vars.scss" as vars;
 
 .ccrte-form-field {
   &.ccrte-inline {
@@ -17,7 +17,7 @@
     padding: 0 3px;
 
     &.ccrte-full-row {
-      width: $dialogWidth - 40px;
+      width: vars.$dialogWidth - 40px;
     }
   }
 }
