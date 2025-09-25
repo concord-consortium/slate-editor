@@ -68,20 +68,25 @@ const ImageRenderComponent = ({ attributes, children, element }: RenderElementPr
   if (!isImageElement(element)) return null;
 
   const handleDoubleClick = () => {
-    editor.configureElement(EFormat.image, getDialogController(editor), element);
+    if (editor.plugins?.images?.onDoubleClick) {
+      editor.plugins.images.onDoubleClick(editor, element);
+    }
+    else {
+      editor.configureElement(EFormat.image, getDialogController(editor), element);
+    }
   };
 
   const handleLoad = () => null;
 
   const highlightClass = isFocused && isSelected ? kImageHighlightClass : undefined;
-  const divClasses = kInlineBlockClass;
+  const spanClasses = element.float ? "" : kInlineBlockClass;
   return (
     // cf. https://github.com/ianstormtaylor/slate/blob/main/site/examples/images.tsx
     // but we use `<span>`s instead of `<div>`s due to the restriction that
     // `Warning: validateDOMNesting(...): <div> cannot appear as a descendant of <p>`
-    <span {...attributes} className={`${kImageNodeClass} ${divClasses}`}>
+    <span {...attributes} className={`${kImageNodeClass} ${spanClasses}`}>
       {children}
-      <span className={divClasses} contentEditable={false}>
+      <span className={spanClasses} contentEditable={false}>
         <img className={getImgClasses(element, highlightClass)} {...getImgAttrs(element)} {...eltRenderAttrs(element)}
             onLoad={handleLoad} onDoubleClick={handleDoubleClick}/>
       </span>
@@ -152,7 +157,12 @@ function getNodeFromDialogValues(values: Record<string, string>) {
   return imageElt;
 }
 
-export function withImages(editor: Editor) {
+export interface IOptions {
+  onClick?: (editor: Editor, element: ImageElement) => void;
+  onDoubleClick?: (editor: Editor, element: ImageElement) => void;
+}
+
+export function withImages(editor: Editor, options?: IOptions) {
   registerImageInline();
 
   registerToolbarButtons(editor, [{
@@ -165,6 +175,8 @@ export function withImages(editor: Editor) {
   }]);
 
   const { configureElement, isInline, isVoid } = editor;
+
+  editor.plugins.images = options || {};
 
   editor.isInline = element => (element.type === EFormat.image) || isInline(element);
   editor.isVoid = element => (element.type === EFormat.image) || isVoid(element);

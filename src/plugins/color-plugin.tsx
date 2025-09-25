@@ -3,7 +3,6 @@ import { Editor } from "slate";
 import { CustomMarks, CustomRenderLeafProps, CustomText } from "../common/custom-types";
 import { EFormat } from "../common/slate-types";
 import { ButtonSpecColorFn, getPlatformTooltip, registerToolbarButtons } from "../common/toolbar-utils";
-import { useSerializing } from "../hooks/use-serializing";
 import { registerMarkRenderer } from "../slate-editor/leaf";
 import { registerMarkDeserializer } from "../serialization/html-serializer";
 import { toHexIfColor } from "../serialization/html-utils";
@@ -12,12 +11,8 @@ import InputColor from "./input-color";
 const kTextColorClass = "ccrte-text-color";
 
 export const ColorComponent = ({ children, leaf }: CustomRenderLeafProps) => {
-  const isSerializing = useSerializing();
   const { color } = leaf;
-  const baseStyle = { color };
-  // color shouldn't change when text is selected
-  const selectedStyle = isSerializing ? undefined : { "--selected-color": color };
-  return <span className={kTextColorClass} style={{ ...baseStyle, ...selectedStyle }}>{children}</span>;
+  return <span className={kTextColorClass} style={{ color }}>{children}</span>;
 };
 
 let isRegistered = false;

@@ -1,10 +1,15 @@
-export { BaseElement, BaseSelection, Descendant, Editor, Node, Range, Transforms } from "slate";
+export { BaseElement, BaseSelection, Descendant, Editor, Node, NodeEntry, Path, Range, Transforms } from "slate";
 export { ReactEditor, RenderElementProps, Slate, useFocused, useSelected, useSlate } from "slate-react";
-export { CustomEditor, CustomElement, CustomText, isCustomElement } from "./common/custom-types";
+export {
+  CustomEditor, CustomElement, CustomMarks, CustomText, ImageElement, isCustomElement, LinkElement
+} from "./common/custom-types";
 export {
   EditorValue, EFormat, kSlateVoidClass, slateToText, textToSlate
 } from "./common/slate-types";
-export { defaultHotkeyMap, normalizeSelection, selectedNodesOfType } from "./common/slate-utils";
+export {
+  defaultHotkeyMap, isBlockActive, isMarkActive, normalizeSelection, selectedNodesOfType, toggleBlock, toggleMark,
+  toggleSuperSubscript, unwrapElement, wrapElement
+} from "./common/slate-utils";
 export {
   ButtonSpecColorFn, getDialogController, getPlatformTooltip, getToolbarButton, IButtonSpec
 } from "./common/toolbar-utils";
@@ -46,6 +51,7 @@ import "./modal-dialog/form-checkbox-field.scss";
 import "./modal-dialog/form-field-entry.scss";
 import "./modal-dialog/modal-cover.scss";
 import "./modal-dialog/modal-dialog.scss";
+import "./plugins/image-plugin.scss";
 import "./slate-container/slate-container.scss";
 import "./slate-editor/slate-editor.scss";
 import "./editor-toolbar/editor-toolbar.scss";
