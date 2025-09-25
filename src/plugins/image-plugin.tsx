@@ -62,14 +62,15 @@ const ImageSerializeComponent = ({ attributes, children, element }: RenderElemen
 
 const ImageRenderComponent = ({ attributes, children, element }: RenderElementProps) => {
   const editor = useSlateStatic();
+  const config: typeof editor.plugins.images | undefined = editor.plugins?.images;
   const isFocused = useFocused();
   const isSelected = useSelected();
 
   if (!isImageElement(element)) return null;
 
   const handleDoubleClick = () => {
-    if (editor.plugins?.images?.onDoubleClick) {
-      editor.plugins.images.onDoubleClick(editor, element);
+    if (config?.onDoubleClick) {
+      config.onDoubleClick(editor, element);
     }
     else {
       editor.configureElement(EFormat.image, getDialogController(editor), element);
