@@ -13,15 +13,6 @@ import { createEditor } from "../create-editor";
 import { kLegacyBlockTags } from "../plugins/core-blocks-plugin";
 import { kLegacyEmptyInlineTags, kLegacyNonEmptyInlineTags } from "../plugins/core-inlines-plugin";
 
-jest.mock("slate-react", () => ({
-  ...jest.requireActual("slate-react"),
-  useSlateStatic: jest.fn(() => {
-    return {
-      plugins: {}
-    };
-  })
-}));
-
 describe("htmlToSlate(), slateToHtml()", () => {
 
   const editor = createEditor();
