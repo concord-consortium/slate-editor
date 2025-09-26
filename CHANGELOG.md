@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 0.12.0 - September 26, 2025
+- [Breaking] Minimum React version is 18
+- Improved support for external toolbars
+- Updated many dependencies
+- Fixed rendering of selected colored text
+
 ## Version 0.11.0 - September 26, 2025 (prepared August 2024)
 
 ### Features/Improvements
