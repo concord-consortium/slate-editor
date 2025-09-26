@@ -9,7 +9,7 @@ import { EFormat } from "../common/slate-types";
 import { unwrapElement, wrapElement } from "../common/slate-utils";
 import { getDialogController, getPlatformTooltip, registerToolbarButtons } from "../common/toolbar-utils";
 import { useSerializing } from "../hooks/use-serializing";
-import { useSingleAndDoubleClick } from "../hooks/use-singe-and-double-click";
+import { useSingleAndDoubleClick } from "../hooks/use-single-and-double-click";
 import { IDialogController, IField } from "../modal-dialog/dialog-types";
 import { registerElementDeserializer } from "../serialization/html-serializer";
 import { getElementAttrs } from "../serialization/html-utils";
