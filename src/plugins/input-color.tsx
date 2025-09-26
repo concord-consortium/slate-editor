@@ -1,5 +1,5 @@
 import React from "react";
-import { IconProps } from "./icon-props";
+import { IconProps } from "../assets/icon-props";
 
 export interface IProps extends IconProps {
   onChange?: (color: string) => void;

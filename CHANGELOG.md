@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 0.11.0 - September 26, 2025 (prepared August 2024)
+
+### Features/Improvements
+- [Breaking] Plugin architecture improvements
+- [Breaking] Update minimum React version to 17
+
 ## Version 0.10.1 - July 24, 2024
 
 ### Features/Improvements

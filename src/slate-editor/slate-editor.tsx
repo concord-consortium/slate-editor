@@ -61,6 +61,7 @@ export const SlateEditor = ({
       className={`ccrte-editor slate-editor ${className || ""}`}
       data-testid="ccrte-editor"
       readOnly={readOnly}
+      style={editor.globalStyle({})}
       renderElement={renderElement}
       renderLeaf={renderLeaf}
       placeholder={placeholder}

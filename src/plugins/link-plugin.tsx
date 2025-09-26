@@ -3,7 +3,9 @@ import { Descendant, Editor, Range } from "slate";
 import { jsx } from "slate-hyperscript";
 import { RenderElementProps } from "slate-react";
 import { isWebUri } from "valid-url";
+import IconLink from "../assets/icon-link";
 import { CustomElement, LinkElement } from "../common/custom-types";
+import { getDialogController, getPlatformTooltip, registerToolbarButtons } from "../common/toolbar-utils";
 import { useSerializing } from "../hooks/use-serializing";
 import { EFormat } from "../common/slate-types";
 import { unwrapElement, wrapElement } from "../common/slate-utils";
@@ -60,6 +62,15 @@ export function registerLinkInline() {
 export function withLinkInline(editor: Editor) {
   registerLinkInline();
 
+  registerToolbarButtons(editor, [{
+    format: EFormat.link,
+    SvgIcon: IconLink,
+    tooltip: getPlatformTooltip("link"),
+    isActive: () => editor.isElementActive(EFormat.link),
+    isEnabled: () => editor.isElementEnabled(EFormat.link),
+    onClick: () => editor.configureElement(EFormat.link, getDialogController(editor))
+  }]);
+
   const { configureElement, isElementEnabled, isInline } = editor;
 
   editor.isInline = element => (element.type === EFormat.link) || isInline(element);
@@ -79,7 +90,7 @@ export function withLinkInline(editor: Editor) {
     return (blocks <= 1) && ((inlines === 0) || (inlines === 1 && links === 1));
   };
 
-  editor.configureElement = (format: string, controller: IDialogController, node?: CustomElement) => {
+  editor.configureElement = (format: string, controller?: IDialogController, node?: CustomElement) => {
     if (format !== EFormat.link) return configureElement(format, controller, node);
 
     const { selection } = editor;
@@ -94,7 +105,7 @@ export function withLinkInline(editor: Editor) {
                                     : [];
       const urlField: IField[] = [{ name: "linkUrl", type: "input", label: "Link URL:" }];
 
-      controller.display({
+      controller?.display({
         title: "Insert Link",
         rows: [...textField, ...urlField],
         values: {},

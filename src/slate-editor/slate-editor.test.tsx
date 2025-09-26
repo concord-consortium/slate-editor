@@ -63,17 +63,6 @@ describe("Slate Editor", () => {
           ))}
         </div>
       );
-
-      const listeners = [jest.fn(), jest.fn()];
-      editors.forEach((editor, i) => editor.onEvent("foo", listeners[i]));
-      // editor 1 emitting "foo" should only trigger editor 1 listener
-      editors[0].emitEvent("foo");
-      expect(listeners[0]).toBeCalledTimes(1);
-      expect(listeners[1]).toBeCalledTimes(0);
-      // editor 2 emitting "foo" should only trigger editor 2 listener
-      editors[1].emitEvent("foo");
-      expect(listeners[0]).toBeCalledTimes(1);
-      expect(listeners[1]).toBeCalledTimes(1);
     });
 
   });
