@@ -1,6 +1,6 @@
 # Changelog
 
-## Version 0.11.0 - August 9, 2024
+## Version 0.11.0 - September 26, 2025 (prepared August 2024)
 
 ### Features/Improvements
 - [Breaking] Plugin architecture improvements

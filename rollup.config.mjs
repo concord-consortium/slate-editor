@@ -9,7 +9,7 @@ import { visualizer } from "rollup-plugin-visualizer";
 import commonjs from "@rollup/plugin-commonjs";
 import postcss from "rollup-plugin-postcss";
 
-import packageJson from "./package.json" assert { type: 'json' };
+import packageJson from "./package.json" with { type: 'json' };
 
 export default [{
   input: "src/index.tsx",
