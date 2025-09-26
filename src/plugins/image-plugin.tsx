@@ -9,6 +9,7 @@ import { CustomElement, ImageElement } from "../common/custom-types";
 import { EFormat } from "../common/slate-types";
 import { getDialogController, getPlatformTooltip, registerToolbarButtons } from "../common/toolbar-utils";
 import { useSerializing } from "../hooks/use-serializing";
+import { useSingleAndDoubleClick } from "../hooks/use-singe-and-double-click";
 import { IDialogController } from "../modal-dialog/dialog-types";
 import { registerElementDeserializer } from "../serialization/html-serializer";
 import { getElementAttrs } from "../serialization/html-utils";
@@ -66,16 +67,14 @@ const ImageRenderComponent = ({ attributes, children, element }: RenderElementPr
   const isFocused = useFocused();
   const isSelected = useSelected();
 
-  if (!isImageElement(element)) return null;
+  const { handleClick, handleDoubleClick } = useSingleAndDoubleClick(
+    config?.onClick ? () => config.onClick(editor, element) : undefined,
+    config?.onDoubleClick
+      ? () => config.onDoubleClick(editor, element)
+      : () => editor.configureElement(EFormat.image, getDialogController(editor), element)
+  );
 
-  const handleDoubleClick = () => {
-    if (config?.onDoubleClick) {
-      config.onDoubleClick(editor, element);
-    }
-    else {
-      editor.configureElement(EFormat.image, getDialogController(editor), element);
-    }
-  };
+  if (!isImageElement(element)) return null;
 
   const handleLoad = () => null;
 
@@ -89,7 +88,7 @@ const ImageRenderComponent = ({ attributes, children, element }: RenderElementPr
       {children}
       <span className={spanClasses} contentEditable={false}>
         <img className={getImgClasses(element, highlightClass)} {...getImgAttrs(element)} {...eltRenderAttrs(element)}
-            onLoad={handleLoad} onDoubleClick={handleDoubleClick}/>
+            onLoad={handleLoad} onClick={handleClick} onDoubleClick={handleDoubleClick}/>
       </span>
     </span>
   );

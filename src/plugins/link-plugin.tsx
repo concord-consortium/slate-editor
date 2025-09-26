@@ -9,6 +9,7 @@ import { EFormat } from "../common/slate-types";
 import { unwrapElement, wrapElement } from "../common/slate-utils";
 import { getDialogController, getPlatformTooltip, registerToolbarButtons } from "../common/toolbar-utils";
 import { useSerializing } from "../hooks/use-serializing";
+import { useSingleAndDoubleClick } from "../hooks/use-singe-and-double-click";
 import { IDialogController, IField } from "../modal-dialog/dialog-types";
 import { registerElementDeserializer } from "../serialization/html-serializer";
 import { getElementAttrs } from "../serialization/html-utils";
@@ -37,16 +38,21 @@ const LinkRenderComponent = ({ attributes, children, element }: RenderElementPro
   const editor = useSlateStatic();
   const config: typeof editor.plugins.links | undefined = editor.plugins?.links;
 
+  const { handleClick, handleDoubleClick } = useSingleAndDoubleClick(
+    config?.onClick ? () => config.onClick(editor, element) : undefined,
+    config?.onDoubleClick
+      ? () => config.onDoubleClick(editor, element)
+      : isLinkElement(element)
+        ? () => window.open(element.href, "_blank", "noopener,noreferrer")
+        : undefined
+  );
+
   if (!isLinkElement(element)) return null;
 
   const { href } = element;
-  const onClick = config?.onClick ? () => config.onClick(editor, element) : undefined;
-  const onDoubleClick = config?.onDoubleClick
-                          ? () => config.onDoubleClick(editor, element)
-                          : () => window.open(href, "_blank", "noopener,noreferrer");
   return (
     <a {...attributes} {...eltRenderAttrs(element)} href={href} target="_blank" rel="noopener noreferrer"
-        onClick={onClick} onDoubleClick={onDoubleClick}>
+        onClick={handleClick} onDoubleClick={handleDoubleClick}>
       <InlineChromiumBugfix/>
       {children}
       <InlineChromiumBugfix/>
