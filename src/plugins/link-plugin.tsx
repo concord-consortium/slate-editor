@@ -1,14 +1,15 @@
 import React from "react";
 import { Descendant, Editor, Range } from "slate";
 import { jsx } from "slate-hyperscript";
-import { RenderElementProps } from "slate-react";
+import { RenderElementProps, useSlateStatic } from "slate-react";
 import { isWebUri } from "valid-url";
 import IconLink from "../assets/icon-link";
 import { CustomElement, LinkElement } from "../common/custom-types";
-import { getDialogController, getPlatformTooltip, registerToolbarButtons } from "../common/toolbar-utils";
-import { useSerializing } from "../hooks/use-serializing";
 import { EFormat } from "../common/slate-types";
 import { unwrapElement, wrapElement } from "../common/slate-utils";
+import { getDialogController, getPlatformTooltip, registerToolbarButtons } from "../common/toolbar-utils";
+import { useSerializing } from "../hooks/use-serializing";
+import { useSingleAndDoubleClick } from "../hooks/use-single-and-double-click";
 import { IDialogController, IField } from "../modal-dialog/dialog-types";
 import { registerElementDeserializer } from "../serialization/html-serializer";
 import { getElementAttrs } from "../serialization/html-utils";
@@ -22,22 +23,48 @@ export const isLinkElement = (element: CustomElement): element is LinkElement =>
 // https://bugs.chromium.org/p/chromium/issues/detail?id=1249405
 const InlineChromiumBugfix = () => <span contentEditable={false} style={{ fontSize: 0 }}>{"\u00a0"}</span>;
 
-export const LinkComponent = ({ attributes, children, element }: RenderElementProps) => {
-  const isSerializing = useSerializing();
+const LinkSerializeComponent = ({ attributes, children, element }: RenderElementProps) => {
+  if (!isLinkElement(element)) return null;
+
+  const { href } = element;
+  return (
+    <a {...attributes} {...eltRenderAttrs(element)} href={href}>
+      {children}
+    </a>
+  );
+};
+
+const LinkRenderComponent = ({ attributes, children, element }: RenderElementProps) => {
+  const editor = useSlateStatic();
+  const config: typeof editor.plugins.links | undefined = editor.plugins?.links;
+
+  const { handleClick, handleDoubleClick } = useSingleAndDoubleClick(
+    config?.onClick ? () => config.onClick(editor, element) : undefined,
+    config?.onDoubleClick
+      ? () => config.onDoubleClick(editor, element)
+      : isLinkElement(element)
+        ? () => window.open(element.href, "_blank", "noopener,noreferrer")
+        : undefined
+  );
 
   if (!isLinkElement(element)) return null;
 
   const { href } = element;
-  const target = isSerializing ? undefined : "_blank";
-  const rel = isSerializing ? undefined : "noopener noreferrer";
-  const onDoubleClick = isSerializing ? undefined : () => window.open(href);
   return (
-    <a {...attributes} {...eltRenderAttrs(element)} href={href} target={target} rel={rel} onDoubleClick={onDoubleClick}>
-      {!isSerializing && <InlineChromiumBugfix/>}
+    <a {...attributes} {...eltRenderAttrs(element)} href={href} target="_blank" rel="noopener noreferrer"
+        onClick={handleClick} onDoubleClick={handleDoubleClick}>
+      <InlineChromiumBugfix/>
       {children}
-      {!isSerializing && <InlineChromiumBugfix/>}
+      <InlineChromiumBugfix/>
     </a>
   );
+};
+
+export const LinkComponent = (props: RenderElementProps) => {
+  const isSerializing = useSerializing();
+  return isSerializing
+          ? <LinkSerializeComponent {...props} />
+          : <LinkRenderComponent {...props} />;
 };
 
 const kLinkTag = "a";
@@ -59,7 +86,12 @@ export function registerLinkInline() {
   isRegistered = true;
 }
 
-export function withLinkInline(editor: Editor) {
+export interface IOptions {
+  onClick?: (editor: Editor, element: LinkElement) => void;
+  onDoubleClick?: (editor: Editor, element: LinkElement) => void;
+}
+
+export function withLinkInline(editor: Editor, options?: IOptions) {
   registerLinkInline();
 
   registerToolbarButtons(editor, [{
@@ -72,6 +104,8 @@ export function withLinkInline(editor: Editor) {
   }]);
 
   const { configureElement, isElementEnabled, isInline } = editor;
+
+  editor.plugins.links = options || {};
 
   editor.isInline = element => (element.type === EFormat.link) || isInline(element);
 

@@ -7,56 +7,46 @@ interface BaseProps {
   [key: string]: unknown;
 }
 
-export const Button = React.forwardRef(
-  (
-    {
-      className,
-      active,
-      reversed,
-      ...props
-    }: React.PropsWithChildren<
-      {
-        active: boolean;
-        reversed: boolean;
-      } & BaseProps
-    >,
-    ref: React.LegacyRef<HTMLSpanElement>
-  ) => (
-    <span
-      {...props}
-      ref={ref}
-      className={cx(
-        className,
-        css`
-          cursor: pointer;
-          color: ${reversed
-            ? active
-              ? 'white'
-              : '#aaa'
-            : active
-            ? 'black'
-            : '#ccc'};
-        `
-      )}
-    />
-  )
+interface ButtonProps extends BaseProps {
+  active: boolean;
+  reversed: boolean;
+  children?: React.ReactNode;
+}
+
+export const Button = React.forwardRef<HTMLSpanElement, ButtonProps>(
+  (props, ref) => {
+    const { className, active, reversed, ...others } = props;
+    return (
+      <span
+        {...others}
+        ref={ref}
+        className={cx(
+          className as string,
+          css`
+            cursor: pointer;
+            color: ${reversed
+              ? active
+                ? 'white'
+                : '#aaa'
+              : active
+              ? 'black'
+              : '#ccc'};
+          `
+        )}
+      />
+    );
+  }
 );
 Button.displayName = "Button";
 
-export const EditorValue = React.forwardRef(
-  (
-    {
-      className,
-      value,
-      ...props
-    }: React.PropsWithChildren<
-      {
-        value: any;
-      } & BaseProps
-    >,
-    ref: React.LegacyRef<HTMLDivElement>
-  ) => {
-    const textLines = value.document.nodes
+interface EditorValueProps extends BaseProps {
+  value: any;
+  children?: React.ReactNode;
+}
+
+export const EditorValue = React.forwardRef<HTMLDivElement, EditorValueProps>(
+  ({ className, value, ...props }, ref) => {
+    const textLines = (value as any).document.nodes
       .map((node: any) => node.text)
       .toArray()
       .join('\n');
@@ -65,7 +55,7 @@ export const EditorValue = React.forwardRef(
         ref={ref}
         {...props}
         className={cx(
-          className,
+          className as string,
           css`
             margin: 30px -20px 0;
           `
@@ -101,17 +91,14 @@ export const EditorValue = React.forwardRef(
 );
 EditorValue.displayName = "EditorValue";
 
-export const Icon = React.forwardRef(
-  (
-    { className, ...props }: React.PropsWithChildren<BaseProps>,
-    ref: React.LegacyRef<HTMLSpanElement>
-  ) => (
+export const Icon = React.forwardRef<HTMLSpanElement, BaseProps>(
+  ({ className, ...props }, ref) => (
     <span
       {...props}
       ref={ref}
       className={cx(
         'material-icons',
-        className,
+        className as string,
         css`
           font-size: 18px;
           vertical-align: text-bottom;
@@ -122,16 +109,13 @@ export const Icon = React.forwardRef(
 );
 Icon.displayName = "Icon";
 
-export const Instruction = React.forwardRef(
-  (
-    { className, ...props }: React.PropsWithChildren<BaseProps>,
-    ref: React.LegacyRef<HTMLDivElement>
-  ) => (
+export const Instruction = React.forwardRef<HTMLDivElement, BaseProps>(
+  ({ className, ...props }, ref) => (
     <div
       {...props}
       ref={ref}
       className={cx(
-        className,
+        className as string,
         css`
           white-space: pre-wrap;
           margin: 0 -20px 10px;
@@ -145,16 +129,13 @@ export const Instruction = React.forwardRef(
 );
 Instruction.displayName = "Instruction";
 
-export const Menu = React.forwardRef(
-  (
-    { className, ...props }: React.PropsWithChildren<BaseProps>,
-    ref: React.LegacyRef<HTMLDivElement>
-  ) => (
+export const Menu = React.forwardRef<HTMLDivElement, BaseProps>(
+  ({ className, ...props }, ref) => (
     <div
       {...props}
       ref={ref}
       className={cx(
-        className,
+        className as string,
         css`
           & > * {
             display: inline-block;
@@ -176,16 +157,13 @@ export const Portal = ({ children }: { children: ReactNode }) => {
     : null;
 };
 
-export const Toolbar = React.forwardRef(
-  (
-    { className, ...props }: React.PropsWithChildren<BaseProps>,
-    ref: React.Ref<HTMLDivElement>
-  ) => (
+export const Toolbar = React.forwardRef<HTMLDivElement, BaseProps>(
+  ({ className, ...props }, ref) => (
     <Menu
       {...props}
       ref={ref}
       className={cx(
-        className,
+        className as string,
         css`
           position: relative;
           padding: 1px 18px 17px;

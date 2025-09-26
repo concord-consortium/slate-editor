@@ -1,10 +1,7 @@
 const path = require('path');
 
 module.exports = {
-  addons: [
-    '@storybook/addon-storysource',
-    '@storybook/addon-webpack5-compiler-swc'
-  ],
+  addons: ['@storybook/addon-webpack5-compiler-swc', '@storybook/addon-docs'],
   stories: ['../src/**/*.stories.[tj]s?(x)'],
 
   webpackFinal: async (config) => {
@@ -25,10 +22,6 @@ module.exports = {
   framework: {
     name: '@storybook/react-webpack5',
     options: {}
-  },
-
-  docs: {
-    autodocs: false
   },
 
   typescript: {

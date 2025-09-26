@@ -9,6 +9,7 @@ import { CustomElement, ImageElement } from "../common/custom-types";
 import { EFormat } from "../common/slate-types";
 import { getDialogController, getPlatformTooltip, registerToolbarButtons } from "../common/toolbar-utils";
 import { useSerializing } from "../hooks/use-serializing";
+import { useSingleAndDoubleClick } from "../hooks/use-single-and-double-click";
 import { IDialogController } from "../modal-dialog/dialog-types";
 import { registerElementDeserializer } from "../serialization/html-serializer";
 import { getElementAttrs } from "../serialization/html-utils";
@@ -62,28 +63,32 @@ const ImageSerializeComponent = ({ attributes, children, element }: RenderElemen
 
 const ImageRenderComponent = ({ attributes, children, element }: RenderElementProps) => {
   const editor = useSlateStatic();
+  const config: typeof editor.plugins.images | undefined = editor.plugins?.images;
   const isFocused = useFocused();
   const isSelected = useSelected();
 
-  if (!isImageElement(element)) return null;
+  const { handleClick, handleDoubleClick } = useSingleAndDoubleClick(
+    config?.onClick ? () => config.onClick(editor, element) : undefined,
+    config?.onDoubleClick
+      ? () => config.onDoubleClick(editor, element)
+      : () => editor.configureElement(EFormat.image, getDialogController(editor), element)
+  );
 
-  const handleDoubleClick = () => {
-    editor.configureElement(EFormat.image, getDialogController(editor), element);
-  };
+  if (!isImageElement(element)) return null;
 
   const handleLoad = () => null;
 
   const highlightClass = isFocused && isSelected ? kImageHighlightClass : undefined;
-  const divClasses = kInlineBlockClass;
+  const spanClasses = element.float ? "" : kInlineBlockClass;
   return (
     // cf. https://github.com/ianstormtaylor/slate/blob/main/site/examples/images.tsx
     // but we use `<span>`s instead of `<div>`s due to the restriction that
     // `Warning: validateDOMNesting(...): <div> cannot appear as a descendant of <p>`
-    <span {...attributes} className={`${kImageNodeClass} ${divClasses}`}>
+    <span {...attributes} className={`${kImageNodeClass} ${spanClasses}`}>
       {children}
-      <span className={divClasses} contentEditable={false}>
+      <span className={spanClasses} contentEditable={false}>
         <img className={getImgClasses(element, highlightClass)} {...getImgAttrs(element)} {...eltRenderAttrs(element)}
-            onLoad={handleLoad} onDoubleClick={handleDoubleClick}/>
+            onLoad={handleLoad} onClick={handleClick} onDoubleClick={handleDoubleClick}/>
       </span>
     </span>
   );
@@ -152,7 +157,12 @@ function getNodeFromDialogValues(values: Record<string, string>) {
   return imageElt;
 }
 
-export function withImages(editor: Editor) {
+export interface IOptions {
+  onClick?: (editor: Editor, element: ImageElement) => void;
+  onDoubleClick?: (editor: Editor, element: ImageElement) => void;
+}
+
+export function withImages(editor: Editor, options?: IOptions) {
   registerImageInline();
 
   registerToolbarButtons(editor, [{
@@ -165,6 +175,8 @@ export function withImages(editor: Editor) {
   }]);
 
   const { configureElement, isInline, isVoid } = editor;
+
+  editor.plugins.images = options || {};
 
   editor.isInline = element => (element.type === EFormat.image) || isInline(element);
   editor.isVoid = element => (element.type === EFormat.image) || isVoid(element);
