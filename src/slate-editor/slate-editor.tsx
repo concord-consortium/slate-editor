@@ -1,6 +1,6 @@
 import isHotkey from 'is-hotkey';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
-import { Descendant } from 'slate';
+import { Descendant, Operation } from 'slate';
 import { Editable, RenderElementProps, RenderLeafProps, useSlate } from 'slate-react';
 
 import { Element } from './element';
@@ -32,15 +32,15 @@ export const SlateEditor = ({
   className, placeholder, readOnly, hotkeyMap, historyKeys, onBlur, onChange, onFocus
 }: IProps) => {
   const editor = useSlate();
-  const origOnChangeRef = useRef<() => void>();
+  const origOnChangeRef = useRef<(options?: { operation?: Operation }) => void>();
 
   useEffect(() => {
     origOnChangeRef.current = editor.onChange;
   }, [editor]);
 
   useEffect(() => {
-    editor.onChange = () => {
-      origOnChangeRef.current?.();
+    editor.onChange = (options?: { operation?: Operation }) => {
+      origOnChangeRef.current?.(options);
       onChange?.(editor.children);
     };
   }, [editor, onChange]);
