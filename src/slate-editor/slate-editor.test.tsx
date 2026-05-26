@@ -1,7 +1,8 @@
 import React from "react";
 // not being picked up from `jest.setup.ts` for some reason
 import "@testing-library/jest-dom";
-import { render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
+import { Transforms } from "slate";
 import { Slate } from "slate-react";
 import { EditorValue, slateToText, textToSlate } from "../common/slate-types";
 import { IProps as ISlateEditorProps, SlateEditor } from "./slate-editor";
@@ -65,5 +66,69 @@ describe("Slate Editor", () => {
       );
     });
 
+  });
+
+  describe("Slate onChange options forwarding", () => {
+    // Regression test for the SlateEditor wrapper dropping the options argument
+    // when forwarding to <Slate>'s onContextChange. Without forwarding, set_selection
+    // ops also trigger onValueChange (because the switch on options.operation.type
+    // falls through to the default branch when options is undefined).
+    it("dispatches set_selection ops to onSelectionChange, not onValueChange", async () => {
+      const onValueChange = jest.fn();
+      const onSelectionChange = jest.fn();
+      const editor = createEditor({ history: true });
+      const initialValue = textToSlate("hello");
+
+      render(
+        <Slate
+          editor={editor}
+          initialValue={initialValue}
+          onValueChange={onValueChange}
+          onSelectionChange={onSelectionChange}
+        >
+          <SlateEditor />
+        </Slate>
+      );
+
+      onValueChange.mockClear();
+      onSelectionChange.mockClear();
+
+      await act(async () => {
+        Transforms.select(editor, { path: [0, 0], offset: 1 });
+        // slate batches editor.onChange onto a microtask; flush it
+        await Promise.resolve();
+      });
+
+      expect(onSelectionChange).toHaveBeenCalled();
+      expect(onValueChange).not.toHaveBeenCalled();
+    });
+
+    it("dispatches value ops to onValueChange", async () => {
+      const onValueChange = jest.fn();
+      const onSelectionChange = jest.fn();
+      const editor = createEditor({ history: true });
+      const initialValue = textToSlate("hello");
+
+      render(
+        <Slate
+          editor={editor}
+          initialValue={initialValue}
+          onValueChange={onValueChange}
+          onSelectionChange={onSelectionChange}
+        >
+          <SlateEditor />
+        </Slate>
+      );
+
+      onValueChange.mockClear();
+      onSelectionChange.mockClear();
+
+      await act(async () => {
+        Transforms.insertText(editor, "!", { at: { path: [0, 0], offset: 5 } });
+        await Promise.resolve();
+      });
+
+      expect(onValueChange).toHaveBeenCalled();
+    });
   });
 });
