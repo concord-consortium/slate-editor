@@ -1,6 +1,6 @@
 # Changelog
 
-## Version 0.13.0-pre.0 - May 13, 2026
+## Version 0.13.0 - May 26, 2026
 - Fixed `SlateEditor` wrapper to forward the `options` argument when invoking the original `editor.onChange`, so consumers of `<Slate onValueChange>` / `<Slate onSelectionChange>` correctly distinguish value vs. selection changes.
 
 ## Version 0.12.0 - September 26, 2025
